@@ -3,20 +3,20 @@ import Link from "next/link";
 
 export default function Footer() {
 	return (
-		<footer className='bg-slate-900 border-t border-slate-800 mt-16'>
+		<footer className='bg-gray-50 border-t border-gray-200 mt-16'>
 			<div className='max-w-7xl mx-auto px-4 md:px-8 py-12'>
 				<div className='grid grid-cols-1 md:grid-cols-4 gap-8 mb-8'>
 					{/* Brand */}
 					<div>
 						<div className='flex items-center gap-2 mb-4'>
 							<Image
-								src='/logo.png'
+								src='/newlogo.png'
 								alt='Deelzo'
-								width={180}
-								height={180}
+								width={130}
+								height={130}
 							/>
 						</div>
-						<p className='text-slate-400 text-sm'>
+						<p className='text-gray-600 text-sm'>
 							The trusted marketplace for buying and selling
 							digital assets.
 						</p>
@@ -24,28 +24,28 @@ export default function Footer() {
 
 					{/* Product */}
 					<div>
-						<h3 className='font-semibold text-white mb-4'>
+						<h3 className='font-semibold text-gray-900 mb-4'>
 							Product
 						</h3>
 						<ul className='space-y-2'>
 							<li>
 								<Link
 									href='/marketplace'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									Marketplace
 								</Link>
 							</li>
 							<li>
 								<Link
 									href='/guide'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									How It Works
 								</Link>
 							</li>
 							<li>
 								<Link
 									href='/about'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									About Us
 								</Link>
 							</li>
@@ -54,19 +54,21 @@ export default function Footer() {
 
 					{/* Legal */}
 					<div>
-						<h3 className='font-semibold text-white mb-4'>Legal</h3>
+						<h3 className='font-semibold text-gray-900 mb-4'>
+							Legal
+						</h3>
 						<ul className='space-y-2'>
 							<li>
 								<Link
 									href='/privacy'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									Privacy Policy
 								</Link>
 							</li>
 							<li>
 								<Link
 									href='/terms'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									Terms of Service
 								</Link>
 							</li>
@@ -75,21 +77,21 @@ export default function Footer() {
 
 					{/* Support */}
 					<div>
-						<h3 className='font-semibold text-white mb-4'>
+						<h3 className='font-semibold text-gray-900 mb-4'>
 							Support
 						</h3>
 						<ul className='space-y-2'>
 							<li>
 								<Link
 									href='/contact'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									Contact Us
 								</Link>
 							</li>
 							<li>
 								<a
 									href='mailto:evtnorg@gmail.com'
-									className='text-slate-400 hover:text-white text-sm'>
+									className='text-gray-600 hover:text-blue-600 text-sm'>
 									Email Support
 								</a>
 							</li>

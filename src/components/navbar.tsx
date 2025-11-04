@@ -19,16 +19,16 @@ export default function Navbar() {
 	};
 
 	return (
-		<nav className='sticky top-0 z-50 bg-slate-900 border-b border-slate-800'>
+		<nav className='sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm'>
 			<div className='max-w-7xl mx-auto px-4 md:px-8'>
 				<div className='flex justify-between items-center h-16'>
 					{/* Logo */}
 					<Link href='/' className='flex items-center gap-2'>
 						<Image
-							src='/logos.png'
+							src='/newlogo.png'
 							alt='Deelzo'
-							width={140}
-							height={140}
+							width={130}
+							height={130}
 						/>
 					</Link>
 
@@ -36,17 +36,17 @@ export default function Navbar() {
 					<div className='hidden md:flex items-center gap-8'>
 						<Link
 							href='/marketplace'
-							className='text-slate-300 hover:text-white transition-colors'>
+							className='text-gray-700 hover:text-blue-600 transition-colors'>
 							Marketplace
 						</Link>
 						<Link
 							href='/guide'
-							className='text-slate-300 hover:text-white transition-colors'>
+							className='text-gray-700 hover:text-blue-600 transition-colors'>
 							Guide
 						</Link>
 						<Link
 							href='/about'
-							className='text-slate-300 hover:text-white transition-colors'>
+							className='text-gray-700 hover:text-blue-600 transition-colors'>
 							About
 						</Link>
 					</div>
@@ -74,7 +74,7 @@ export default function Navbar() {
 									<Link href='/login'>
 										<Button
 											variant='outline'
-											className='border-slate-600 cursor-pointer text-slate-300 hover:text-white hover:bg-slate-800 bg-transparent'>
+											className='border-slate-600 cursor-pointer text-slate-600 hover:text-white hover:bg-slate-800 bg-transparent'>
 											Login
 										</Button>
 									</Link>
@@ -91,7 +91,7 @@ export default function Navbar() {
 					{/* Mobile Menu Button */}
 					<button
 						onClick={() => setIsOpen(!isOpen)}
-						className='md:hidden text-slate-300 hover:text-white'>
+						className='md:hidden text-slate-600 hover:text-white'>
 						{isOpen ? <X size={24} /> : <Menu size={24} />}
 					</button>
 				</div>
@@ -101,19 +101,19 @@ export default function Navbar() {
 					<div className='md:hidden pb-4 space-y-4'>
 						<Link
 							href='/marketplace'
-							className='block text-slate-300 hover:text-white'>
+							className='block text-slate-600 hover:text-white'>
 							Marketplace
 						</Link>
 						<Link
 							href='/guide'
-							className='block text-slate-300 hover:text-white'>
+							className='block text-slate-600 hover:text-blue-600'>
 							Guide
 						</Link>
-						<Link
-							href='/about'
-							className='block text-slate-300 hover:text-white'>
+						<Button
+							variant='ghost'
+							className='text-slate-600 hover:bg-gray-200 hover:text-blue-600'>
 							About
-						</Link>
+						</Button>
 						{user ? (
 							<>
 								<Link href='/dashboard' className='block'>
@@ -123,7 +123,7 @@ export default function Navbar() {
 								</Link>
 								<Button
 									onClick={handleLogout}
-									className='w-full border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent'
+									className='w-full border-slate-600 text-slate-300 hover:bg-slate-200 bg-transparent'
 									variant='outline'>
 									Logout
 								</Button>
@@ -132,7 +132,7 @@ export default function Navbar() {
 							<>
 								<Link href='/login' className='block'>
 									<Button
-										className='w-full border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent'
+										className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200 hover:text-blue-600'
 										variant='outline'>
 										Login
 									</Button>
