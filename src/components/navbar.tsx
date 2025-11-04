@@ -25,10 +25,10 @@ export default function Navbar() {
 					{/* Logo */}
 					<Link href='/' className='flex items-center gap-2'>
 						<Image
-							src='/logo.png'
-							alt='WebDeelers'
-							width={180}
-							height={180}
+							src='/logos.png'
+							alt='Deelzo'
+							width={140}
+							height={140}
 						/>
 					</Link>
 

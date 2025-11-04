@@ -28,7 +28,7 @@ export default function About() {
 			{/* Content */}
 			<div className='max-w-4xl mx-auto px-4 md:px-8 py-16'>
 				<h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-					About WebDeelers
+					About Deelzo
 				</h1>
 
 				<div className='space-y-8 text-slate-600'>
@@ -37,7 +37,7 @@ export default function About() {
 							Our Mission
 						</h2>
 						<p className='leading-relaxed'>
-							WebDeelers is a trusted marketplace for buying and
+							Deelzo is a trusted marketplace for buying and
 							selling digital assets. We empower entrepreneurs and
 							digital investors to discover, evaluate, and acquire
 							high-quality digital properties with confidence.
@@ -46,7 +46,7 @@ export default function About() {
 
 					<section>
 						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
-							Why Choose WebDeelers?
+							Why Choose Deelzo?
 						</h2>
 						<ul className='space-y-3'>
 							<li className='flex gap-3'>
@@ -123,9 +123,9 @@ export default function About() {
 						<p className='leading-relaxed'>
 							We are committed to maintaining the highest
 							standards of integrity, transparency, and customer
-							service. Every transaction on WebDeelers is
-							protected by our comprehensive verification process
-							and secure payment system.
+							service. Every transaction on Deelzo is protected by
+							our comprehensive verification process and secure
+							payment system.
 						</p>
 					</section>
 
@@ -141,8 +141,8 @@ export default function About() {
 								</h2>
 								<p className='text-gray-600 mb-4'>
 									Hi, I'm AdSense Guru aka (Amit Singh), the
-									founder and CEO of WebDeelers. With over 4
-									years of experience in digital marketing and
+									founder and CEO of Deelzo. With over 4 years
+									of experience in digital marketing and
 									website development, I created this platform
 									to help entrepreneurs and investors find
 									quality digital assets.
@@ -230,7 +230,7 @@ export default function About() {
 
 								{/* Telegram Channel */}
 								<Link
-									href='https://www.webdeelers.com/'
+									href='https://www.deelzo.com/marketplace'
 									className='flex items-center justify-center gap-2 p-4 bg-cyan-50 hover:bg-cyan-100 rounded-lg border border-cyan-200 text-cyan-700 transition-colors'>
 									<ExternalLink className='w-5 h-5' />
 									<span>Visit Marketplace</span>

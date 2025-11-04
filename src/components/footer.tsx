@@ -11,7 +11,7 @@ export default function Footer() {
 						<div className='flex items-center gap-2 mb-4'>
 							<Image
 								src='/logo.png'
-								alt='WebDeelers'
+								alt='Deelzo'
 								width={180}
 								height={180}
 							/>
@@ -101,7 +101,7 @@ export default function Footer() {
 				<div className='border-t border-slate-800 pt-8'>
 					<div className='flex flex-col md:flex-row justify-between items-center'>
 						<p className='text-slate-400 text-sm'>
-							© 2025 WebDeelers. All rights reserved.
+							© 2025 Deelzo. All rights reserved.
 						</p>
 						<p className='text-slate-400 text-sm mt-4 md:mt-0'>
 							Platform Fee: 5% on all successful transactions

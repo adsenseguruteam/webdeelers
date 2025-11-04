@@ -157,7 +157,7 @@ export default function Home() {
 							Buy & Sell Digital Assets with Confidence
 						</h1>
 						<p className='text-xl text-gray-600 mb-8'>
-							WebDeelers is the trusted marketplace for digital
+							Deelzo is the trusted marketplace for digital
 							entrepreneurs. Discover, evaluate, and acquire
 							high-quality digital properties.
 						</p>
@@ -595,14 +595,14 @@ export default function Home() {
 				<div className='grid md:grid-cols-2 gap-12 items-center'>
 					<div className='space-y-6'>
 						<h2 className='text-3xl md:text-4xl font-bold text-gray-900'>
-							About WebDeelers
+							About Deelzo
 						</h2>
 						<p className='text-lg text-gray-600'>
-							WebDeelers is a premier marketplace for digital
-							assets, founded by AdSense Guru (Amit Singh). With
-							over 4 years of experience in digital marketing and
-							website development, we've created a trusted
-							platform for buying and selling digital properties.
+							Deelzo is a premier marketplace for digital assets,
+							founded by AdSense Guru (Amit Singh). With over 4
+							years of experience in digital marketing and website
+							development, we've created a trusted platform for
+							buying and selling digital properties.
 						</p>
 						<div className='flex flex-wrap gap-4'>
 							<div className='flex items-center gap-2 text-gray-600'>

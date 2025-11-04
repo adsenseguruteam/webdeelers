@@ -19,6 +19,7 @@ import {
 	Edit2,
 	EyeIcon,
 	ChevronDown,
+	Loader2,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import { toast } from "sonner";
@@ -123,7 +124,7 @@ export default function Dashboard() {
 	if (loading) {
 		return (
 			<div className='flex items-center justify-center min-h-screen'>
-				Loading...
+				<Loader2 className='animate-spin w-12 h-12 text-blue-500' />
 			</div>
 		);
 	}

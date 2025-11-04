@@ -7,7 +7,7 @@ export default function Guide() {
 		{
 			title: "Create Your Account",
 			description:
-				"Sign up with Google or email to get started on WebDeelers.",
+				"Sign up with Google or email to get started on Deelzo.",
 		},
 		{
 			title: "Verify Your Identity",
@@ -57,7 +57,7 @@ export default function Guide() {
 					Getting Started Guide
 				</h1>
 				<p className='text-gray-600 mb-12'>
-					Learn how to buy and sell digital assets on WebDeelers
+					Learn how to buy and sell digital assets on Deelzo
 				</p>
 
 				{/* For Sellers */}
@@ -163,7 +163,7 @@ export default function Guide() {
 						Platform Fee
 					</h3>
 					<p className='text-gray-600 mb-4'>
-						WebDeelers charges a 5% success fee on all completed
+						Deelzo charges a 5% success fee on all completed
 						transactions. This fee is deducted from the seller's
 						proceeds and helps us maintain a secure, verified
 						marketplace.

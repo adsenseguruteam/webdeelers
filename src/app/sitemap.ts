@@ -3,7 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Listing from "@/models/Listing";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const baseUrl = "https://www.webdeelers.com";
+	const baseUrl = "https://www.deelzo.com";
 
 	// Static pages
 	const staticPages: MetadataRoute.Sitemap = [

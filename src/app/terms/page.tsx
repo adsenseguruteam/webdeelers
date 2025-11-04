@@ -30,8 +30,8 @@ export default function Terms() {
 							1. Acceptance of Terms
 						</h2>
 						<p className='leading-relaxed'>
-							By accessing and using WebDeelers, you accept and
-							agree to be bound by the terms and provision of this
+							By accessing and using Deelzo, you accept and agree
+							to be bound by the terms and provision of this
 							agreement. If you do not agree to abide by the
 							above, please do not use this service.
 						</p>
@@ -44,7 +44,7 @@ export default function Terms() {
 						<p className='leading-relaxed'>
 							Permission is granted to temporarily download one
 							copy of the materials (information or software) on
-							WebDeelers for personal, non-commercial transitory
+							Deelzo for personal, non-commercial transitory
 							viewing only. This is the grant of a license, not a
 							transfer of title, and under this license you may
 							not:
@@ -57,7 +57,7 @@ export default function Terms() {
 							</li>
 							<li>
 								Attempt to decompile or reverse engineer any
-								software contained on WebDeelers
+								software contained on Deelzo
 							</li>
 							<li>
 								Remove any copyright or other proprietary
@@ -75,14 +75,13 @@ export default function Terms() {
 							3. Disclaimer
 						</h2>
 						<p className='leading-relaxed'>
-							The materials on WebDeelers are provided on an 'as
-							is' basis. AssetHub makes no warranties, expressed
-							or implied, and hereby disclaims and negates all
-							other warranties including, without limitation,
-							implied warranties or conditions of merchantability,
-							fitness for a particular purpose, or
-							non-infringement of intellectual property or other
-							violation of rights.
+							The materials on Deelzo are provided on an 'as is'
+							basis. AssetHub makes no warranties, expressed or
+							implied, and hereby disclaims and negates all other
+							warranties including, without limitation, implied
+							warranties or conditions of merchantability, fitness
+							for a particular purpose, or non-infringement of
+							intellectual property or other violation of rights.
 						</p>
 					</section>
 

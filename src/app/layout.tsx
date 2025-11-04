@@ -11,13 +11,13 @@ import { AuthProvider } from "@/context/userContext";
 const geistSans = Geist({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	metadataBase: new URL("https://www.webdeelers.com/"),
+	metadataBase: new URL("https://www.deelzo.com/"),
 	title: {
-		default: "WebDeelers - Buy & Sell Digital Assets | Trusted Marketplace",
-		template: "%s | WebDeelers",
+		default: "Deelzo - Buy & Sell Digital Assets | Trusted Marketplace",
+		template: "%s | Deelzo",
 	},
 	description:
-		"WebDeelers is the trusted marketplace for buying and selling digital assets. Discover websites, YouTube channels, social media accounts, mobile apps, SaaS products, and more. Buy verified digital properties with complete metrics and analytics.",
+		"Deelzo is the trusted marketplace for buying and selling digital assets. Discover websites, YouTube channels, social media accounts, mobile apps, SaaS products, and more. Buy verified digital properties with complete metrics and analytics.",
 	keywords: [
 		"buy digital assets",
 		"sell digital assets",
@@ -34,11 +34,11 @@ export const metadata: Metadata = {
 		"verified digital properties",
 		"buy social media account",
 		"digital business for sale",
-		"WebDeelers",
+		"Deelzo",
 	],
-	authors: [{ name: "WebDeelers" }],
-	creator: "WebDeelers",
-	publisher: "WebDeelers",
+	authors: [{ name: "Deelzo" }],
+	creator: "Deelzo",
+	publisher: "Deelzo",
 	formatDetection: {
 		email: false,
 		address: false,
@@ -48,27 +48,27 @@ export const metadata: Metadata = {
 		type: "website",
 		locale: "en_US",
 		url: "/",
-		title: "WebDeelers - Buy & Sell Digital Assets | Trusted Marketplace",
+		title: "Deelzo - Buy & Sell Digital Assets | Trusted Marketplace",
 		description:
-			"WebDeelers is the trusted marketplace for buying and selling digital assets. Discover websites, YouTube channels, social media accounts, mobile apps, SaaS products, and more.",
-		siteName: "WebDeelers",
+			"Deelzo is the trusted marketplace for buying and selling digital assets. Discover websites, YouTube channels, social media accounts, mobile apps, SaaS products, and more.",
+		siteName: "Deelzo",
 		images: [
 			{
 				url: "/og-image.png",
 				width: 1200,
 				height: 630,
-				alt: "WebDeelers - Digital Assets Marketplace",
+				alt: "Deelzo - Digital Assets Marketplace",
 			},
 		],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "WebDeelers - Buy & Sell Digital Assets",
+		title: "Deelzo - Buy & Sell Digital Assets",
 		description:
 			"The trusted marketplace for buying and selling digital assets. Discover verified digital properties with complete metrics.",
 		images: ["/og-image.png"],
-		creator: "@webdeelers",
-		site: "@webdeelers",
+		creator: "@Deelzo",
+		site: "@Deelzo",
 	},
 	robots: {
 		index: true,
@@ -114,20 +114,20 @@ export default function RootLayout({
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "Organization",
-							name: "WebDeelers",
-							url: "https://www.webdeelers.com/",
+							name: "Deelzo",
+							url: "https://www.deelzo.com/",
 							logo: "/logo.png",
 							description:
 								"Trusted marketplace for buying and selling digital assets",
 							sameAs: [
-								"https://twitter.com/webdeelers",
-								"https://facebook.com/webdeelers",
-								"https://linkedin.com/company/webdeelers",
+								"https://twitter.com/Deelzo",
+								"https://facebook.com/Deelzo",
+								"https://linkedin.com/company/Deelzo",
 							],
 							contactPoint: {
 								"@type": "ContactPoint",
 								contactType: "Customer Service",
-								email: "support@webdeelers.com",
+								email: "evtnorg@gmail.com",
 							},
 						}),
 					}}
@@ -140,14 +140,14 @@ export default function RootLayout({
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "WebSite",
-							name: "WebDeelers",
-							url: "https://www.webdeelers.com/",
+							name: "Deelzo",
+							url: "https://www.deelzo.com/",
 							potentialAction: {
 								"@type": "SearchAction",
 								target: {
 									"@type": "EntryPoint",
 									urlTemplate:
-										"https://www.webdeelers.com/marketplace",
+										"https://www.deelzo.com/marketplace",
 								},
 								"query-input":
 									"required name=search_term_string",
@@ -163,10 +163,10 @@ export default function RootLayout({
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "OnlineStore",
-							name: "WebDeelers",
+							name: "Deelzo",
 							description:
 								"Buy and sell digital assets including websites, YouTube channels, social media accounts, mobile apps, and SaaS products",
-							url: "https://www.webdeelers.com/",
+							url: "https://www.deelzo.com/",
 							priceRange: "$$",
 						}),
 					}}
