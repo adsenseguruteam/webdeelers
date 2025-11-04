@@ -74,7 +74,7 @@ export default function ProfilePage({
 				{/* Profile Header */}
 				<Card className='bg-white border-gray-200 mb-8 shadow-sm'>
 					<CardContent className='pt-8'>
-						<div className='flex flex-col md:flex-row gap-8 items-start md:items-center'>
+						<div className='flex flex-row gap-8 items-start md:items-center'>
 							{/* Avatar */}
 							<div className='w-24 h-24 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center'>
 								<span className='text-4xl font-bold text-white'>
@@ -89,6 +89,9 @@ export default function ProfilePage({
 										<h1 className='text-3xl font-bold text-gray-900 mb-2'>
 											{user.name}
 										</h1>
+										<p className='text-gray-600'>
+											{user.phone}
+										</p>
 										<p className='text-gray-600 mb-2'>
 											{user.email}
 										</p>
@@ -170,7 +173,7 @@ export default function ProfilePage({
 				</Card>
 
 				{/* Stats Grid */}
-				<div className='grid grid-cols-1 md:grid-cols-4 gap-4 mb-8'>
+				<div className='grid grid-cols-2 md:grid-cols-4 gap-4 mb-8'>
 					<Card className='bg-white border-gray-200 shadow-sm'>
 						<CardContent className='pt-6'>
 							<div className='flex items-center justify-between'>

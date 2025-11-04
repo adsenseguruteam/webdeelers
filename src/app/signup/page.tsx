@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Value as E164Number } from "react-phone-number-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Mail, Lock, User } from "lucide-react";
+import { ArrowRight, Mail, Lock, User, Phone } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export default function SignUp() {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [phone, setPhone] = useState("");
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -41,17 +45,14 @@ export default function SignUp() {
 			return;
 		}
 
-		if (
-			!formData.phone ||
-			!formData.phone.startsWith("+") ||
-			formData.phone.length < 10
-		) {
-			setError(
-				"Please enter your phone number with country code, e.g. +15551234567"
-			);
+		if (!phone) {
+			setError("Please enter a valid phone number with country code");
 			setLoading(false);
 			return;
 		}
+
+		// Update formData with the phone number from the phone input
+		formData.phone = phone;
 
 		try {
 			const response = await axios.post("/api/auth/signup", {
@@ -94,7 +95,7 @@ export default function SignUp() {
 				<Card className='bg-white border-gray-200 shadow-lg'>
 					<CardHeader className='text-center'>
 						<div className='flex justify-center mb-4'>
-							<div className='w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center'>
+							<div className='w-12 h-12 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center'>
 								<span className='text-white font-bold text-xl'>
 									A
 								</span>
@@ -117,9 +118,7 @@ export default function SignUp() {
 
 						<form onSubmit={handleSubmit} className='space-y-4'>
 							<div>
-								<Label
-									htmlFor='name'
-									className='text-gray-700'>
+								<Label htmlFor='name' className='text-gray-700'>
 									Full Name
 								</Label>
 								<div className='relative mt-2'>
@@ -171,21 +170,19 @@ export default function SignUp() {
 									Phone Number
 								</Label>
 								<div className='relative mt-2'>
-									<span className='absolute left-3 top-3 text-slate-500 text-sm'>
-										+
-									</span>
-									<Input
-										id='phone'
-										name='phone'
-										type='tel'
-										placeholder='+917897315148'
-										value={formData.phone}
-										onChange={handleChange}
-										required
-										className='pl-8 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'
-										minLength={10}
-										pattern='\+[0-9]{10,15}'
-									/>
+									<div className='flex items-center border border-gray-300 rounded-md overflow-hidden bg-white'>
+										{/* <Phone className='w-5 h-5 text-gray-400 ml-3' /> */}
+										<PhoneInput
+											international
+											defaultCountry='IN'
+											value={phone}
+											placeholder='Enter phone number'
+											onChange={(value) =>
+												setPhone(value || "")
+											}
+											className='flex-1 pl-1 py-1 border-0 focus:ring-0 text-gray-900 placeholder-gray-400 w-full'
+										/>
+									</div>
 								</div>
 							</div>
 
@@ -240,7 +237,7 @@ export default function SignUp() {
 							<Button
 								type='submit'
 								disabled={loading}
-								className='w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
+								className='w-full bg-linear-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
 								{loading ? "Creating Account..." : "Sign Up"}
 								<ArrowRight size={18} />
 							</Button>

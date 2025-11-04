@@ -173,10 +173,83 @@ export default function ListingDetail({
 							</div>
 						</Card>
 
+						{/* Price card for mobile users */}
+						<div className='block md:hidden mb-6'>
+							<Card className='bg-linear-to-br from-blue-600 to-cyan-600 border-blue-500 shadow-lg'>
+								<CardContent className='p-6'>
+									<p className='text-white/90 text-sm mb-2'>
+										Asking Price
+									</p>
+									<p className='text-4xl font-bold text-white mb-6'>
+										${listing.price.toLocaleString()}
+									</p>
+									{listing.status === "sold" ? (
+										<h2 className='text-red-400 text-3xl font-black'>
+											Out Of Stock
+										</h2>
+									) : (
+										<div className='space-y-3'>
+											<Button
+												onClick={() =>
+													handleContactSeller(
+														listing.seller.phone
+													)
+												}
+												className='w-full cursor-pointer bg-green-600 hover:bg-green-700 text-white gap-2 '>
+												<MessageCircle size={18} />
+												Contact on WhatsApp
+											</Button>
+
+											<div className='flex gap-2'>
+												<Button
+													variant='outline'
+													size='icon'
+													onClick={() =>
+														handleContactSeller(
+															"917755089819"
+														)
+													}
+													className='flex-1 cursor-pointer border-white/30 text-shadow-gray-600 hover:bg-white/20'>
+													<MessageCircle size={20} />
+													Admin
+												</Button>
+												<Button
+													variant='outline'
+													onClick={() => {
+														try {
+															navigator.clipboard.writeText(
+																window.location
+																	.href
+															);
+															toast.success(
+																"Link copied to clipboard"
+															);
+														} catch (error) {
+															console.error(
+																"Failed to copy link:",
+																error
+															);
+															toast.error(
+																"Failed to copy link"
+															);
+														}
+													}}
+													size='icon'
+													className='flex-1 cursor-pointer border-white/30 text-gray-600 hover:bg-white/20'>
+													<Share2 size={20} />
+													Share
+												</Button>
+											</div>
+										</div>
+									)}
+								</CardContent>
+							</Card>
+						</div>
+
 						{/* Details */}
 						<Card className='bg-white border-gray-200 shadow-sm'>
 							<CardHeader>
-								<CardTitle className='text-gray-900 text-2xl'>
+								<CardTitle className='text-gray-900 text-xl md:text-2xl'>
 									{listing?.title}
 								</CardTitle>
 							</CardHeader>
@@ -256,7 +329,7 @@ export default function ListingDetail({
 								{/* Details */}
 								{listing.details && (
 									<div className='space-y-3 pt-4 border-t border-gray-200'>
-										<div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+										<div className='grid grid-cols-2 md:grid-cols-3 gap-4'>
 											{listing.details.niche && (
 												<div className='p-4 bg-gray-50 rounded-lg border border-gray-200'>
 													<p className='text-xs text-gray-600'>
@@ -456,7 +529,7 @@ export default function ListingDetail({
 					{/* Sidebar */}
 					<div className='space-y-6'>
 						{/* Price Card */}
-						<Card className='bg-linear-to-br from-blue-600 to-cyan-600 border-blue-500 shadow-lg'>
+						<Card className='bg-linear-to-br hidden md:block from-blue-600 to-cyan-600 border-blue-500 shadow-lg'>
 							<CardContent className='p-6'>
 								<p className='text-white/90 text-sm mb-2'>
 									Asking Price

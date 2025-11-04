@@ -74,7 +74,7 @@ export default function Navbar() {
 									<Link href='/login'>
 										<Button
 											variant='outline'
-											className='border-slate-600 cursor-pointer text-slate-300 hover:bg-slate-800 bg-transparent'>
+											className='border-slate-600 cursor-pointer text-slate-300 hover:text-white hover:bg-slate-800 bg-transparent'>
 											Login
 										</Button>
 									</Link>

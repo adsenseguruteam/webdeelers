@@ -27,6 +27,9 @@ function VerifyOTPForm() {
 			const data = await res.json();
 			if (data.success) {
 				setSuccess(true);
+				setTimeout(() => {
+					router.push("/login");
+				}, 1200);
 				setMessage("Your email was verified! You may now log in.");
 			} else {
 				setMessage(data.message || "Verification failed.");
@@ -39,15 +42,15 @@ function VerifyOTPForm() {
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center bg-linear-to-br from-blue-950 via-blue-900 to-cyan-900'>
-			<Card className='w-full max-w-md border-blue-700 bg-slate-900/90'>
+		<div className='flex min-h-screen items-center justify-center bg-linear-to-br from-blue-50 via-white to-cyan-50'>
+			<Card className='w-full max-w-md border border-gray-200 bg-white shadow-lg'>
 				<CardContent className='p-8'>
-					<h2 className='text-2xl font-bold mb-4 text-white text-center'>
+					<h2 className='text-2xl font-bold mb-4 text-gray-900 text-center'>
 						Verify Your AssetHub Account
 					</h2>
-					<p className='text-gray-700 text-center mb-7'>
+					<p className='text-gray-600 text-center mb-7'>
 						Enter the 6-digit code sent to your email{" "}
-						<b className='text-blue-400'>{email}</b>
+						<b className='text-blue-600'>{email}</b>
 					</p>
 					<form onSubmit={handleSubmit} className='space-y-6'>
 						<input
@@ -58,13 +61,13 @@ function VerifyOTPForm() {
 							placeholder='OTP code'
 							value={code}
 							onChange={(e) => setCode(e.target.value)}
-							className='w-full p-3 rounded bg-slate-800 border border-slate-700 text-lg text-white focus:outline-none focus:border-cyan-500 text-center tracking-widest font-mono mb-2'
+							className='w-full p-3 rounded border border-gray-300 text-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center tracking-widest font-mono mb-2'
 							autoFocus
 							required
 						/>
 						<Button
 							type='submit'
-							className='w-full bg-linear-to-r from-blue-600 to-cyan-500 text-white'
+							className='w-full bg-linear-to-br from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600'
 							disabled={
 								loading || success || !code.match(/^[0-9]{6}$/)
 							}>
@@ -78,7 +81,7 @@ function VerifyOTPForm() {
 					{message && (
 						<p
 							className={`mt-4 text-center text-sm ${
-								success ? "text-green-400" : "text-red-400"
+								success ? "text-green-600" : "text-red-600"
 							}`}>
 							{message}
 						</p>
@@ -86,7 +89,8 @@ function VerifyOTPForm() {
 					{success && (
 						<Button
 							size='sm'
-							className='mt-6 w-full bg-blue-900/80'
+							variant='outline'
+							className='mt-6 w-full border-blue-600 text-blue-600 hover:bg-blue-50'
 							onClick={() => router.push("/login")}>
 							Go to Login
 						</Button>

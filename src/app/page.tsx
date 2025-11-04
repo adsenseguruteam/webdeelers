@@ -20,10 +20,11 @@ import {
 	Eye,
 	MapPin,
 	DollarSign,
-	BarChart2,
-	Calendar,
-	Users as UsersIcon,
 	Star,
+	MessageCircle,
+	Facebook,
+	Mail,
+	Phone,
 } from "lucide-react";
 
 export default function Home() {
@@ -162,7 +163,7 @@ export default function Home() {
 						</p>
 						<div className='flex flex-col sm:flex-row gap-4'>
 							<Link href='/marketplace'>
-								<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-6 text-lg gap-2'>
+								<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-6 text-md gap-2'>
 									Browse Marketplace
 									<ArrowRight size={20} />
 								</Button>
@@ -170,7 +171,7 @@ export default function Home() {
 							<Link href='/guide'>
 								<Button
 									variant='outline'
-									className='border-gray-300 cursor-pointer text-gray-700 hover:bg-gray-100 px-8 py-6 text-lg'>
+									className='border-gray-300 cursor-pointer text-gray-700 hover:bg-gray-100 px-8 py-6 text-md'>
 									Learn More
 								</Button>
 							</Link>
@@ -589,6 +590,85 @@ export default function Home() {
 				)}
 			</section>
 
+			{/* About Section */}
+			<section className='max-w-7xl mx-auto px-4 md:px-8 py-12'>
+				<div className='grid md:grid-cols-2 gap-12 items-center'>
+					<div className='space-y-6'>
+						<h2 className='text-3xl md:text-4xl font-bold text-gray-900'>
+							About WebDeelers
+						</h2>
+						<p className='text-lg text-gray-600'>
+							WebDeelers is a premier marketplace for digital
+							assets, founded by AdSense Guru (Amit Singh). With
+							over 4 years of experience in digital marketing and
+							website development, we've created a trusted
+							platform for buying and selling digital properties.
+						</p>
+						<div className='flex flex-wrap gap-4'>
+							<div className='flex items-center gap-2 text-gray-600'>
+								<Mail size={18} className='text-gray-500' />
+								<span>evtnorg@gmail.com</span>
+							</div>
+							<div className='flex items-center gap-2 text-gray-600'>
+								<Phone size={18} className='text-gray-500' />
+								<span>+91 7755089819</span>
+							</div>
+						</div>
+						<div className='flex flex-wrap gap-4'>
+							<Link href='/about' className='inline-flex'>
+								<Button className='bg-blue-600 hover:bg-blue-700 text-white px-6 py-3'>
+									About Us
+								</Button>
+							</Link>
+							<Link
+								href='https://www.facebook.com/adsenseguruteam'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='inline-flex'>
+								<Button
+									variant='outline'
+									className='border-gray-300 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors hover:bg-gray-50 px-6 py-3'>
+									<Facebook size={18} />
+									Follow on Facebook
+								</Button>
+							</Link>
+						</div>
+					</div>
+					<div className='space-y-6'>
+						<div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm'>
+							<h3 className='text-xl font-semibold text-gray-900 mb-4'>
+								Join Our Community
+							</h3>
+							<div className='space-y-3'>
+								<a
+									href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 text-green-700 transition-colors'>
+									<MessageCircle className='w-5 h-5' />
+									<span>Join WhatsApp Group</span>
+								</a>
+								<a
+									href='https://www.facebook.com/groups/adsenseguruteam'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 text-blue-700 transition-colors'>
+									<Facebook className='w-5 h-5' />
+									<span>Join Facebook Group</span>
+								</a>
+								<a
+									href='https://wa.me/917755089819'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='flex items-center gap-3 p-3 bg-cyan-50 hover:bg-cyan-100 rounded-lg border border-cyan-200 text-cyan-700 transition-colors'>
+									<MessageCircle className='w-5 h-5' />
+									<span>Connect on WhatsApp</span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 			{/* Features */}
 			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16'>
 				<h2 className='text-3xl font-bold text-gray-900 mb-12 text-center'>
@@ -620,7 +700,7 @@ export default function Home() {
 			</section>
 
 			{/* CTA Section */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16'>
+			<section className='max-w-7xl mx-auto px-4 md:px-8 py-12'>
 				<div className='bg-linear-to-br from-blue-600 to-cyan-600 rounded-2xl p-12 text-center shadow-xl'>
 					<h2 className='text-3xl md:text-4xl font-bold text-white mb-4'>
 						Ready to Get Started?
@@ -631,14 +711,14 @@ export default function Home() {
 					</p>
 					<div className='flex flex-col sm:flex-row gap-4 justify-center'>
 						<Link href='/marketplace'>
-							<Button className='bg-white hover:bg-gray-100 cursor-pointer text-blue-600 px-8 py-6 text-lg font-semibold'>
+							<Button className='bg-white hover:bg-gray-100 cursor-pointer text-blue-600 px-8 py-6 text-md font-semibold'>
 								Start Browsing
 							</Button>
 						</Link>
 						<Link href='/guide'>
 							<Button
 								variant='outline'
-								className='border-white text-gray-600 cursor-pointer hover:bg-white/20 px-8 py-6 text-lg'>
+								className='border-white text-gray-600 cursor-pointer hover:bg-white/20 px-8 py-6 text-md'>
 								Learn How to Sell
 							</Button>
 						</Link>

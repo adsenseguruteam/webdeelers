@@ -167,12 +167,20 @@ export default function Dashboard() {
 							Manage your digital assets and track your sales
 						</p>
 					</div>
-					<Link href='/dashboard/create-listing'>
-						<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
-							<Plus size={20} />
-							Create Listing
-						</Button>
-					</Link>
+					<div className='flex gap-2'>
+						<Link href={`/profile/${user?._id}`}>
+							<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
+								<Plus size={20} />
+								Profile
+							</Button>
+						</Link>
+						<Link href='/dashboard/create-listing'>
+							<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
+								<Plus size={20} />
+								Create Listing
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				{/* Stats Grid */}
