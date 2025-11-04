@@ -20,6 +20,7 @@ import {
 	EyeIcon,
 	ChevronDown,
 	Loader2,
+	User,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import { toast } from "sonner";
@@ -171,7 +172,7 @@ export default function Dashboard() {
 					<div className='flex gap-2'>
 						<Link href={`/profile/${user?._id}`}>
 							<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
-								<Plus size={20} />
+								<User size={20} />
 								Profile
 							</Button>
 						</Link>

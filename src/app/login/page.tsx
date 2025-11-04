@@ -43,9 +43,12 @@ export default function Login() {
 			if (data.success) {
 				localStorage.setItem("user", JSON.stringify(data.user));
 				toast.success(data.message || "Login successful");
-				router.push(
-					data.user.role === "admin" ? "/admin" : "/dashboard"
-				);
+				window.location.reload();
+				setTimeout(() => {
+					router.push(
+						data.user.role === "admin" ? "/admin" : "/dashboard"
+					);
+				}, 1000);
 			} else {
 				setError(data.message || "Login failed");
 				// If unverified, prompt and redirect
