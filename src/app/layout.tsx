@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 		siteName: "Deelzo",
 		images: [
 			{
-				url: "/og-image.png",
+				url: "/deelzobanner.png",
 				width: 1200,
 				height: 630,
 				alt: "Deelzo - Digital Assets Marketplace",
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 		title: "Deelzo - Buy & Sell Digital Assets",
 		description:
 			"The trusted marketplace for buying and selling digital assets. Discover verified digital properties with complete metrics.",
-		images: ["/og-image.png"],
+		images: ["/deelzobanner.png"],
 		creator: "@Deelzo",
 		site: "@Deelzo",
 	},
