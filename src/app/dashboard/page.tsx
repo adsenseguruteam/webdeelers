@@ -10,6 +10,14 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+// Import Select component from the correct path
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import {
 	Plus,
 	Eye,
@@ -86,6 +94,13 @@ export default function Dashboard() {
 		setUpdating(listingId);
 		try {
 			if (!user) return;
+			if (newStatus === "active") {
+				toast.success(
+					"You cant make this listing active, contact support for more details"
+				);
+				return;
+			}
+
 			const response = await fetch(`/api/listings/${listingId}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
@@ -371,17 +386,28 @@ export default function Dashboard() {
 																Preview
 															</button>
 
-															<div className='relative group'>
-																<button className='px-3 py-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors flex items-center gap-1'>
-																	Status
-																	<ChevronDown
-																		size={
-																			16
-																		}
-																	/>
-																</button>
-																<div className='absolute left-0 mt-1 w-32 bg-slate-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10'>
+															<Select
+																value={
+																	listing.status
+																}
+																onValueChange={(
+																	value: string
+																) =>
+																	handleUpdateStatus(
+																		listing._id,
+																		value
+																	)
+																}
+																disabled={
+																	updating ===
+																	listing._id
+																}>
+																<SelectTrigger className='w-[120px]'>
+																	<SelectValue placeholder='Status' />
+																</SelectTrigger>
+																<SelectContent>
 																	{[
+																		"active",
 																		"pending",
 																		"sold",
 																		"draft",
@@ -389,21 +415,13 @@ export default function Dashboard() {
 																		(
 																			status
 																		) => (
-																			<button
+																			<SelectItem
 																				key={
 																					status
 																				}
-																				onClick={() =>
-																					handleUpdateStatus(
-																						listing._id,
-																						status
-																					)
-																				}
-																				disabled={
-																					updating ===
-																					listing._id
-																				}
-																				className='w-full text-left cursor-pointer px-4 py-2 text-sm text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg transition-colors disabled:opacity-50'>
+																				value={
+																					status
+																				}>
 																				{status
 																					.charAt(
 																						0
@@ -412,25 +430,25 @@ export default function Dashboard() {
 																					status.slice(
 																						1
 																					)}
-																			</button>
+																			</SelectItem>
 																		)
 																	)}
-																</div>
-															</div>
-															<Button
-																variant='outline'
-																onClick={() =>
-																	alert(
-																		"Coming soon......!"
-																	)
-																}
-																size='sm'
-																className='bg-transparent cursor-pointer border-slate-500 text-slate-600 hover:bg-slate-600 hover:text-white gap-1'>
-																<Edit2
-																	size={16}
-																/>
-																Edit
-															</Button>
+																</SelectContent>
+															</Select>
+															<Link
+																href={`/dashboard/edit-listing/${listing._id}`}>
+																<Button
+																	variant='outline'
+																	size='sm'
+																	className='bg-transparent cursor-pointer border-slate-500 text-slate-600 hover:bg-slate-600 hover:text-white gap-1'>
+																	<Edit2
+																		size={
+																			16
+																		}
+																	/>
+																	Edit
+																</Button>
+															</Link>
 
 															<button
 																onClick={() =>

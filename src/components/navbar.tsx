@@ -78,7 +78,7 @@ export default function Navbar() {
 										onClick={handleLogout}
 										variant='outline'
 										size='icon'
-										className='border-slate-600 cursor-pointer text-slate-300 hover:bg-slate-200 bg-transparent'>
+										className='border-slate-600 cursor-pointer text-slate-800 hover:bg-slate-200 bg-transparent'>
 										<LogOut size={20} />
 									</Button>
 								</div>
