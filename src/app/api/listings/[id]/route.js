@@ -59,9 +59,12 @@ export async function PUT(request) {
 		}
 
 		await connectDB();
-
+		const user = await User.findById(userId);
 		const listing = await Listing.findById(id);
-		if (!listing || listing.seller.toString() !== userId) {
+		if (
+			!listing ||
+			(listing.seller.toString() !== userId && user.role !== "admin")
+		) {
 			return NextResponse.json(
 				{ message: "Unauthorized" },
 				{ status: 401 }
