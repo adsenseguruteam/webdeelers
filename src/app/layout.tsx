@@ -100,6 +100,10 @@ export default function RootLayout({
 					name='viewport'
 					content='width=device-width, initial-scale=1'
 				/>
+				<meta
+					name='google-adsense-account'
+					content='ca-pub-3138751846532107'
+				/>
 				<meta name='theme-color' content='#f8fafc' />
 				<meta name='apple-mobile-web-app-capable' content='yes' />
 				<meta
