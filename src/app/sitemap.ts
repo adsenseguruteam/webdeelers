@@ -61,12 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		const listings = await Listing.find({
 			status: { $in: ["active", "sold"] },
 		})
-			.select("_id updatedAt")
+			.select("_id updatedAt slug")
 			.sort({ updatedAt: -1 })
 			.lean();
 
 		listingPages = listings.map((listing) => ({
-			url: `${baseUrl}/listing/${listing._id}`,
+			url: `${baseUrl}/listing/${listing.slug || listing._id}`,
 			lastModified: listing.updatedAt
 				? new Date(listing.updatedAt)
 				: new Date(),

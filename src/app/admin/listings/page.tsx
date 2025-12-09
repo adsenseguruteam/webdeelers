@@ -291,7 +291,11 @@ export default function AdminListingsPage() {
 												{/* Action Buttons */}
 												<div className='flex flex-wrap gap-2'>
 													<Link
-														href={`/listing/${listing?._id}`}>
+														target='_blank'
+														href={`/listing/${
+															listing?.slug ||
+															listing?._id
+														}`}>
 														<button className='px-3 py-1 cursor-pointer bg-slate-600 hover:bg-slate-500 text-white rounded text-sm font-medium transition-colors flex items-center gap-1'>
 															<EyeIcon
 																size={16}

@@ -410,9 +410,9 @@ export default function Home() {
 						{listings.map((listing: any) => (
 							<Link
 								key={listing._id}
-								href={`/listing/${listing._id}`}
+								href={`/listing/${listing.slug || listing._id}`}
 								className='group'>
-								<Card className='bg-white border-gray-200 hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 overflow-hidden h-full flex flex-col cursor-pointer'>
+								<Card className='bg-white p-0 border-gray-200 hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 overflow-hidden h-full flex flex-col gap-1 cursor-pointer'>
 									{/* Image */}
 									<div className='relative w-full h-48 overflow-hidden bg-linear-to-br from-gray-100 to-gray-200'>
 										{listing.thumbnail ||

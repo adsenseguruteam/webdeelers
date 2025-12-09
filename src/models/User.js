@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import "./Listing";
+import "./Listing.js";
 
 const userSchema = new mongoose.Schema(
 	{

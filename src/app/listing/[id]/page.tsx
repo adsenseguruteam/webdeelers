@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import {
 	Verified,
 	Loader2,
 	Copy,
+	ChevronRight,
 } from "lucide-react";
 import axios from "axios";
 import { userContext } from "@/context/userContext";
@@ -28,7 +29,7 @@ export default function ListingDetail({
 }: {
 	params: Promise<{ id: string }>;
 }) {
-	const { id } = use(params);
+	const { id: slugOrId } = use(params);
 	const { user } = userContext();
 	const router = useRouter();
 	const [listing, setListing] = useState<any>(null);
@@ -39,9 +40,9 @@ export default function ListingDetail({
 	const [submittingBid, setSubmittingBid] = useState(false);
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-	const fetchListing = async () => {
+	const fetchListing = useCallback(async () => {
 		try {
-			const response = await axios.get(`/api/listings/${id}`);
+			const response = await axios.get(`/api/listings/${slugOrId}`);
 			const data = await response.data;
 			setListing(data);
 			setBidAmount(data?.price.toString());
@@ -50,10 +51,10 @@ export default function ListingDetail({
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [slugOrId]);
 	useEffect(() => {
 		fetchListing();
-	}, [id]);
+	}, [fetchListing]);
 
 	const handlePlaceBid = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -70,8 +71,12 @@ export default function ListingDetail({
 
 		setSubmittingBid(true);
 		try {
+			if (!listing?._id) {
+				throw new Error("Listing not loaded");
+			}
+
 			const response = await axios.post("/api/bids", {
-				listingId: id,
+				listingId: listing._id,
 				bidderId: user?._id,
 				amount: Number.parseFloat(bidAmount),
 				message: bidMessage,
@@ -122,25 +127,54 @@ export default function ListingDetail({
 		);
 	}
 
+	const breadcrumbs = [
+		{ label: "Home", href: "/" },
+		{ label: "Marketplace", href: "/marketplace" },
+		{
+			label: listing?.title.slice(0, 20) + "..." || "Listing",
+			href: `/listing/${listing?.slug || slugOrId}`,
+		},
+	];
+
 	return (
 		<div className='min-h-screen bg-gray-50 p-4 md:p-8 pb-24 md:pb-8'>
 			<div className='max-w-6xl mx-auto'>
 				{/* Header */}
-				<div className='mb-8'>
+				<div className='flex mb-3 justify-between items-center'>
 					<Button
 						variant='ghost'
 						onClick={() => router.back()}
-						className='text-gray-700 hover:text-gray-900 mb-4'>
+						className='text-gray-700 p-0 m-0 cursor-pointer hover:text-gray-900'>
 						← Back
 					</Button>
+
+					<nav className='flex items-center text-sm text-gray-600 gap-0 md:gap-2 flex-wrap'>
+						{breadcrumbs.map((crumb, index) => (
+							<div
+								key={crumb.href}
+								className='flex items-center gap-0 md:gap-2'>
+								<Link
+									href={crumb.href}
+									className='hover:text-gray-900'>
+									{crumb.label}
+								</Link>
+								{index < breadcrumbs.length - 1 && (
+									<ChevronRight
+										size={14}
+										className='text-gray-400'
+									/>
+								)}
+							</div>
+						))}
+					</nav>
 				</div>
 
 				<div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 					{/* Main Content */}
 					<div className='lg:col-span-2'>
 						{/* Hero Image / Thumbnail */}
-						<Card className='bg-white border-gray-200 mb-6 overflow-hidden shadow-sm'>
-							<div className='relative w-full h-112 bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center'>
+						<Card className='bg-white border-gray-200 p-0 mb-6 overflow-hidden shadow-sm'>
+							<div className='relative w-full min-h-60 max-h-112 bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center'>
 								{listing?.thumbnail ? (
 									<img
 										src={listing.thumbnail}
@@ -152,7 +186,7 @@ export default function ListingDetail({
 											listing?.title ||
 											"Listing thumbnail"
 										}
-										className='w-full h-full object-cover'
+										className='w-full h-full cursor-pointer object-cover'
 									/>
 								) : (
 									<div className='text-center'>

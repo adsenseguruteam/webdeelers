@@ -312,7 +312,7 @@ export default function Dashboard() {
 																</p>
 															</div>
 															<span
-																className={`px-3 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${getStatusColor(
+																className={`px-3 py-1 w-25 text-center rounded-full text-xs font-semibold border whitespace-nowrap ${getStatusColor(
 																	listing.status
 																)}`}>
 																{listing.status

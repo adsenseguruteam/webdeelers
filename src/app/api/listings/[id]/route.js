@@ -2,23 +2,33 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
+import mongoose from "mongoose";
 
-function extractIdFromRequest(request) {
+function extractParamFromRequest(request) {
 	const url = new URL(request.url, process.env.NEXT_PUBLIC_APP_URL);
 	const pathParts = url.pathname.split("/");
-	return pathParts[pathParts.length - 1];
+	return decodeURIComponent(pathParts[pathParts.length - 1]);
 }
 
 export async function GET(request) {
 	try {
 		await connectDB();
-		const id = extractIdFromRequest(request);
+		const slug = extractParamFromRequest(request);
+		let listing;
+		if (mongoose.isValidObjectId(slug)) {
+			listing = await Listing.findById(slug)
+				.populate("seller")
+				.populate({
+					path: "bids",
+					populate: {
+						path: "bidder",
+						select: "name email phone",
+					},
+				});
+			return NextResponse.json(listing);
+		}
 
-		const listing = await Listing.findByIdAndUpdate(
-			id,
-			{ $inc: { views: 1 } },
-			{ new: true }
-		)
+		listing = await Listing.findOne({ slug })
 			.populate("seller")
 			.populate({
 				path: "bids",
@@ -35,6 +45,10 @@ export async function GET(request) {
 			);
 		}
 
+		await Listing.findByIdAndUpdate(listing._id, {
+			$inc: { views: 1 },
+		});
+
 		return NextResponse.json(listing);
 	} catch (error) {
 		console.error("Listing fetch error:", error);
@@ -49,7 +63,7 @@ export async function PUT(request) {
 	try {
 		const { userId, ...updateData } = await request.json();
 
-		const id = extractIdFromRequest(request);
+		const slug = extractParamFromRequest(request);
 
 		if (!userId) {
 			return NextResponse.json(
@@ -60,7 +74,7 @@ export async function PUT(request) {
 
 		await connectDB();
 		const user = await User.findById(userId);
-		const listing = await Listing.findById(id);
+		const listing = await Listing.findOne({ slug });
 		if (
 			!listing ||
 			(listing.seller.toString() !== userId && user.role !== "admin")
@@ -71,9 +85,13 @@ export async function PUT(request) {
 			);
 		}
 
-		const updated = await Listing.findByIdAndUpdate(id, updateData, {
-			new: true,
-		});
+		const updated = await Listing.findByIdAndUpdate(
+			listing._id,
+			updateData,
+			{
+				new: true,
+			}
+		);
 		if (updated.status === "sold") {
 			const user = await User.findById(userId);
 			user.totalSales += listing.price;
@@ -92,7 +110,7 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
 	try {
-		const id = extractIdFromRequest(request);
+		const slug = extractParamFromRequest(request);
 		const { userId } = await request.json();
 
 		if (!userId) {
@@ -104,7 +122,7 @@ export async function DELETE(request) {
 
 		await connectDB();
 
-		const listing = await Listing.findById(id);
+		const listing = await Listing.findOne({ slug });
 		if (!listing || listing.seller.toString() !== userId) {
 			return NextResponse.json(
 				{ message: "Unauthorized" },
@@ -112,9 +130,9 @@ export async function DELETE(request) {
 			);
 		}
 
-		await Listing.findByIdAndDelete(id);
+		await Listing.findByIdAndDelete(listing._id);
 		await User.findByIdAndUpdate(userId, {
-			$pull: { listings: id },
+			$pull: { listings: listing._id },
 		});
 
 		return NextResponse.json({ success: true });

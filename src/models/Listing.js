@@ -1,5 +1,15 @@
 import mongoose from "mongoose";
-import "./Bid";
+import "./Bid.js";
+import "./User.js";
+
+const slugifyTitle = (title) =>
+	title
+		?.toString()
+		.toLowerCase()
+		.trim()
+		.replace(/[^a-z0-9\s-]/g, "")
+		.replace(/\s+/g, "-")
+		.replace(/-+/g, "-");
 
 const listingSchema = new mongoose.Schema(
 	{
@@ -84,6 +94,12 @@ const listingSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		slug: {
+			type: String,
+			unique: true,
+			index: true,
+			sparse: true,
+		},
 		bids: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
@@ -101,6 +117,33 @@ const listingSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+listingSchema.pre("save", function (next) {
+	if (!this.isModified("title") && this.slug) {
+		return next();
+	}
+
+	const baseSlug = slugifyTitle(this.title);
+	this.slug = baseSlug || this.slug;
+	next();
+});
+
+listingSchema.pre("findOneAndUpdate", function (next) {
+	const update = this.getUpdate() || {};
+	const title = update.title || update.$set?.title;
+
+	if (title) {
+		const newSlug = slugifyTitle(title);
+		if (update.$set) {
+			update.$set.slug = newSlug;
+		} else {
+			update.slug = newSlug;
+		}
+		this.setUpdate(update);
+	}
+
+	next();
+});
 
 export default mongoose.models.Listing ||
 	mongoose.model("Listing", listingSchema);

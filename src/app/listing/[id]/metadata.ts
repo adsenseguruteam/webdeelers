@@ -27,7 +27,7 @@ export async function generateMetadata(
 		listing.description?.substring(0, 160) ||
 		"Check out this listing on Deelzo";
 	const imageUrl = listing.thumbnail || "/placeholder.png";
-	const url = `${process.env.NEXT_PUBLIC_APP_URL}/listing/${params.id}`;
+	const url = `${process.env.NEXT_PUBLIC_APP_URL}/listing/${listing.slug || params.id}`;
 
 	return {
 		title: title,

@@ -33,7 +33,7 @@ export async function POST(request) {
 
 		// Send email notification to seller if it's not their own bid
 		if (listing.seller._id.toString() !== bidderId) {
-			const listingLink = `${process.env.NEXT_PUBLIC_APP_URL}/listing/${listingId}`;
+			const listingLink = `${process.env.NEXT_PUBLIC_APP_URL}/listing/${listing.slug || listingId}`;
 			const emailContent = generateNewBidEmail(
 				listing.title,
 				amount,

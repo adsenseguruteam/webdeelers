@@ -86,7 +86,7 @@ export default function ProfilePage({
 							<div className='flex-1'>
 								<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
 									<div>
-										<h1 className='text-3xl font-bold text-gray-900 mb-2'>
+										<h1 className='text-2xl font-bold text-gray-900 mb-2'>
 											{user.name}
 										</h1>
 										<p className='text-gray-600'>
@@ -270,7 +270,9 @@ export default function ProfilePage({
 							{listings.map((listing: any) => (
 								<Link
 									key={listing._id}
-									href={`/listing/${listing._id}`}>
+									href={`/listing/${
+										listing.slug || listing._id
+									}`}>
 									<Card className='bg-white border-gray-200 hover:border-blue-500 transition-colors cursor-pointer h-full shadow-sm'>
 										{listing.thumbnail && (
 											<div className='w-full h-40 bg-gray-100 rounded-t-lg overflow-hidden'>
