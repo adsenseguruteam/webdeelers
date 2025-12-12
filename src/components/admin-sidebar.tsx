@@ -11,6 +11,7 @@ import {
 	LogOut,
 	Menu,
 	X,
+	Mail,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
@@ -24,7 +25,7 @@ export default function AdminSidebar() {
 		{ icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
 		{ icon: FileText, label: "Listings", href: "/admin/listings" },
 		{ icon: Users, label: "Users", href: "/admin/users" },
-		// { icon: MessageSquare, label: "Bids", href: "/admin/bids" },
+		{ icon: Mail, label: "Emails", href: "/admin/emails" },
 		// { icon: TrendingUp, label: "Analytics", href: "/admin/analytics" },
 		// { icon: Settings, label: "Settings", href: "/admin/settings" },
 	];

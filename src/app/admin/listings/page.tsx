@@ -3,18 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-	Trash2,
-	Eye,
-	EyeOff,
-	DollarSign,
-	User,
-	CheckCircle,
-	XCircle,
-	Edit2,
-	ChevronDown,
-	EyeIcon,
-} from "lucide-react";
+import { Trash2, Edit2, ChevronDown, EyeIcon } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { toast } from "sonner";
 import { userContext } from "@/context/userContext";

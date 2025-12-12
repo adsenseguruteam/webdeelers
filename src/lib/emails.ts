@@ -1,8 +1,6 @@
 import nodemailer from "nodemailer";
 
-const companyEmail = process.env.COMPANY_EMAIL;
 const companyName = process.env.COMPANY_NAME;
-const companyDomain = process.env.NEXT_PUBLIC_APP_URL;
 
 const transporter = nodemailer.createTransport({
 	host: process.env.SMTP_HOST || "smtp.gmail.com",
