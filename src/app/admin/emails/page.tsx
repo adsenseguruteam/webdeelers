@@ -268,7 +268,7 @@ export default function AdminEmails() {
 									value={search}
 									onChange={(e) => setSearch(e.target.value)}
 								/>
-								<div className='max-h-[320px] overflow-auto border border-slate-200 rounded-lg divide-y divide-slate-100'>
+								<div className='max-h-[630px] overflow-auto border border-slate-200 rounded-lg divide-y divide-slate-100'>
 									{loading ? (
 										<div className='p-4 text-slate-600'>
 											Loading listings...
@@ -379,7 +379,7 @@ export default function AdminEmails() {
 									onChange={(
 										e: ChangeEvent<HTMLTextAreaElement>
 									) => setBody(e.target.value)}
-									rows={12}
+									rows={27}
 									className='w-full rounded-md border border-slate-200 bg-white px-3 py-2 font-mono text-sm text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-500'
 									placeholder='Type or paste your HTML email...'
 								/>
