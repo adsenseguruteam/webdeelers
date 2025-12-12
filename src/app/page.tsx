@@ -26,6 +26,7 @@ import {
 	Mail,
 	Phone,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function Home() {
 	const [listings, setListings] = useState([]);
@@ -180,7 +181,13 @@ export default function Home() {
 
 					{/* Hero Image */}
 					<div className='relative'>
-						<div className='absolute inset-0 bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl blur-3xl opacity-10' />
+						<Image
+							src='./home.svg'
+							height={500}
+							width={500}
+							alt='hero image'
+						/>
+						{/* <div className='absolute inset-0 bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl blur-3xl opacity-10' />
 						<div className='relative bg-linear-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-lg'>
 							<div className='space-y-4'>
 								{[1, 2, 3].map((i) => (
@@ -190,7 +197,7 @@ export default function Home() {
 									/>
 								))}
 							</div>
-						</div>
+						</div> */}
 					</div>
 				</div>
 			</section>

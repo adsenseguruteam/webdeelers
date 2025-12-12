@@ -103,15 +103,15 @@ export default function AdminListingsPage() {
 	const getStatusColor = (status: string) => {
 		switch (status) {
 			case "active":
-				return "bg-green-500/20 text-green-400 border-green-500/30";
+				return "bg-emerald-50 text-emerald-700 border-emerald-200";
 			case "sold":
-				return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+				return "bg-blue-50 text-blue-700 border-blue-200";
 			case "pending":
-				return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+				return "bg-amber-50 text-amber-700 border-amber-200";
 			case "rejected":
-				return "bg-red-500/20 text-red-400 border-red-500/30";
+				return "bg-rose-50 text-rose-700 border-rose-200";
 			default:
-				return "bg-slate-500/20 text-slate-400 border-slate-500/30";
+				return "bg-slate-100 text-slate-700 border-slate-200";
 		}
 	};
 
@@ -122,19 +122,61 @@ export default function AdminListingsPage() {
 	);
 
 	return (
-		<div className='flex min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900'>
+		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			<AdminSidebar />
 
 			{/* Main Content */}
 			<main className='flex-1 md:ml-64 p-4 md:p-8'>
 				{/* Header */}
 				<div className='mb-8 mt-12 md:mt-0'>
-					<h1 className='text-3xl md:text-4xl font-bold text-white mb-2'>
+					<h1 className='text-3xl md:text-4xl font-bold text-slate-900 mb-2'>
 						Manage Listings
 					</h1>
-					<p className='text-slate-400'>
+					<p className='text-slate-600'>
 						View and manage all marketplace listings
 					</p>
+				</div>
+
+				{/* Stats */}
+				<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Total Listings
+							</p>
+							<p className='text-3xl font-bold text-slate-900 mt-2'>
+								{listings.length}
+							</p>
+						</CardContent>
+					</Card>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Active Listings
+							</p>
+							<p className='text-3xl font-bold text-emerald-600 mt-2'>
+								{
+									listings.filter(
+										(l: any) => l.status === "active"
+									).length
+								}
+							</p>
+						</CardContent>
+					</Card>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Sold Listings
+							</p>
+							<p className='text-3xl font-bold text-rose-600 mt-2'>
+								{
+									listings.filter(
+										(l: any) => l.status === "sold"
+									).length
+								}
+							</p>
+						</CardContent>
+					</Card>
 				</div>
 
 				{/* Filter and Search */}
@@ -144,7 +186,7 @@ export default function AdminListingsPage() {
 						placeholder='Search by title or category...'
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className='flex-1 px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500'
+						className='flex-1 px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100'
 					/>
 					<div className='flex gap-2'>
 						{["all", "active", "inactive", "pending"].map(
@@ -159,8 +201,8 @@ export default function AdminListingsPage() {
 									}
 									className={
 										filter === status
-											? "bg-linear-to-br from-blue-500 to-cyan-500 cursor-pointer"
-											: "border-slate-600 text-slate-500 cursor-pointer hover:text-slate-300 hover:bg-slate-700"
+											? "bg-linear-to-br from-sky-500 to-blue-500 text-white cursor-pointer"
+											: "border-slate-200 text-slate-600 cursor-pointer hover:text-slate-900 hover:bg-slate-100"
 									}>
 									{status.charAt(0).toUpperCase() +
 										status.slice(1)}
@@ -173,9 +215,9 @@ export default function AdminListingsPage() {
 				{/* Listings Grid */}
 				<div className='grid grid-cols-1 gap-6'>
 					{loading ? (
-						<Card className='bg-slate-800 border-slate-700'>
+						<Card className='bg-white border border-slate-200 shadow-sm'>
 							<CardContent className='p-12 text-center'>
-								<p className='text-slate-400'>
+								<p className='text-slate-600'>
 									Loading listings...
 								</p>
 							</CardContent>
@@ -184,11 +226,11 @@ export default function AdminListingsPage() {
 						filteredListings.map((listing: any) => (
 							<Card
 								key={listing._id}
-								className='bg-slate-800 border-slate-700 hover:border-slate-600 transition-colors'>
+								className='bg-white border border-slate-200 shadow-sm hover:border-slate-300 transition-colors'>
 								<CardContent className='p-6'>
 									<div
 										key={listing._id}
-										className='p-4 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors border border-slate-600'>
+										className='p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors border border-slate-200'>
 										<div className='flex flex-col md:flex-row md:items-start gap-4'>
 											{/* Thumbnail */}
 											{listing.thumbnail && (
@@ -206,10 +248,10 @@ export default function AdminListingsPage() {
 											<div className='flex-1 min-w-0'>
 												<div className='flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2'>
 													<div>
-														<h3 className='font-semibold text-white text-lg truncate text-wrap'>
+														<h3 className='font-semibold text-slate-900 text-lg truncate text-wrap'>
 															{listing.title}
 														</h3>
-														<p className='text-sm text-slate-400'>
+														<p className='text-sm text-slate-600'>
 															{listing.category}
 														</p>
 													</div>
@@ -229,30 +271,30 @@ export default function AdminListingsPage() {
 												{/* Details Grid */}
 												<div className='grid grid-cols-4 md:grid-cols-6 gap-3 mb-4 text-sm'>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Link
 														</p>
-														<p className='font-bold text-white'>
-															{
-																listing.metrics
-																	.assetLink
-															}
+														<p className='font-bold text-slate-900 text-wrap'>
+															{listing.metrics.assetLink.slice(
+																0,
+																20
+															) + "..."}
 														</p>
 													</div>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Price
 														</p>
-														<p className='font-bold text-white'>
+														<p className='font-bold text-slate-900'>
 															$
 															{listing.price.toLocaleString()}
 														</p>
 													</div>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Country
 														</p>
-														<p className='font-bold text-white'>
+														<p className='font-bold text-slate-900'>
 															{
 																listing.metrics
 																	.country
@@ -260,27 +302,27 @@ export default function AdminListingsPage() {
 														</p>
 													</div>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Views
 														</p>
-														<p className='font-bold text-white'>
+														<p className='font-bold text-slate-900'>
 															{listing.views}
 														</p>
 													</div>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Bids
 														</p>
-														<p className='font-bold text-white'>
+														<p className='font-bold text-slate-900'>
 															{listing.bids
 																?.length || 0}
 														</p>
 													</div>
 													<div>
-														<p className='text-slate-400'>
+														<p className='text-slate-600'>
 															Created
 														</p>
-														<p className='font-bold text-white'>
+														<p className='font-bold text-slate-900'>
 															{new Date(
 																listing.createdAt
 															).toLocaleDateString()}
@@ -296,7 +338,7 @@ export default function AdminListingsPage() {
 															listing?.slug ||
 															listing?._id
 														}`}>
-														<button className='px-3 py-1 cursor-pointer bg-slate-600 hover:bg-slate-500 text-white rounded text-sm font-medium transition-colors flex items-center gap-1'>
+														<button className='px-3 py-1 cursor-pointer bg-slate-200 hover:bg-slate-300 text-slate-900 rounded text-sm font-medium transition-colors flex items-center gap-1'>
 															<EyeIcon
 																size={16}
 															/>
@@ -305,13 +347,13 @@ export default function AdminListingsPage() {
 													</Link>
 
 													<div className='relative group'>
-														<button className='px-3 py-1 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors flex items-center gap-1'>
+														<button className='px-3 py-1 cursor-pointer bg-blue-500 hover:bg-blue-600 text-white rounded text-sm font-medium transition-colors flex items-center gap-1'>
 															Status
 															<ChevronDown
 																size={16}
 															/>
 														</button>
-														<div className='absolute left-0 mt-1 w-32 bg-slate-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10'>
+														<div className='absolute left-0 mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10'>
 															{[
 																"active",
 																"pending",
@@ -331,7 +373,7 @@ export default function AdminListingsPage() {
 																		updating ===
 																		listing._id
 																	}
-																	className='w-full text-left cursor-pointer px-4 py-2 text-sm text-white hover:bg-slate-600 first:rounded-t-lg last:rounded-b-lg transition-colors disabled:opacity-50'>
+																	className='w-full text-left cursor-pointer px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 first:rounded-t-lg last:rounded-b-lg transition-colors disabled:opacity-50'>
 																	{status
 																		.charAt(
 																			0
@@ -350,7 +392,7 @@ export default function AdminListingsPage() {
 														<Button
 															variant='outline'
 															size='sm'
-															className='bg-transparent cursor-pointer border-slate-500 text-white hover:bg-slate-600 gap-1'>
+															className='bg-transparent cursor-pointer border-slate-200 text-slate-700 hover:bg-slate-100 gap-1'>
 															<Edit2 size={16} />
 															Edit
 														</Button>
@@ -366,7 +408,7 @@ export default function AdminListingsPage() {
 															deleting ===
 															listing._id
 														}
-														className='px-3 cursor-pointer py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm font-medium transition-colors flex items-center gap-1 disabled:opacity-50'>
+														className='px-3 cursor-pointer py-1 bg-rose-500 hover:bg-rose-600 text-white rounded text-sm font-medium transition-colors flex items-center gap-1 disabled:opacity-50'>
 														<Trash2 size={16} />
 														Delete
 													</button>
@@ -378,56 +420,14 @@ export default function AdminListingsPage() {
 							</Card>
 						))
 					) : (
-						<Card className='bg-slate-800 border-slate-700'>
+						<Card className='bg-white border border-slate-200 shadow-sm'>
 							<CardContent className='p-12 text-center'>
-								<p className='text-slate-400'>
+								<p className='text-slate-600'>
 									No listings found
 								</p>
 							</CardContent>
 						</Card>
 					)}
-				</div>
-
-				{/* Stats */}
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-8'>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Total Listings
-							</p>
-							<p className='text-3xl font-bold text-white mt-2'>
-								{listings.length}
-							</p>
-						</CardContent>
-					</Card>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Active Listings
-							</p>
-							<p className='text-3xl font-bold text-green-500 mt-2'>
-								{
-									listings.filter(
-										(l: any) => l.status === "active"
-									).length
-								}
-							</p>
-						</CardContent>
-					</Card>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Sold Listings
-							</p>
-							<p className='text-3xl font-bold text-red-500 mt-2'>
-								{
-									listings.filter(
-										(l: any) => l.status === "sold"
-									).length
-								}
-							</p>
-						</CardContent>
-					</Card>
 				</div>
 			</main>
 		</div>

@@ -83,31 +83,31 @@ export default function AdminPanel() {
 	const filteredListings = listings.filter((l: any) => l.status === filter);
 
 	return (
-		<div className='flex min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900'>
+		<div className='flex min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100'>
 			<AdminSidebar />
 
 			{/* Main Content */}
 			<main className='flex-1 md:ml-64 p-4 md:p-8'>
 				{/* Header */}
 				<div className='mb-8 mt-12 md:mt-0'>
-					<h1 className='text-3xl md:text-4xl font-bold text-white mb-2'>
+					<h1 className='text-3xl md:text-4xl font-bold text-slate-900 mb-2'>
 						Admin Dashboard
 					</h1>
-					<p className='text-slate-400'>
+					<p className='text-slate-600'>
 						Manage marketplace listings and users
 					</p>
 				</div>
 
 				{/* Stats Grid */}
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-					<Card className='bg-slate-800 border-slate-700'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div>
-									<p className='text-slate-400 text-sm'>
+									<p className='text-slate-600 text-sm'>
 										Total Listings
 									</p>
-									<p className='text-3xl font-bold text-white mt-2'>
+									<p className='text-3xl font-bold text-slate-900 mt-2'>
 										{stats.totalListings}
 									</p>
 								</div>
@@ -116,14 +116,14 @@ export default function AdminPanel() {
 						</CardContent>
 					</Card>
 
-					<Card className='bg-slate-800 border-slate-700'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div>
-									<p className='text-slate-400 text-sm'>
+									<p className='text-slate-600 text-sm'>
 										Pending Review
 									</p>
-									<p className='text-3xl font-bold text-yellow-500 mt-2'>
+									<p className='text-3xl font-bold text-yellow-600 mt-2'>
 										{stats.pendingListings}
 									</p>
 								</div>
@@ -132,14 +132,14 @@ export default function AdminPanel() {
 						</CardContent>
 					</Card>
 
-					<Card className='bg-slate-800 border-slate-700'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div>
-									<p className='text-slate-400 text-sm'>
+									<p className='text-slate-600 text-sm'>
 										Total Users
 									</p>
-									<p className='text-3xl font-bold text-white mt-2'>
+									<p className='text-3xl font-bold text-slate-900 mt-2'>
 										{stats.totalUsers}
 									</p>
 								</div>
@@ -148,14 +148,14 @@ export default function AdminPanel() {
 						</CardContent>
 					</Card>
 
-					<Card className='bg-slate-800 border-slate-700'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div>
-									<p className='text-slate-400 text-sm'>
+									<p className='text-slate-600 text-sm'>
 										Active Bids
 									</p>
-									<p className='text-3xl font-bold text-white mt-2'>
+									<p className='text-3xl font-bold text-slate-900 mt-2'>
 										{stats.totalBids}
 									</p>
 								</div>
@@ -177,8 +177,8 @@ export default function AdminPanel() {
 							variant={filter === status ? "default" : "outline"}
 							className={
 								filter === status
-									? "bg-linear-to-r from-blue-500 cursor-pointer to-cyan-500"
-									: "border-slate-600 cursor-pointer text-slate-500 hover:text-slate-300 hover:bg-slate-700"
+									? "bg-gradient-to-r from-sky-500 cursor-pointer to-blue-500 text-white"
+									: "border-slate-200 cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-slate-100"
 							}>
 							{status.charAt(0).toUpperCase() + status.slice(1)}
 						</Button>
@@ -188,23 +188,23 @@ export default function AdminPanel() {
 				{/* Listings Grid */}
 				<div className='grid grid-cols-1 gap-6'>
 					{loading ? (
-						<Card className='bg-slate-800 border-slate-700'>
+						<Card className='bg-white border border-slate-200 shadow-sm'>
 							<CardContent className='p-12 text-center'>
-								<p className='text-slate-400'>Loading...</p>
+								<p className='text-slate-600'>Loading...</p>
 							</CardContent>
 						</Card>
 					) : filteredListings.length > 0 ? (
 						filteredListings.map((listing: any) => (
 							<Card
 								key={listing._id}
-								className='bg-slate-800 border-slate-700 hover:border-slate-600 transition-colors'>
+								className='bg-white border border-slate-200 shadow-sm hover:border-slate-300 transition-colors'>
 								<CardContent className='p-6'>
 									<div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
 										<div className='flex-1'>
-											<h3 className='text-xl font-bold text-white mb-2'>
+											<h3 className='text-xl font-bold text-slate-900 mb-2'>
 												{listing.title}
 											</h3>
-											<p className='text-slate-400 mb-3 line-clamp-2'>
+											<p className='text-slate-600 mb-3 line-clamp-2'>
 												{listing.description}
 											</p>
 
@@ -213,7 +213,7 @@ export default function AdminPanel() {
 													<p className='text-xs text-slate-500'>
 														Category
 													</p>
-													<p className='text-sm font-semibold text-white'>
+													<p className='text-sm font-semibold text-slate-900'>
 														{listing.category}
 													</p>
 												</div>
@@ -221,7 +221,7 @@ export default function AdminPanel() {
 													<p className='text-xs text-slate-500'>
 														Price
 													</p>
-													<p className='text-sm font-semibold text-white'>
+													<p className='text-sm font-semibold text-slate-900'>
 														$
 														{listing.price.toLocaleString()}
 													</p>
@@ -230,7 +230,7 @@ export default function AdminPanel() {
 													<p className='text-xs text-slate-500'>
 														Seller
 													</p>
-													<p className='text-sm font-semibold text-white'>
+													<p className='text-sm font-semibold text-slate-900'>
 														{listing.seller?.name}
 													</p>
 												</div>
@@ -241,9 +241,9 @@ export default function AdminPanel() {
 													<div className='flex items-center gap-1 mt-1'>
 														<Clock
 															size={14}
-															className='text-yellow-500'
+															className='text-amber-500'
 														/>
-														<p className='text-sm font-semibold text-yellow-500'>
+														<p className='text-sm font-semibold text-amber-600'>
 															{listing.status}
 														</p>
 													</div>
@@ -251,14 +251,14 @@ export default function AdminPanel() {
 											</div>
 
 											{listing.metrics && (
-												<div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-3 bg-slate-700 rounded-lg'>
+												<div className='grid grid-cols-2 md:grid-cols-4 gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200'>
 													{listing.metrics
 														.monthlyRevenue && (
 														<div>
-															<p className='text-xs text-slate-400'>
+															<p className='text-xs text-slate-500'>
 																Monthly Revenue
 															</p>
-															<p className='text-sm font-semibold text-white'>
+															<p className='text-sm font-semibold text-slate-900'>
 																$
 																{listing.metrics.monthlyRevenue.toLocaleString()}
 															</p>
@@ -267,10 +267,10 @@ export default function AdminPanel() {
 													{listing.metrics
 														.monthlyTraffic && (
 														<div>
-															<p className='text-xs text-slate-400'>
+															<p className='text-xs text-slate-500'>
 																Monthly Traffic
 															</p>
-															<p className='text-sm font-semibold text-white'>
+															<p className='text-sm font-semibold text-slate-900'>
 																{listing.metrics.monthlyTraffic.toLocaleString()}
 															</p>
 														</div>
@@ -278,20 +278,20 @@ export default function AdminPanel() {
 													{listing.metrics
 														.followers && (
 														<div>
-															<p className='text-xs text-slate-400'>
+															<p className='text-xs text-slate-500'>
 																Followers
 															</p>
-															<p className='text-sm font-semibold text-white'>
+															<p className='text-sm font-semibold text-slate-900'>
 																{listing.metrics.followers.toLocaleString()}
 															</p>
 														</div>
 													)}
 													{listing.metrics.age && (
 														<div>
-															<p className='text-xs text-slate-400'>
+															<p className='text-xs text-slate-500'>
 																Age
 															</p>
-															<p className='text-sm font-semibold text-white'>
+															<p className='text-sm font-semibold text-slate-900'>
 																{
 																	listing
 																		.metrics
@@ -315,7 +315,7 @@ export default function AdminPanel() {
 															"active"
 														)
 													}
-													className='flex-1 md:flex-none bg-green-600 hover:bg-green-700 text-white gap-2'>
+													className='flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white gap-2'>
 													<CheckCircle size={18} />
 													Approve
 												</Button>
@@ -326,7 +326,7 @@ export default function AdminPanel() {
 															"rejected"
 														)
 													}
-													className='flex-1 md:flex-none bg-red-600 hover:bg-red-700 text-white gap-2'>
+													className='flex-1 md:flex-none bg-rose-500 hover:bg-rose-600 text-white gap-2'>
 													<XCircle size={18} />
 													Reject
 												</Button>
@@ -337,9 +337,9 @@ export default function AdminPanel() {
 							</Card>
 						))
 					) : (
-						<Card className='bg-slate-800 border-slate-700'>
+						<Card className='bg-white border border-slate-200 shadow-sm'>
 							<CardContent className='p-12 text-center'>
-								<p className='text-slate-400'>
+								<p className='text-slate-600'>
 									No listings to review
 								</p>
 							</CardContent>

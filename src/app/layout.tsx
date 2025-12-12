@@ -2,11 +2,9 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
-import MobileBottomNav from "@/components/mobile-bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/userContext";
+import LayoutShell from "@/components/layout-shell";
 
 const geistSans = Geist({ subsets: ["latin"] });
 
@@ -123,11 +121,6 @@ export default function RootLayout({
 							logo: "/logo.png",
 							description:
 								"Trusted marketplace for buying and selling digital assets",
-							sameAs: [
-								"https://twitter.com/Deelzo",
-								"https://facebook.com/Deelzo",
-								"https://linkedin.com/company/Deelzo",
-							],
 							contactPoint: {
 								"@type": "ContactPoint",
 								contactType: "Customer Service",
@@ -201,12 +194,11 @@ export default function RootLayout({
 				className={`${geistSans.className} bg-gray-50`}
 				suppressHydrationWarning>
 				<AuthProvider>
-					<Navbar />
-					{children}
-					<Toaster />
-					<MobileBottomNav />
+					<LayoutShell>
+						{children}
+						<Toaster />
+					</LayoutShell>
 				</AuthProvider>
-				<Footer />
 			</body>
 		</html>
 	);

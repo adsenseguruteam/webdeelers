@@ -3,14 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-	CheckCircle,
-	XCircle,
-	Mail,
-	TrendingUp,
-	Calendar,
-	Phone,
-} from "lucide-react";
+import { Mail, TrendingUp, Phone } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { userContext } from "@/context/userContext";
 
@@ -123,19 +116,53 @@ export default function AdminUsersPage() {
 	};
 
 	return (
-		<div className='flex min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900'>
+		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			<AdminSidebar />
 
 			{/* Main Content */}
 			<main className='flex-1 md:ml-64 p-4 md:p-8'>
 				{/* Header */}
 				<div className='mb-8 mt-12 md:mt-0'>
-					<h1 className='text-3xl md:text-4xl font-bold text-white mb-2'>
+					<h1 className='text-3xl md:text-4xl font-bold text-slate-900 mb-2'>
 						Manage Users
 					</h1>
-					<p className='text-slate-400'>
+					<p className='text-slate-600'>
 						View and manage all registered users
 					</p>
+				</div>
+
+				{/* Stats */}
+				<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-8'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Total Users
+							</p>
+							<p className='text-3xl font-bold text-slate-900 mt-2'>
+								{users.length}
+							</p>
+						</CardContent>
+					</Card>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Verified Users
+							</p>
+							<p className='text-3xl font-bold text-emerald-600 mt-2'>
+								{users.filter((u: any) => u.verified).length}
+							</p>
+						</CardContent>
+					</Card>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
+						<CardContent className='p-6'>
+							<p className='text-slate-600 text-sm'>
+								Unverified Users
+							</p>
+							<p className='text-3xl font-bold text-amber-600 mt-2'>
+								{users.filter((u: any) => !u.verified).length}
+							</p>
+						</CardContent>
+					</Card>
 				</div>
 
 				{/* Search Bar */}
@@ -145,17 +172,17 @@ export default function AdminUsersPage() {
 						placeholder='Search by name or email...'
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className='w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500'
+						className='w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100'
 					/>
 				</div>
 
 				{/* Users Table */}
 				<div className='overflow-x-auto'>
-					<Card className='bg-slate-800 border-slate-700'>
+					<Card className='bg-white border border-slate-200 shadow-sm'>
 						<CardContent className='p-0'>
 							{loading ? (
 								<div className='p-12 text-center'>
-									<p className='text-slate-400'>
+									<p className='text-slate-600'>
 										Loading users...
 									</p>
 								</div>
@@ -163,26 +190,23 @@ export default function AdminUsersPage() {
 								<div className='overflow-x-auto'>
 									<table className='w-full'>
 										<thead>
-											<tr className='border-b border-slate-700'>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+											<tr className='border-b border-slate-200 bg-slate-50'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Name
 												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Email
 												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Listings
 												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Rating
 												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
-													Status
-												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Joined
 												</th>
-												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-300'>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Actions
 												</th>
 											</tr>
@@ -191,11 +215,11 @@ export default function AdminUsersPage() {
 											{filteredUsers.map((user: any) => (
 												<tr
 													key={user._id}
-													className='border-b border-slate-700 hover:bg-slate-700/50 transition-colors'>
-													<td className='px-6 py-4 text-sm text-white font-medium'>
+													className='border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+													<td className='px-6 py-4 text-sm text-slate-900 font-medium'>
 														{user.name}
 													</td>
-													<td className='px-6 py-4 text-sm text-slate-400 items-center gap-2'>
+													<td className='px-6 py-4 text-sm text-slate-700 items-center gap-2'>
 														<span className='flex gap-1 items-center'>
 															<Mail size={16} />
 															{user.email}
@@ -206,34 +230,17 @@ export default function AdminUsersPage() {
 																"Unknown"}
 														</span>
 													</td>
-													<td className='px-6 py-4 text-sm text-white'>
+													<td className='px-6 py-4 text-sm text-slate-900'>
 														{user.listings.length}
 													</td>
-													<td className='px-6 py-4 text-sm text-white flex items-center gap-1'>
+													<td className='px-6 py-4 text-sm text-slate-900 flex items-center gap-1'>
 														<TrendingUp
 															size={16}
-															className='text-yellow-500'
+															className='text-amber-500'
 														/>
 														{user.rating.toFixed(1)}
 													</td>
-													<td className='px-6 py-4 text-sm'>
-														{user.verified ? (
-															<span className='inline-flex items-center gap-1 px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold'>
-																<CheckCircle
-																	size={14}
-																/>
-																Verified
-															</span>
-														) : (
-															<span className='inline-flex items-center gap-1 px-3 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-semibold'>
-																<XCircle
-																	size={14}
-																/>
-																Unverified
-															</span>
-														)}
-													</td>
-													<td className='px-6 py-4 text-sm text-slate-400'>
+													<td className='px-6 py-4 text-sm text-slate-700'>
 														{new Date(
 															user.createdAt
 														).toLocaleDateString()}
@@ -243,7 +250,7 @@ export default function AdminUsersPage() {
 															<Button
 																size='sm'
 																variant='outline'
-																className='border-slate-600 text-slate-300 hover:bg-slate-700 text-xs px-3 cursor-pointer'
+																className='border-slate-200 text-slate-700 hover:bg-slate-100 text-xs px-3 cursor-pointer'
 																onClick={() =>
 																	handleEditUser(
 																		user
@@ -255,7 +262,7 @@ export default function AdminUsersPage() {
 																<Button
 																	size='sm'
 																	variant='outline'
-																	className='border-slate-600 text-yellow-400 hover:bg-yellow-600/20 text-xs px-3 cursor-pointer'
+																	className='border-amber-200 text-amber-700 hover:bg-amber-50 text-xs px-3 cursor-pointer'
 																	onClick={() =>
 																		handleVerifyUser(
 																			user,
@@ -271,7 +278,7 @@ export default function AdminUsersPage() {
 																<Button
 																	size='sm'
 																	variant='outline'
-																	className='border-slate-600 text-green-400 hover:bg-green-600/20 text-xs px-3 cursor-pointer'
+																	className='border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs px-3 cursor-pointer'
 																	onClick={() =>
 																		handleVerifyUser(
 																			user,
@@ -287,11 +294,11 @@ export default function AdminUsersPage() {
 															<Button
 																size='sm'
 																variant='outline'
-																className={`border-slate-600 cursor-pointer ${
+																className={`cursor-pointer text-xs px-3 ${
 																	user.isBlocked
-																		? "text-green-400"
-																		: "text-red-400"
-																} hover:bg-slate-700 text-xs px-3`}
+																		? "border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+																		: "border-rose-200 text-rose-700 hover:bg-rose-50"
+																}`}
 																onClick={() =>
 																	handleBlockUser(
 																		user,
@@ -305,7 +312,7 @@ export default function AdminUsersPage() {
 															<Button
 																size='sm'
 																variant='destructive'
-																className='text-xs px-3 bg-red-600 cursor-pointer border-red-600 hover:bg-red-700 hover:border-red-700 text-white'
+																className='text-xs px-3 bg-rose-500 cursor-pointer border-rose-500 hover:bg-rose-600 hover:border-rose-600 text-white'
 																onClick={() =>
 																	handleDeleteUser(
 																		user
@@ -325,45 +332,11 @@ export default function AdminUsersPage() {
 								</div>
 							) : (
 								<div className='p-12 text-center'>
-									<p className='text-slate-400'>
+									<p className='text-slate-600'>
 										No users found
 									</p>
 								</div>
 							)}
-						</CardContent>
-					</Card>
-				</div>
-
-				{/* Stats */}
-				<div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-8'>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Total Users
-							</p>
-							<p className='text-3xl font-bold text-white mt-2'>
-								{users.length}
-							</p>
-						</CardContent>
-					</Card>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Verified Users
-							</p>
-							<p className='text-3xl font-bold text-green-500 mt-2'>
-								{users.filter((u: any) => u.verified).length}
-							</p>
-						</CardContent>
-					</Card>
-					<Card className='bg-slate-800 border-slate-700'>
-						<CardContent className='p-6'>
-							<p className='text-slate-400 text-sm'>
-								Unverified Users
-							</p>
-							<p className='text-3xl font-bold text-yellow-500 mt-2'>
-								{users.filter((u: any) => !u.verified).length}
-							</p>
 						</CardContent>
 					</Card>
 				</div>
