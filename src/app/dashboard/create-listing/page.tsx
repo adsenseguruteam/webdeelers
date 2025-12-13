@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +30,6 @@ import {
 	CreditCard,
 	AlertCircle,
 	Info,
-	ChevronRight,
 	Link as LinkIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -500,14 +498,6 @@ export default function CreateListing() {
 			<div className='max-w-6xl mx-auto'>
 				{/* Header */}
 				<div className='mb-6'>
-					<Link href='/dashboard'>
-						<Button
-							variant='ghost'
-							className='text-slate-700 hover:text-slate-900 hover:bg-slate-100 gap-2 mb-4'>
-							<ArrowLeft size={18} />
-							Back to Dashboard
-						</Button>
-					</Link>
 					<div className='text-center mb-6'>
 						<h1 className='text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-2'>
 							Create New Listing
@@ -518,9 +508,9 @@ export default function CreateListing() {
 					</div>
 				</div>
 
-				<Card className='bg-white border border-slate-200 shadow-2xl overflow-hidden'>
+				<Card className='bg-white border p-0 border-slate-200 shadow-2xl overflow-hidden'>
 					<CardHeader className='border-b border-slate-200 bg-linear-to-r from-sky-50 to-blue-50 pb-4 md:pb-6'>
-						<CardTitle className='text-2xl md:text-3xl font-bold text-center text-slate-900 mb-6'>
+						<CardTitle className='text-2xl pt-4 md:text-3xl font-bold text-center text-slate-900 mb-6'>
 							List Your Product
 						</CardTitle>
 
@@ -1495,7 +1485,7 @@ export default function CreateListing() {
 							)}
 
 							{/* Navigation Buttons */}
-							<div className='flex flex-col sm:flex-row justify-between gap-3 pt-6 md:pt-8 border-t border-slate-200'>
+							<div className='flex justify-between gap-3 pt-6 md:pt-8 border-t border-slate-200'>
 								<Button
 									type='button'
 									variant='outline'

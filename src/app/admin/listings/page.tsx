@@ -397,36 +397,33 @@ export default function AdminListingsPage() {
 									<CardContent className='p-6'>
 										<div className='flex flex-col lg:flex-row gap-6'>
 											{/* Thumbnail Section */}
-											{listing.thumbnail && (
-												<div className='lg:w-48'>
-													<div className='relative w-full h-48 lg:h-full lg:min-h-[200px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100'>
-														<img
-															src={
-																listing.thumbnail ||
-																"/placeholder.svg"
-															}
-															alt={listing.title}
-															className='w-full h-full object-cover group-hover:scale-105 transition-transform duration-300'
-														/>
-														<div className='absolute top-3 right-3'>
-															<div
-																className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${statusConfig.bg} shadow-sm`}>
-																<StatusIcon
-																	size={14}
-																	className={
-																		statusConfig.iconColor
-																	}
-																/>
-																<span className='text-xs font-semibold capitalize'>
-																	{
-																		listing.status
-																	}
-																</span>
-															</div>
+
+											<div className='md:w-60'>
+												<div className='relative w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-100'>
+													<img
+														src={
+															listing.thumbnail ||
+															"/deelzobanner.png"
+														}
+														alt={listing.title}
+														className='w-full h-full max-h-[430px] object-cover group-hover:scale-105 transition-transform duration-300'
+													/>
+													<div className='absolute top-3 right-3'>
+														<div
+															className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${statusConfig.bg} shadow-sm`}>
+															<StatusIcon
+																size={14}
+																className={
+																	statusConfig.iconColor
+																}
+															/>
+															<span className='text-xs font-semibold capitalize'>
+																{listing.status}
+															</span>
 														</div>
 													</div>
 												</div>
-											)}
+											</div>
 
 											{/* Content Section */}
 											<div className='flex-1 min-w-0'>

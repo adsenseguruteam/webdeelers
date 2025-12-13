@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 	metadataBase: new URL("https://www.deelzo.com/"),
 	title: {
 		default: "Deelzo - Buy & Sell Digital Assets | Trusted Marketplace",
-		template: "%s | Deelzo",
+		template: "%s | Deelzo.com",
 	},
 	description:
 		"Deelzo is the trusted marketplace for buying and selling digital assets. Discover websites, YouTube channels, social media accounts, mobile apps, SaaS products, and more. Buy verified digital properties with complete metrics and analytics.",

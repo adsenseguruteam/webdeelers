@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -526,13 +525,10 @@ export default function EditListing() {
 		e.preventDefault();
 		e.stopPropagation();
 
-		// Only submit if we're on the last step AND the submit button was explicitly clicked
 		if (currentStep < steps.length) {
 			return;
 		}
 
-		// Prevent submission unless the submit button was explicitly clicked
-		// This prevents auto-submission when reaching step 5
 		if (!submitButtonClicked.current) {
 			return;
 		}
@@ -612,14 +608,6 @@ export default function EditListing() {
 			<div className='max-w-6xl mx-auto'>
 				{/* Header */}
 				<div className='mb-6'>
-					<Link href='/dashboard'>
-						<Button
-							variant='ghost'
-							className='text-slate-700 hover:text-slate-900 hover:bg-slate-100 gap-2 mb-4'>
-							<ArrowLeft size={18} />
-							Back to Dashboard
-						</Button>
-					</Link>
 					<div className='text-center mb-6'>
 						<h1 className='text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-2'>
 							Edit Listing
@@ -1401,7 +1389,7 @@ export default function EditListing() {
 							{currentStep === 5 && (
 								<div className='space-y-6'>
 									<div className='text-center md:text-left'>
-										<h2 className='text-2xl md:text-3xl font-bold text-slate-900 mb-2 flex items-center gap-2 justify-center md:justify-start'>
+										<h2 className='text-xl md:text-3xl font-bold text-slate-900 mb-2 flex items-center gap-2 justify-center md:justify-start'>
 											<DollarSign
 												size={28}
 												className='text-emerald-600'
@@ -1607,7 +1595,7 @@ export default function EditListing() {
 							)}
 
 							{/* Navigation Buttons */}
-							<div className='flex flex-col sm:flex-row justify-between gap-3 pt-6 md:pt-8 border-t border-slate-200'>
+							<div className='flex justify-between gap-3 pt-6 md:pt-8 border-t border-slate-200'>
 								<Button
 									type='button'
 									variant='outline'

@@ -108,7 +108,7 @@ export default function SignUp() {
 	};
 
 	return (
-		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4 pb-24 md:pb-8'>
+		<div className=' bg-linear-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4 pb-24 md:pb-8'>
 			<div className='w-full max-w-md'>
 				<Card className='bg-white border p-0 border-slate-200 shadow-2xl overflow-hidden'>
 					{/* Header with gradient */}

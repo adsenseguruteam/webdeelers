@@ -1,28 +1,21 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+	title: "Terms of Service",
+	description:
+		"Terms of service for Deelzo, the trusted marketplace for buying and selling digital assets.",
+};
 export default function Terms() {
 	return (
 		<div className='min-h-screen bg-gray-50'>
-			{/* Header */}
-			<div className='border-b border-gray-200'>
-				<div className='max-w-7xl mx-auto px-4 md:px-8 py-6'>
-					<Link href='/'>
-						<Button
-							variant='ghost'
-							className='text-gray-700 hover:text-white'>
-							← Back to Home
-						</Button>
-					</Link>
-				</div>
-			</div>
-
 			{/* Content */}
 			<div className='max-w-4xl mx-auto px-4 md:px-8 py-16'>
 				<h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
 					Terms of Service
 				</h1>
-				<p className='text-gray-600 mb-8'>Last updated: October 2024</p>
+				<p className='text-gray-600 mb-8'>
+					Last updated: December 2025
+				</p>
 
 				<div className='space-y-8 text-slate-600'>
 					<section>

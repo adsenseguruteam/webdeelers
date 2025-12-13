@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Facebook,
@@ -7,7 +6,6 @@ import {
 	Phone,
 	MessageCircle,
 	ExternalLink,
-	ArrowLeft,
 	CheckCircle,
 	Shield,
 	Zap,
@@ -18,6 +16,13 @@ import {
 	ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+	title: "About Us",
+	description:
+		"About Deelzo, the trusted marketplace for buying and selling digital assets.",
+};
 
 export default function About() {
 	const features = [
@@ -64,20 +69,6 @@ export default function About() {
 
 	return (
 		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
-			{/* Header */}
-			<div className='bg-white border-b border-slate-200 shadow-sm'>
-				<div className='max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6'>
-					<Link href='/'>
-						<Button
-							variant='ghost'
-							className='text-slate-700 hover:text-slate-900 hover:bg-slate-100 gap-2'>
-							<ArrowLeft size={18} />
-							Back to Home
-						</Button>
-					</Link>
-				</div>
-			</div>
-
 			{/* Hero Section */}
 			<div className='relative overflow-hidden bg-linear-to-r from-sky-500 via-blue-500 to-cyan-500 py-12 md:py-16'>
 				<div className='absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl' />
