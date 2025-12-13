@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -99,6 +99,7 @@ export default function EditListing() {
 	const [uploadingImages, setUploadingImages] = useState(false);
 	const [currentStep, setCurrentStep] = useState(1);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+	const submitButtonClicked = useRef(false);
 	const [formData, setFormData] = useState<ListingFormState>({
 		title: "",
 		description: "",
@@ -523,12 +524,21 @@ export default function EditListing() {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		e.stopPropagation();
 
-		// Don't submit if not on the last step
+		// Only submit if we're on the last step AND the submit button was explicitly clicked
 		if (currentStep < steps.length) {
-			nextStep();
 			return;
 		}
+
+		// Prevent submission unless the submit button was explicitly clicked
+		// This prevents auto-submission when reaching step 5
+		if (!submitButtonClicked.current) {
+			return;
+		}
+
+		// Reset the flag
+		submitButtonClicked.current = false;
 
 		// Final validation
 		if (!validateStep(5)) {
@@ -708,6 +718,14 @@ export default function EditListing() {
 					<CardContent className='p-4 md:p-6 lg:p-8'>
 						<form
 							onSubmit={handleSubmit}
+							onKeyDown={(e) => {
+								// Prevent ALL form submissions via Enter key
+								// Only allow submission via explicit button click
+								if (e.key === "Enter") {
+									e.preventDefault();
+									e.stopPropagation();
+								}
+							}}
 							className='space-y-6 md:space-y-8'>
 							{/* Step 1: Category */}
 							{currentStep === 1 && (
@@ -1615,6 +1633,9 @@ export default function EditListing() {
 								) : (
 									<Button
 										type='submit'
+										onClick={() => {
+											submitButtonClicked.current = true;
+										}}
 										disabled={saving || uploadingImages}
 										className='bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/20 gap-2 disabled:opacity-50 disabled:cursor-not-allowed'>
 										{saving ? (
