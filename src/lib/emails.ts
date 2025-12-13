@@ -185,11 +185,11 @@ export function generateListingStatusUpdate(
 	adminNote?: string
 ): string {
 	const statusMessages: { [key: string]: string } = {
-		active: "Your listing has been approved and is now live on AssetHub!",
+		active: "Your listing has been approved and is now live on Deelzo!",
 		inactive: "Your listing has been deactivated by an administrator.",
 		rejected:
 			"Your listing has been rejected as it does not meet our community guidelines.",
-		sold: "Your listing has been marked as sold. Thank you for using AssetHub!",
+		sold: "Your listing has been marked as sold. Thank you for using Deelzo!",
 		pending: "Your listing is under review by our team.",
 	};
 

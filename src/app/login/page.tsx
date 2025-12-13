@@ -4,10 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+	CardDescription,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import {
+	ArrowRight,
+	Mail,
+	Lock,
+	Loader2,
+	Shield,
+	Eye,
+	EyeOff,
+	AlertCircle,
+} from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -15,6 +30,7 @@ export default function Login() {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 	const [formData, setFormData] = useState({
 		email: "",
 		password: "",
@@ -70,43 +86,50 @@ export default function Login() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gray-50 flex items-center justify-center p-4 pb-24 md:pb-0'>
+		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center p-4 pb-24 md:pb-8'>
 			<div className='w-full max-w-md'>
-				<Card className='bg-white border-gray-200 shadow-lg'>
-					<CardHeader className='text-center'>
-						<div className='flex justify-center mb-4'>
-							<div className='w-12 h-12 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center'>
-								<span className='text-white font-bold text-xl'>
-									A
-								</span>
+				<Card className='bg-white border p-0 border-slate-200 shadow-2xl overflow-hidden'>
+					{/* Header with gradient */}
+					<CardHeader className='bg-linear-to-r from-sky-500 via-blue-500 to-cyan-500 p-6 text-center relative overflow-hidden border-0'>
+						<div className='absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl' />
+						<div className='absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full blur-3xl' />
+						<div className='relative z-10'>
+							<div className='flex justify-center mb-4'>
+								<div className='w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center shadow-lg'>
+									<Shield size={32} className='text-white' />
+								</div>
 							</div>
+							<CardTitle className='text-white text-2xl md:text-3xl font-bold mb-2'>
+								Welcome Back
+							</CardTitle>
+							<CardDescription className='text-white/90 text-sm'>
+								Login to your Deelzo account
+							</CardDescription>
 						</div>
-						<CardTitle className='text-gray-900 text-2xl'>
-							Welcome Back
-						</CardTitle>
-						<p className='text-gray-600 text-sm mt-2'>
-							Login to your AssetHub account
-						</p>
 					</CardHeader>
 
-					<CardContent>
+					<CardContent className='p-6 md:p-8'>
 						{error && (
-							<div className='mb-4 p-3 bg-red-900/20 border border-red-700 rounded-lg text-red-400 text-sm'>
-								{error}
+							<div className='mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm flex items-start gap-2'>
+								<AlertCircle
+									size={18}
+									className='text-rose-600 mt-0.5 shrink-0'
+								/>
+								<span>{error}</span>
 							</div>
 						)}
 
-						<form onSubmit={handleSubmit} className='space-y-4'>
+						<form onSubmit={handleSubmit} className='space-y-5'>
 							<div>
 								<Label
 									htmlFor='email'
-									className='text-gray-700'>
+									className='text-slate-700 font-semibold text-sm mb-2 block'>
 									Email Address
 								</Label>
-								<div className='relative mt-2'>
+								<div className='relative'>
 									<Mail
 										size={18}
-										className='absolute left-3 top-3 text-gray-400'
+										className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400'
 									/>
 									<Input
 										id='email'
@@ -116,7 +139,7 @@ export default function Login() {
 										value={formData.email}
 										onChange={handleChange}
 										required
-										className='pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'
+										className='pl-10 pr-4 h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:ring-sky-500/20'
 									/>
 								</div>
 							</div>
@@ -124,49 +147,76 @@ export default function Login() {
 							<div>
 								<Label
 									htmlFor='password'
-									className='text-gray-700'>
+									className='text-slate-700 font-semibold text-sm mb-2 block'>
 									Password
 								</Label>
-								<div className='relative mt-2'>
+								<div className='relative'>
 									<Lock
 										size={18}
-										className='absolute left-3 top-3 text-gray-400'
+										className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400'
 									/>
 									<Input
 										id='password'
 										name='password'
-										type='password'
+										type={
+											showPassword ? "text" : "password"
+										}
 										placeholder='••••••••'
 										value={formData.password}
 										onChange={handleChange}
 										required
-										className='pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'
+										className='pl-10 pr-12 h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:ring-sky-500/20'
 									/>
+									<button
+										type='button'
+										onClick={() =>
+											setShowPassword(!showPassword)
+										}
+										className='absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors'>
+										{showPassword ? (
+											<EyeOff size={18} />
+										) : (
+											<Eye size={18} />
+										)}
+									</button>
 								</div>
+							</div>
+
+							<div className='flex items-center justify-between'>
+								<Link
+									href='/forgot-password'
+									className='text-sm text-sky-600 hover:text-sky-700 font-medium transition-colors'>
+									Forgot password?
+								</Link>
 							</div>
 
 							<Button
 								type='submit'
 								disabled={loading}
-								className='w-full bg-linear-to-br from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white gap-2'>
-								{loading ? "Logging in..." : "Login"}
-								<ArrowRight size={18} />
+								className='w-full bg-linear-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white gap-2 shadow-lg shadow-sky-500/20 h-11 text-base font-semibold'>
+								{loading ? (
+									<>
+										<Loader2
+											size={18}
+											className='animate-spin'
+										/>
+										Logging in...
+									</>
+								) : (
+									<>
+										Login
+										<ArrowRight size={18} />
+									</>
+								)}
 							</Button>
-							<p className='text-right mt-1'>
-								<Link
-									href='/forgot-password'
-									className='text-cyan-400 underline text-sm hover:text-blue-300'>
-									Forgot password?
-								</Link>
-							</p>
 						</form>
 
-						<div className='mt-6 pt-6 border-t border-gray-200'>
-							<p className='text-gray-600 text-sm text-center'>
+						<div className='mt-6 pt-6 border-t border-slate-200'>
+							<p className='text-slate-600 text-sm text-center'>
 								Don't have an account?{" "}
 								<Link
 									href='/signup'
-									className='text-blue-400 hover:text-blue-300 font-semibold'>
+									className='text-sky-600 hover:text-sky-700 font-semibold transition-colors'>
 									Sign up here
 								</Link>
 							</p>

@@ -149,22 +149,32 @@ export default function Home() {
 	];
 
 	return (
-		<div className='min-h-screen bg-gray-50'>
+		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			{/* Hero Section */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24'>
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
-					<div>
-						<h1 className='text-4xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight'>
+			<section className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-20 lg:py-28 overflow-hidden'>
+				{/* Background decoration */}
+				<div className='absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl -z-10' />
+				<div className='absolute bottom-0 left-0 w-96 h-96 bg-linear-to-br from-cyan-200/30 to-emerald-200/30 rounded-full blur-3xl -z-10' />
+
+				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10'>
+					<div className='text-center lg:text-left'>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-sky-50 to-blue-50 rounded-full border border-sky-200 mb-6'>
+							<Shield size={16} className='text-sky-600' />
+							<span className='text-sm font-semibold text-sky-700'>
+								Trusted Marketplace
+							</span>
+						</div>
+						<h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-6 leading-tight'>
 							Buy & Sell Digital Assets with Confidence
 						</h1>
-						<p className='text-xl text-gray-600 mb-8'>
+						<p className='text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0'>
 							Deelzo is the trusted marketplace for digital
 							entrepreneurs. Discover, evaluate, and acquire
 							high-quality digital properties.
 						</p>
-						<div className='flex flex-col sm:flex-row gap-4'>
+						<div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
 							<Link href='/marketplace'>
-								<Button className='bg-linear-to-br cursor-pointer from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-6 text-md gap-2'>
+								<Button className='bg-linear-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white px-8 py-6 text-base md:text-lg gap-2 shadow-lg shadow-sky-500/20 transition-all duration-200 hover:scale-105'>
 									Browse Marketplace
 									<ArrowRight size={20} />
 								</Button>
@@ -172,7 +182,7 @@ export default function Home() {
 							<Link href='/guide'>
 								<Button
 									variant='outline'
-									className='border-gray-300 cursor-pointer text-gray-700 hover:bg-gray-100 px-8 py-6 text-md'>
+									className='border-2 border-slate-300 cursor-pointer text-slate-700 hover:bg-slate-50 hover:border-slate-400 px-8 py-6 text-base md:text-lg transition-all duration-200'>
 									Learn More
 								</Button>
 							</Link>
@@ -203,24 +213,31 @@ export default function Home() {
 			</section>
 
 			{/* Categories */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16'>
-				<h2 className='text-3xl font-bold text-gray-900 mb-8'>
-					Browse by Category
-				</h2>
-				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
+			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
+				<div className='text-center mb-8 md:mb-12'>
+					<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-3'>
+						Browse by Category
+					</h2>
+					<p className='text-slate-600 text-base md:text-lg'>
+						Explore digital assets across different categories
+					</p>
+				</div>
+				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4'>
 					{categories.map((cat) => {
 						const Icon = cat.icon;
 						return (
 							<Link
 								key={cat.name}
 								href={`/marketplace?category=${cat.name}`}>
-								<Card className='bg-white border-gray-200 hover:border-blue-500 cursor-pointer transition-all hover:shadow-lg hover:shadow-blue-500/10'>
-									<CardContent className='p-6 text-center'>
-										<Icon
-											size={32}
-											className='text-blue-500 mx-auto mb-3'
-										/>
-										<p className='text-gray-900 font-semibold text-sm'>
+								<Card className='bg-white border border-slate-200 hover:border-sky-500 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 group'>
+									<CardContent className='p-4 md:p-6 text-center'>
+										<div className='w-12 h-12 md:w-14 md:h-14 mx-auto mb-3 rounded-xl bg-linear-to-br from-sky-50 to-blue-50 flex items-center justify-center group-hover:from-sky-100 group-hover:to-blue-100 transition-all duration-300'>
+											<Icon
+												size={24}
+												className='text-sky-600 group-hover:scale-110 transition-transform duration-300'
+											/>
+										</div>
+										<p className='text-slate-900 font-semibold text-xs md:text-sm group-hover:text-sky-600 transition-colors'>
 											{cat.name}
 										</p>
 									</CardContent>
@@ -232,25 +249,29 @@ export default function Home() {
 			</section>
 
 			{/* Featured Listings with Filters */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16'>
-				<div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6'>
-					<h2 className='text-3xl font-bold text-gray-900'>
-						Featured Listings
+			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
+				<div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 md:mb-8'>
+					<div>
+						<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-2'>
+							Featured Listings
+						</h2>
 						{listings.length > 0 && (
-							<span className='text-lg text-gray-600 font-normal ml-2'>
-								({listings.length})
-							</span>
+							<p className='text-slate-600 text-base'>
+								{listings.length}{" "}
+								{listings.length === 1 ? "listing" : "listings"}{" "}
+								available
+							</p>
 						)}
-					</h2>
-					<div className='flex gap-3'>
+					</div>
+					<div className='flex flex-wrap gap-2 md:gap-3'>
 						<Button
 							onClick={() => setShowFilters(!showFilters)}
 							variant='outline'
-							className='border-gray-300 cursor-pointer text-gray-700 hover:bg-gray-100 bg-transparent gap-2'>
+							className='border-slate-200 cursor-pointer text-slate-700 hover:bg-slate-50 hover:border-slate-300 bg-white gap-2 transition-all duration-200'>
 							<Filter size={18} />
-							Filters
+							<span className='hidden sm:inline'>Filters</span>
 							{hasActiveFilters && (
-								<span className='ml-1 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full'>
+								<span className='ml-1 px-2 py-0.5 bg-sky-600 text-white text-xs rounded-full font-semibold'>
 									{[
 										selectedCategory !== "All" ? 1 : 0,
 										selectedCountry !== "All" ? 1 : 0,
@@ -264,15 +285,15 @@ export default function Home() {
 							<Button
 								onClick={clearFilters}
 								variant='outline'
-								className='border-gray-300 cursor-pointer text-gray-700 hover:bg-gray-100 bg-transparent gap-2'>
+								className='border-slate-200 cursor-pointer text-slate-700 hover:bg-slate-50 hover:border-slate-300 bg-white gap-2 transition-all duration-200'>
 								<X size={18} />
-								Clear
+								<span className='hidden sm:inline'>Clear</span>
 							</Button>
 						)}
 						<Link href='/marketplace'>
 							<Button
 								variant='outline'
-								className='border-gray-300 text-gray-700 hover:bg-gray-100'>
+								className='border-sky-200 text-sky-700 hover:bg-sky-50 hover:border-sky-300 bg-white transition-all duration-200'>
 								View All
 							</Button>
 						</Link>
@@ -281,9 +302,9 @@ export default function Home() {
 
 				{/* Filters Panel */}
 				{showFilters && (
-					<Card className='bg-white border-gray-200 mb-8 shadow-sm'>
-						<CardContent className='p-6'>
-							<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+					<Card className='bg-white border border-slate-200 mb-8 shadow-lg'>
+						<CardContent className='p-4 md:p-6'>
+							<div className='grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6'>
 								{/* Category Filter */}
 								<div>
 									<label className='text-sm font-semibold text-gray-700 mb-2 block'>
@@ -413,13 +434,13 @@ export default function Home() {
 						</CardContent>
 					</Card>
 				) : (
-					<div className='grid grid-cols-1 xl:grid-cols-4 gap-4 md:gap-6'>
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6'>
 						{listings.map((listing: any) => (
 							<Link
 								key={listing._id}
 								href={`/listing/${listing.slug || listing._id}`}
 								className='group'>
-								<Card className='bg-white p-0 border-gray-200 hover:border-blue-500 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/10 overflow-hidden h-full flex flex-col gap-1 cursor-pointer'>
+								<Card className='bg-white p-0 border border-slate-200 hover:border-sky-500 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 overflow-hidden h-full flex flex-col gap-1 cursor-pointer hover:-translate-y-1'>
 									{/* Image */}
 									<div className='relative w-full h-48 overflow-hidden bg-linear-to-br from-gray-100 to-gray-200'>
 										{listing.thumbnail ||
@@ -677,26 +698,33 @@ export default function Home() {
 				</div>
 			</section>
 			{/* Features */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-16'>
-				<h2 className='text-3xl font-bold text-gray-900 mb-12 text-center'>
-					Why Choose AssetHub?
-				</h2>
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
+				<div className='text-center mb-8 md:mb-12'>
+					<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-3'>
+						Why Choose Deelzo?
+					</h2>
+					<p className='text-slate-600 text-base md:text-lg'>
+						Experience the best in digital asset trading
+					</p>
+				</div>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
 					{features.map((feature, index) => {
 						const Icon = feature.icon;
 						return (
 							<Card
 								key={index}
-								className='bg-white border-gray-200 hover:border-blue-500 transition-colors shadow-sm'>
+								className='bg-white border border-slate-200 hover:border-sky-500 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 group'>
 								<CardContent className='p-6'>
-									<Icon
-										size={32}
-										className='text-blue-500 mb-4'
-									/>
-									<h3 className='font-bold text-gray-900 mb-2'>
+									<div className='w-14 h-14 rounded-xl bg-linear-to-br from-sky-50 to-blue-50 flex items-center justify-center mb-4 group-hover:from-sky-100 group-hover:to-blue-100 transition-all duration-300'>
+										<Icon
+											size={28}
+											className='text-sky-600 group-hover:scale-110 transition-transform duration-300'
+										/>
+									</div>
+									<h3 className='font-bold text-slate-900 mb-2 text-lg'>
 										{feature.title}
 									</h3>
-									<p className='text-gray-600 text-sm'>
+									<p className='text-slate-600 text-sm leading-relaxed'>
 										{feature.description}
 									</p>
 								</CardContent>
@@ -707,28 +735,33 @@ export default function Home() {
 			</section>
 
 			{/* CTA Section */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-12'>
-				<div className='bg-linear-to-br from-blue-600 to-cyan-600 rounded-2xl p-12 text-center shadow-xl'>
-					<h2 className='text-3xl md:text-4xl font-bold text-white mb-4'>
-						Ready to Get Started?
-					</h2>
-					<p className='text-white/90 mb-8 text-lg'>
-						Join thousands of digital entrepreneurs buying and
-						selling assets on AssetHub
-					</p>
-					<div className='flex flex-col sm:flex-row gap-4 justify-center'>
-						<Link href='/marketplace'>
-							<Button className='bg-white hover:bg-gray-100 cursor-pointer text-blue-600 px-8 py-6 text-md font-semibold'>
-								Start Browsing
-							</Button>
-						</Link>
-						<Link href='/guide'>
-							<Button
-								variant='outline'
-								className='border-white text-gray-600 cursor-pointer hover:bg-white/20 px-8 py-6 text-md'>
-								Learn How to Sell
-							</Button>
-						</Link>
+			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
+				<div className='relative bg-linear-to-br from-sky-600 via-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-8 md:p-12 lg:p-16 text-center shadow-2xl overflow-hidden'>
+					{/* Background decoration */}
+					<div className='absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl' />
+					<div className='absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl' />
+
+					<div className='relative z-10'>
+						<h2 className='text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4'>
+							Ready to Get Started?
+						</h2>
+						<p className='text-white/90 mb-8 text-base md:text-lg max-w-2xl mx-auto'>
+							Join thousands of digital entrepreneurs buying and
+							selling assets on Deelzo
+						</p>
+						<div className='flex flex-col sm:flex-row gap-4 justify-center'>
+							<Link href='/marketplace'>
+								<Button className='bg-white hover:bg-slate-50 cursor-pointer text-sky-600 px-8 py-6 text-base md:text-md font-semibold shadow-lg hover:scale-105 transition-all duration-200'>
+									Start Browsing
+									<ArrowRight size={20} className='ml-2' />
+								</Button>
+							</Link>
+							<Link href='/guide'>
+								<Button className='bg-white hover:bg-slate-50 cursor-pointer text-sky-600 px-8 py-6 text-base md:text-md font-semibold shadow-lg hover:scale-105 transition-all duration-200'>
+									Learn How to Sell
+								</Button>
+							</Link>
+						</div>
 					</div>
 				</div>
 			</section>

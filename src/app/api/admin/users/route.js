@@ -33,7 +33,7 @@ export async function GET(request) {
 
 export async function PUT(request) {
 	try {
-		const { userId, action, adminId } = await request.json();
+		const { userId, action, adminId, updates } = await request.json();
 
 		await connectDB();
 
@@ -53,6 +53,15 @@ export async function PUT(request) {
 			await User.findByIdAndUpdate(userId, { isBlocked: true });
 		} else if (action === "unblock") {
 			await User.findByIdAndUpdate(userId, { isBlocked: false });
+		} else if (action === "update" && updates) {
+			// Update user details
+			const updateData = {};
+			if (updates.name !== undefined) updateData.name = updates.name;
+			if (updates.email !== undefined) updateData.email = updates.email;
+			if (updates.phone !== undefined) updateData.phone = updates.phone;
+			if (updates.bio !== undefined) updateData.bio = updates.bio;
+
+			await User.findByIdAndUpdate(userId, updateData);
 		}
 
 		return NextResponse.json({ success: true });

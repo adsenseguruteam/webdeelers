@@ -28,14 +28,19 @@ export default function MobileBottomNav() {
 		},
 		{
 			icon: User,
+			label: "Profile",
+			href: user ? `/profile/${user?._id}` : "/login",
+		},
+		{
+			icon: User,
 			label: "Dashboard",
 			href: user ? "/dashboard" : "/login",
 		},
 	];
 
 	return (
-		<nav className='fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 md:hidden z-40'>
-			<div className='flex justify-around items-center h-16'>
+		<nav className='fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 shadow-2xl md:hidden z-50'>
+			<div className='flex justify-around items-center h-20 px-2 pb-safe'>
 				{navItems.map((item, index) => {
 					const Icon = item.icon;
 					const isActive = pathname === item.href;
@@ -43,13 +48,33 @@ export default function MobileBottomNav() {
 						<Link
 							key={index}
 							href={item.href}
-							className={`flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${
+							className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all duration-200 ${
 								isActive
-									? "text-blue-500 bg-slate-800/50"
-									: "text-slate-400 hover:text-white"
+									? "text-sky-600"
+									: "text-slate-500 hover:text-slate-700"
 							}`}>
-							<Icon size={24} />
-							<span className='text-xs'>{item.label}</span>
+							{isActive && (
+								<div className='absolute top-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-linear-to-r from-sky-500 to-blue-500 rounded-b-full' />
+							)}
+							<div
+								className={`relative p-2.5 rounded-xl transition-all duration-200 ${
+									isActive
+										? "bg-linear-to-br from-sky-50 to-blue-50 shadow-lg shadow-sky-500/20"
+										: "hover:bg-slate-50"
+								}`}>
+								<Icon
+									size={22}
+									className={`transition-transform duration-200 ${
+										isActive ? "scale-110" : ""
+									}`}
+								/>
+							</div>
+							<span
+								className={`text-[10px] font-semibold transition-all duration-200 ${
+									isActive ? "text-sky-600" : "text-slate-500"
+								}`}>
+								{item.label}
+							</span>
 						</Link>
 					);
 				})}

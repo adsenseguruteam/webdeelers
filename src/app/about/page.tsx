@@ -1,145 +1,216 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
 	Facebook,
 	Mail,
 	Phone,
 	MessageCircle,
 	ExternalLink,
+	ArrowLeft,
+	CheckCircle,
+	Shield,
+	Zap,
+	TrendingUp,
+	Users,
+	Globe,
+	Star,
+	ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
 
 export default function About() {
+	const features = [
+		{
+			icon: Shield,
+			title: "Verified Sellers",
+			description: "Transparent pricing and verified sellers",
+		},
+		{
+			icon: CheckCircle,
+			title: "Asset Verification",
+			description: "Comprehensive asset verification process",
+		},
+		{
+			icon: Zap,
+			title: "Secure Transactions",
+			description: "Secure transactions with escrow protection",
+		},
+		{
+			icon: TrendingUp,
+			title: "Performance Metrics",
+			description: "Detailed performance metrics and analytics",
+		},
+		{
+			icon: Users,
+			title: "Expert Support",
+			description: "Expert support and guidance",
+		},
+		{
+			icon: Globe,
+			title: "Global Reach",
+			description: "Connect with buyers and sellers worldwide",
+		},
+	];
+
+	const assetTypes = [
+		"Websites & Blogs",
+		"YouTube Channels",
+		"Social Media Accounts",
+		"E-commerce Stores",
+		"SaaS Businesses",
+		"Mobile Applications",
+	];
+
 	return (
-		<div className='min-h-screen bg-gray-50'>
+		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			{/* Header */}
-			<div className='border-b border-gray-200'>
-				<div className='max-w-7xl mx-auto px-4 md:px-8 py-6'>
+			<div className='bg-white border-b border-slate-200 shadow-sm'>
+				<div className='max-w-7xl mx-auto px-4 md:px-8 py-4 md:py-6'>
 					<Link href='/'>
 						<Button
 							variant='ghost'
-							className='text-gray-700 hover:text-white'>
-							← Back to Home
+							className='text-slate-700 hover:text-slate-900 hover:bg-slate-100 gap-2'>
+							<ArrowLeft size={18} />
+							Back to Home
 						</Button>
 					</Link>
 				</div>
 			</div>
 
+			{/* Hero Section */}
+			<div className='relative overflow-hidden bg-linear-to-r from-sky-500 via-blue-500 to-cyan-500 py-12 md:py-16'>
+				<div className='absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl' />
+				<div className='absolute bottom-0 left-0 w-96 h-96 bg-white/10 rounded-full blur-3xl' />
+				<div className='max-w-4xl mx-auto px-4 md:px-8 text-center relative z-10'>
+					<h1 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4'>
+						About Deelzo
+					</h1>
+					<p className='text-white/90 text-lg md:text-xl max-w-2xl mx-auto'>
+						The trusted marketplace for buying and selling digital
+						assets. Empowering entrepreneurs and digital investors
+						worldwide.
+					</p>
+				</div>
+			</div>
+
 			{/* Content */}
-			<div className='max-w-4xl mx-auto px-4 md:px-8 py-16'>
-				<h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
-					About Deelzo
-				</h1>
+			<div className='max-w-6xl mx-auto px-4 md:px-8 py-12 md:py-16'>
+				{/* Mission Section */}
+				<Card className='bg-white border border-slate-200 shadow-lg mb-8'>
+					<CardContent className='p-6 md:p-8'>
+						<div className='flex items-start gap-4 mb-4'>
+							<div className='w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-blue-500 flex items-center justify-center shrink-0'>
+								<Star size={24} className='text-white' />
+							</div>
+							<div>
+								<h2 className='text-2xl md:text-3xl font-bold text-slate-900 mb-3'>
+									Our Mission
+								</h2>
+								<p className='text-slate-600 leading-relaxed text-base md:text-lg'>
+									Deelzo is a trusted marketplace for buying
+									and selling digital assets. We empower
+									entrepreneurs and digital investors to
+									discover, evaluate, and acquire high-quality
+									digital properties with confidence.
+								</p>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
 
-				<div className='space-y-8 text-slate-600'>
-					<section>
-						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
-							Our Mission
-						</h2>
-						<p className='leading-relaxed'>
-							Deelzo is a trusted marketplace for buying and
-							selling digital assets. We empower entrepreneurs and
-							digital investors to discover, evaluate, and acquire
-							high-quality digital properties with confidence.
-						</p>
-					</section>
+				{/* Why Choose Deelzo */}
+				<div className='mb-12'>
+					<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-8 text-center'>
+						Why Choose Deelzo?
+					</h2>
+					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6'>
+						{features.map((feature, index) => {
+							const Icon = feature.icon;
+							return (
+								<Card
+									key={index}
+									className='bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+									<CardContent className='p-6'>
+										<div className='w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-blue-500 flex items-center justify-center mb-4'>
+											<Icon
+												size={24}
+												className='text-white'
+											/>
+										</div>
+										<h3 className='text-lg font-bold text-slate-900 mb-2'>
+											{feature.title}
+										</h3>
+										<p className='text-slate-600 text-sm leading-relaxed'>
+											{feature.description}
+										</p>
+									</CardContent>
+								</Card>
+							);
+						})}
+					</div>
+				</div>
 
-					<section>
-						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
-							Why Choose Deelzo?
-						</h2>
-						<ul className='space-y-3'>
-							<li className='flex gap-3'>
-								<span className='text-blue-500 font-bold'>
-									✓
-								</span>
-								<span>
-									Verified sellers and transparent pricing
-								</span>
-							</li>
-							<li className='flex gap-3'>
-								<span className='text-blue-500 font-bold'>
-									✓
-								</span>
-								<span>
-									Comprehensive asset verification process
-								</span>
-							</li>
-							<li className='flex gap-3'>
-								<span className='text-blue-500 font-bold'>
-									✓
-								</span>
-								<span>
-									Secure transactions with escrow protection
-								</span>
-							</li>
-							<li className='flex gap-3'>
-								<span className='text-blue-500 font-bold'>
-									✓
-								</span>
-								<span>
-									Detailed performance metrics and analytics
-								</span>
-							</li>
-							<li className='flex gap-3'>
-								<span className='text-blue-500 font-bold'>
-									✓
-								</span>
-								<span>Expert support and guidance</span>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
+				{/* What We Offer */}
+				<Card className='bg-white border border-slate-200 shadow-lg mb-8'>
+					<CardContent className='p-6 md:p-8'>
+						<h2 className='text-2xl md:text-3xl font-bold text-slate-900 mb-4'>
 							What We Offer
 						</h2>
-						<p className='leading-relaxed mb-4'>
+						<p className='text-slate-600 leading-relaxed mb-6 text-base md:text-lg'>
 							We provide a comprehensive platform for trading
 							digital assets including:
 						</p>
-						<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-							{[
-								"Websites & Blogs",
-								"YouTube Channels",
-								"Social Media Accounts",
-								"E-commerce Stores",
-								"SaaS Businesses",
-								"Mobile Applications",
-							].map((item) => (
+						<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4'>
+							{assetTypes.map((item, index) => (
 								<div
-									key={item}
-									className='p-4 bg-white rounded-lg border border-gray-200'>
-									{item}
+									key={index}
+									className='p-4 bg-linear-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200 hover:border-sky-300 transition-colors'>
+									<p className='text-slate-900 font-semibold text-sm md:text-base'>
+										{item}
+									</p>
 								</div>
 							))}
 						</div>
-					</section>
+					</CardContent>
+				</Card>
 
-					<section>
-						<h2 className='text-2xl font-bold text-gray-900 mb-4'>
-							Our Commitment
-						</h2>
-						<p className='leading-relaxed'>
-							We are committed to maintaining the highest
-							standards of integrity, transparency, and customer
-							service. Every transaction on Deelzo is protected by
-							our comprehensive verification process and secure
-							payment system.
-						</p>
-					</section>
+				{/* Commitment */}
+				<Card className='bg-linear-to-br from-sky-50 to-blue-50 border border-sky-200 shadow-lg mb-12'>
+					<CardContent className='p-6 md:p-8'>
+						<div className='flex items-start gap-4'>
+							<div className='w-12 h-12 rounded-xl bg-linear-to-br from-sky-500 to-blue-500 flex items-center justify-center shrink-0'>
+								<Shield size={24} className='text-white' />
+							</div>
+							<div>
+								<h2 className='text-2xl md:text-3xl font-bold text-slate-900 mb-3'>
+									Our Commitment
+								</h2>
+								<p className='text-slate-700 leading-relaxed text-base md:text-lg'>
+									We are committed to maintaining the highest
+									standards of integrity, transparency, and
+									customer service. Every transaction on
+									Deelzo is protected by our comprehensive
+									verification process and secure payment
+									system.
+								</p>
+							</div>
+						</div>
+					</CardContent>
+				</Card>
 
-					{/* About the Owner */}
-					<section className='mt-16 bg-white rounded-xl shadow-sm p-8 border border-gray-100'>
-						<div className='flex flex-col md:flex-row gap-8 items-center'>
-							<div className='w-40 h-40 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-4xl font-bold'>
+				{/* About the Owner */}
+				<Card className='bg-white border p-0 border-slate-200 shadow-xl overflow-hidden'>
+					<div className='bg-linear-to-r from-sky-500 via-blue-500 to-cyan-500 p-6 md:p-8'>
+						<div className='flex flex-col md:flex-row gap-6 md:gap-8 items-center'>
+							<div className='w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-xl'>
 								AG
 							</div>
-							<div className='flex-1'>
-								<h2 className='text-2xl font-bold text-gray-900 mb-2'>
+							<div className='flex-1 text-center md:text-left'>
+								<h2 className='text-2xl md:text-3xl font-bold text-white mb-3'>
 									About the Owner
 								</h2>
-								<p className='text-gray-600 mb-4'>
+								<p className='text-white/90 leading-relaxed text-base md:text-lg mb-4'>
 									Hi, I'm AdSense Guru aka (Amit Singh), the
 									founder and CEO of Deelzo. With over 4 years
 									of experience in digital marketing and
@@ -147,98 +218,113 @@ export default function About() {
 									to help entrepreneurs and investors find
 									quality digital assets.
 								</p>
-								<div className='space-y-2'>
+								<div className='flex flex-col sm:flex-row gap-3 justify-center md:justify-start'>
 									<Link
 										href='https://www.facebook.com/adsenseguruteam'
 										target='_blank'
 										rel='noopener noreferrer'
-										className='flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors'>
+										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Facebook size={18} />
-										Follow us on Facebook
+										Follow on Facebook
 									</Link>
-									<div className='flex items-center gap-2 text-gray-600'>
-										<Mail
-											size={18}
-											className='text-gray-500'
-										/>
-										<span>evtnorg@gmail.com</span>
-									</div>
-									<div className='flex items-center gap-2 text-gray-600'>
-										<Phone
-											size={18}
-											className='text-gray-500'
-										/>
-										<span>+91 7755089819</span>
-									</div>
+									<a
+										href='mailto:evtnorg@gmail.com'
+										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
+										<Mail size={18} />
+										Email
+									</a>
+									<a
+										href='tel:+917755089819'
+										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
+										<Phone size={18} />
+										Call
+									</a>
 								</div>
 							</div>
 						</div>
+					</div>
 
-						{/* Social Media & Contact */}
-						<div className='mt-12'>
-							<h3 className='text-xl font-semibold text-gray-900 mb-6'>
-								Connect With Me
-							</h3>
-							<div className='space-y-4'>
-								{/* Website Screenshots */}
-								<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-									<div className='rounded-lg overflow-hidden border border-gray-200 shadow-sm'>
-										<Image
-											src='/page.jpg'
-											alt='Dashboard Preview'
-											width={500}
-											height={300}
-											className='w-full h-auto'
-										/>
-										<p className='text-center text-sm text-gray-500 p-2'>
-											Facebook Page Overview
-										</p>
-									</div>
-									<div className='rounded-lg overflow-hidden border border-gray-200 shadow-sm'>
-										<Image
-											src='/group.jpg'
-											alt='Marketplace Preview'
-											width={500}
-											height={300}
-											className='w-full h-auto'
-										/>
-										<p className='text-center text-sm text-gray-500 p-2'>
-											Facebook Group Overview
-										</p>
-									</div>
+					<CardContent className='p-6 md:p-8'>
+						<h3 className='text-xl md:text-2xl font-bold text-slate-900 mb-6'>
+							Connect With Me
+						</h3>
+						<div className='space-y-4'>
+							{/* Website Screenshots */}
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
+								<div className='rounded-xl overflow-hidden border border-slate-200 shadow-lg group hover:shadow-xl transition-shadow'>
+									<Image
+										src='/page.jpg'
+										alt='Facebook Page Overview'
+										width={500}
+										height={300}
+										className='w-full h-auto group-hover:scale-105 transition-transform duration-300'
+									/>
+									<p className='text-center text-sm text-slate-600 p-3 bg-slate-50 font-medium'>
+										Facebook Page Overview
+									</p>
 								</div>
+								<div className='rounded-xl overflow-hidden border border-slate-200 shadow-lg group hover:shadow-xl transition-shadow'>
+									<Image
+										src='/group.jpg'
+										alt='Facebook Group Overview'
+										width={500}
+										height={300}
+										className='w-full h-auto group-hover:scale-105 transition-transform duration-300'
+									/>
+									<p className='text-center text-sm text-slate-600 p-3 bg-slate-50 font-medium'>
+										Facebook Group Overview
+									</p>
+								</div>
+							</div>
 
-								{/* WhatsApp Group */}
+							{/* Social Links */}
+							<div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
 								<Link
 									href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
 									target='_blank'
 									rel='noopener noreferrer'
-									className='flex items-center justify-center gap-2 p-4 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 text-green-700 transition-colors'>
-									<MessageCircle className='w-5 h-5' />
-									<span>Join Our WhatsApp Group</span>
+									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 rounded-xl border border-emerald-200 text-emerald-700 transition-all duration-200 hover:shadow-lg group'>
+									<MessageCircle size={20} />
+									<span className='font-semibold'>
+										WhatsApp Group
+									</span>
+									<ArrowRight
+										size={16}
+										className='group-hover:translate-x-1 transition-transform'
+									/>
 								</Link>
 
-								{/* Facebook Group */}
 								<Link
 									href='https://www.facebook.com/groups/adsenseguruteam'
 									target='_blank'
 									rel='noopener noreferrer'
-									className='flex items-center justify-center gap-2 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 text-blue-700 transition-colors'>
-									<Facebook className='w-5 h-5' />
-									<span>Join Our Facebook Group</span>
+									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-blue-50 to-sky-50 hover:from-blue-100 hover:to-sky-100 rounded-xl border border-blue-200 text-blue-700 transition-all duration-200 hover:shadow-lg group'>
+									<Facebook size={20} />
+									<span className='font-semibold'>
+										Facebook Group
+									</span>
+									<ArrowRight
+										size={16}
+										className='group-hover:translate-x-1 transition-transform'
+									/>
 								</Link>
 
-								{/* Telegram Channel */}
 								<Link
-									href='https://www.deelzo.com/marketplace'
-									className='flex items-center justify-center gap-2 p-4 bg-cyan-50 hover:bg-cyan-100 rounded-lg border border-cyan-200 text-cyan-700 transition-colors'>
-									<ExternalLink className='w-5 h-5' />
-									<span>Visit Marketplace</span>
+									href='/marketplace'
+									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-cyan-50 to-teal-50 hover:from-cyan-100 hover:to-teal-100 rounded-xl border border-cyan-200 text-cyan-700 transition-all duration-200 hover:shadow-lg group'>
+									<ExternalLink size={20} />
+									<span className='font-semibold'>
+										Marketplace
+									</span>
+									<ArrowRight
+										size={16}
+										className='group-hover:translate-x-1 transition-transform'
+									/>
 								</Link>
 							</div>
 						</div>
-					</section>
-				</div>
+					</CardContent>
+				</Card>
 			</div>
 		</div>
 	);
