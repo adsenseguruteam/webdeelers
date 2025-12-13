@@ -34,6 +34,8 @@ export async function GET(request) {
 
 export async function PUT(request) {
 	try {
+		await connectDB();
+		const id = extractIdFromRequest(request);
 		const { userId, ...updateData } = await request.json();
 
 		if (userId !== id) {
@@ -43,13 +45,16 @@ export async function PUT(request) {
 			);
 		}
 
-		await connectDB();
-
-		const id = extractIdFromRequest(request);
-
 		const user = await User.findByIdAndUpdate(id, updateData, {
 			new: true,
 		});
+
+		if (!user) {
+			return NextResponse.json(
+				{ message: "User not found" },
+				{ status: 404 }
+			);
+		}
 
 		return NextResponse.json({ success: true, user });
 	} catch (error) {

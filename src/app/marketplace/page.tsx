@@ -269,7 +269,7 @@ export default function Marketplace() {
 											{/* Metrics Grid */}
 											<div className='grid grid-cols-2 gap-2 mb-3 flex-1'>
 												{listing.metrics
-													?.monthlyRevenue && (
+													?.monthlyRevenue >= 0 && (
 													<div className='bg-linear-to-br from-emerald-50 to-emerald-100/50 rounded-lg p-2 border border-emerald-100'>
 														<p className='text-[10px] text-slate-600 mb-0.5 font-medium'>
 															Revenue/Month

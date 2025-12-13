@@ -1126,6 +1126,7 @@ export default function Dashboard() {
 
 							<div className='flex gap-3 pt-4 border-t border-slate-200'>
 								<Link
+									target='_blank'
 									href={`/listing/${
 										selectedListing?.slug ||
 										selectedListing?._id

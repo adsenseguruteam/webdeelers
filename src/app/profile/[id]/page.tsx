@@ -5,6 +5,9 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Mail,
 	MessageCircle,
@@ -22,7 +25,13 @@ import {
 	Phone,
 	User,
 	AlertCircle,
+	Edit2,
+	Save,
+	X,
 } from "lucide-react";
+import { userContext } from "@/context/userContext";
+import { toast } from "sonner";
+import axios from "axios";
 
 export default function ProfilePage({
 	params,
@@ -30,9 +39,20 @@ export default function ProfilePage({
 	params: Promise<{ id: string }>;
 }) {
 	const { id } = use(params);
+	const { user: currentUser } = userContext();
 	const [user, setUser] = useState<any>(null);
 	const [listings, setListings] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+	const [editFormData, setEditFormData] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		bio: "",
+	});
+	const [saving, setSaving] = useState(false);
+
+	const isOwnProfile = currentUser && currentUser._id === id;
 
 	useEffect(() => {
 		const fetchUserProfile = async () => {
@@ -42,6 +62,13 @@ export default function ProfilePage({
 				const userData = await response.json();
 				setUser(userData);
 				setListings(userData.listings);
+				// Initialize edit form data
+				setEditFormData({
+					name: userData.name || "",
+					email: userData.email || "",
+					phone: userData.phone || "",
+					bio: userData.bio || "",
+				});
 			} catch (err) {
 				console.log(err);
 			} finally {
@@ -51,6 +78,56 @@ export default function ProfilePage({
 
 		fetchUserProfile();
 	}, [id]);
+
+	const handleOpenEditDialog = () => {
+		if (user) {
+			setEditFormData({
+				name: user.name || "",
+				email: user.email || "",
+				phone: user.phone || "",
+				bio: user.bio || "",
+			});
+			setIsEditDialogOpen(true);
+		}
+	};
+
+	const handleSaveProfile = async () => {
+		if (!currentUser || !user) return;
+
+		setSaving(true);
+		try {
+			const response = await axios.put(`/api/users/${id}`, {
+				userId: currentUser._id,
+				name: editFormData.name,
+				email: editFormData.email,
+				phone: editFormData.phone,
+				bio: editFormData.bio,
+			});
+
+			if (response.data.success) {
+				// Update local state
+				setUser({ ...user, ...editFormData });
+				// Update localStorage if it's the current user
+				if (currentUser._id === id) {
+					const updatedUser = { ...currentUser, ...editFormData };
+					localStorage.setItem("user", JSON.stringify(updatedUser));
+				}
+				toast.success("Profile updated successfully!");
+				setIsEditDialogOpen(false);
+				// Refresh the page to show updated data
+				window.location.reload();
+			} else {
+				toast.error("Failed to update profile");
+			}
+		} catch (error: any) {
+			console.error("Failed to update profile:", error);
+			toast.error(
+				error.response?.data?.message || "Failed to update profile"
+			);
+		} finally {
+			setSaving(false);
+		}
+	};
 
 	if (loading) {
 		return (
@@ -197,6 +274,14 @@ export default function ProfilePage({
 
 									{/* Contact Buttons */}
 									<div className='flex flex-col sm:flex-row lg:flex-col gap-2 w-full sm:w-auto lg:w-auto'>
+										{isOwnProfile && (
+											<Button
+												onClick={handleOpenEditDialog}
+												className='w-full cursor-pointer bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white gap-2 shadow-lg shadow-purple-500/20 mb-2'>
+												<Edit2 size={18} />
+												Edit Profile
+											</Button>
+										)}
 										<a
 											href={`mailto:${user.email}`}
 											className='w-full sm:w-auto'>
@@ -407,6 +492,152 @@ export default function ProfilePage({
 					)}
 				</div>
 			</div>
+
+			{/* Edit Profile Dialog */}
+			{isEditDialogOpen && (
+				<div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm'>
+					<Card className='bg-white border border-slate-200 shadow-2xl max-w-[500px] w-full max-h-[90vh] overflow-y-auto'>
+						<CardHeader className='border-b border-slate-200'>
+							<div className='flex items-center justify-between'>
+								<CardTitle className='text-2xl font-bold text-slate-900 flex items-center gap-2'>
+									<Edit2
+										size={24}
+										className='text-purple-600'
+									/>
+									Edit Profile
+								</CardTitle>
+								<Button
+									variant='ghost'
+									size='icon'
+									onClick={() => setIsEditDialogOpen(false)}
+									disabled={saving}
+									className='text-slate-500 hover:text-slate-900'>
+									<X size={20} />
+								</Button>
+							</div>
+							<p className='text-slate-600 text-sm mt-2'>
+								Update your profile information below
+							</p>
+						</CardHeader>
+						<CardContent className='p-6'>
+							<div className='space-y-4'>
+								<div>
+									<Label
+										htmlFor='edit-name'
+										className='text-slate-700 font-semibold text-sm mb-2 block'>
+										Full Name
+									</Label>
+									<Input
+										id='edit-name'
+										value={editFormData.name}
+										onChange={(e) =>
+											setEditFormData({
+												...editFormData,
+												name: e.target.value,
+											})
+										}
+										className='h-11 bg-white border-slate-200 text-slate-900 focus:border-purple-500 focus:ring-purple-500/20'
+										placeholder='Enter your full name'
+									/>
+								</div>
+
+								<div>
+									<Label
+										htmlFor='edit-email'
+										className='text-slate-700 font-semibold text-sm mb-2 block'>
+										Email Address
+									</Label>
+									<Input
+										id='edit-email'
+										type='email'
+										value={editFormData.email}
+										onChange={(e) =>
+											setEditFormData({
+												...editFormData,
+												email: e.target.value,
+											})
+										}
+										className='h-11 bg-white border-slate-200 text-slate-900 focus:border-purple-500 focus:ring-purple-500/20'
+										placeholder='Enter your email'
+									/>
+								</div>
+
+								<div>
+									<Label
+										htmlFor='edit-phone'
+										className='text-slate-700 font-semibold text-sm mb-2 block'>
+										Phone Number
+									</Label>
+									<Input
+										id='edit-phone'
+										value={editFormData.phone}
+										onChange={(e) =>
+											setEditFormData({
+												...editFormData,
+												phone: e.target.value,
+											})
+										}
+										className='h-11 bg-white border-slate-200 text-slate-900 focus:border-purple-500 focus:ring-purple-500/20'
+										placeholder='Enter your phone number'
+									/>
+								</div>
+
+								<div>
+									<Label
+										htmlFor='edit-bio'
+										className='text-slate-700 font-semibold text-sm mb-2 block'>
+										Bio
+									</Label>
+									<textarea
+										id='edit-bio'
+										value={editFormData.bio}
+										onChange={(e) =>
+											setEditFormData({
+												...editFormData,
+												bio: e.target.value,
+											})
+										}
+										rows={4}
+										className='w-full p-3 rounded-lg bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-purple-500/20 resize-none'
+										placeholder='Tell us about yourself...'
+									/>
+								</div>
+
+								<div className='flex gap-3 pt-4'>
+									<Button
+										onClick={handleSaveProfile}
+										disabled={saving}
+										className='flex-1 bg-linear-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white gap-2 shadow-lg shadow-purple-500/20'>
+										{saving ? (
+											<>
+												<Loader2
+													size={18}
+													className='animate-spin'
+												/>
+												Saving...
+											</>
+										) : (
+											<>
+												<Save size={18} />
+												Save Changes
+											</>
+										)}
+									</Button>
+									<Button
+										variant='outline'
+										onClick={() =>
+											setIsEditDialogOpen(false)
+										}
+										disabled={saving}
+										className='border-slate-200 text-slate-700 hover:bg-slate-100'>
+										<X size={18} />
+									</Button>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+			)}
 		</div>
 	);
 }

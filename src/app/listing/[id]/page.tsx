@@ -123,6 +123,26 @@ export default function ListingDetail({
 		);
 	};
 
+	const sanitizeUrl = (url: string | undefined): string => {
+		if (!url) return "";
+
+		// Remove any whitespace
+		let sanitized = url.trim();
+
+		// If it already has a protocol, return as is
+		if (/^https?:\/\//i.test(sanitized)) {
+			return sanitized;
+		}
+
+		// If it starts with www., add https://
+		if (/^www\./i.test(sanitized)) {
+			return `https://${sanitized}`;
+		}
+
+		// Otherwise, add https://
+		return `https://${sanitized}`;
+	};
+
 	if (loading) {
 		return (
 			<div className='flex items-center justify-center min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
@@ -358,11 +378,11 @@ export default function ListingDetail({
 													/>
 													Asset Link
 												</p>
-												<Link
-													href={
+												<a
+													href={sanitizeUrl(
 														listing.metrics
 															.assetLink
-													}
+													)}
 													target='_blank'
 													rel='noopener noreferrer'
 													className='text-sm font-semibold text-sky-600 hover:text-sky-700 break-all flex items-center gap-1 group'>
@@ -371,10 +391,11 @@ export default function ListingDetail({
 														size={14}
 														className='group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform'
 													/>
-												</Link>
+												</a>
 											</div>
 										)}
-										{listing.metrics?.monthlyRevenue && (
+										{listing.metrics?.monthlyRevenue >=
+											0 && (
 											<div className='p-4 bg-linear-to-br from-emerald-50 to-emerald-100/50 rounded-xl border border-emerald-100'>
 												<p className='text-xs text-slate-600 mb-2 font-medium flex items-center gap-1'>
 													<DollarSign
