@@ -74,10 +74,16 @@ export async function PUT(request) {
 
 		await connectDB();
 		const user = await User.findById(userId);
-		const listing = await Listing.findOne({ slug });
+		let listing;
+		if (mongoose.isValidObjectId(slug)) {
+			listing = await Listing.findById(slug);
+		} else {
+			listing = await Listing.findOne({ slug });
+		}
+
 		if (
-			!listing ||
-			(listing.seller.toString() !== userId && user.role !== "admin")
+			!listing &&
+			(listing.seller.toString() !== userId || user.role !== "admin")
 		) {
 			return NextResponse.json(
 				{ message: "Unauthorized" },
@@ -122,8 +128,12 @@ export async function DELETE(request) {
 
 		await connectDB();
 
-		const listing = await Listing.findOne({ slug });
-		if (!listing || listing.seller.toString() !== userId) {
+		const user = await User.findById(userId);
+		const listing = await Listing.findById(slug);
+		if (
+			(!listing && listing.seller.toString() !== userId) ||
+			user.role !== "admin"
+		) {
 			return NextResponse.json(
 				{ message: "Unauthorized" },
 				{ status: 401 }

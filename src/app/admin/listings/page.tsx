@@ -393,12 +393,12 @@ export default function AdminListingsPage() {
 							return (
 								<Card
 									key={listing._id}
-									className='bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group'>
+									className='bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 '>
 									<CardContent className='p-6'>
 										<div className='flex flex-col lg:flex-row gap-6'>
 											{/* Thumbnail Section */}
 											{listing.thumbnail && (
-												<div className='lg:w-48 flex-shrink-0'>
+												<div className='lg:w-48'>
 													<div className='relative w-full h-48 lg:h-full lg:min-h-[200px] rounded-xl overflow-hidden border border-slate-200 bg-slate-100'>
 														<img
 															src={
@@ -652,7 +652,7 @@ export default function AdminListingsPage() {
 																size={16}
 															/>
 														</Button>
-														<div className='absolute left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10'>
+														<div className='absolute left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all'>
 															{[
 																"active",
 																"pending",

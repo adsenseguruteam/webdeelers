@@ -3,10 +3,7 @@ import connectDB from "@/lib/mongodb";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import { sendEmail } from "@/lib/emails";
-import {
-	generateNewListingNotification,
-	generateListingStatusUpdate,
-} from "@/lib/emails";
+import { generateNewListingNotification } from "@/lib/emails";
 
 export async function GET(request) {
 	try {
@@ -109,7 +106,9 @@ export async function POST(request) {
 			const admins = await User.find({ role: "admin" }).select("email");
 
 			if (admins.length > 0) {
-				const listingLink = `${process.env.NEXT_PUBLIC_APP_URL}/listing/${listing.slug || listing._id}`;
+				const listingLink = `${
+					process.env.NEXT_PUBLIC_APP_URL
+				}/listing/${listing.slug || listing._id}`;
 				const emailContent = generateNewListingNotification(
 					listing.title,
 					user.name,
