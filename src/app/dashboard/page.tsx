@@ -188,7 +188,7 @@ export default function Dashboard() {
 	const soldListings = listings.filter(
 		(l: any) => l.status === "sold"
 	).length;
-	const totalEarnings = profile?.totalEarnings || 0;
+	const totalEarnings = profile?.totalSales || 0;
 	const totalViews = listings.reduce(
 		(sum: number, l: any) => sum + (l.views || 0),
 		0
