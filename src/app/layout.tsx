@@ -5,6 +5,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/userContext";
 import LayoutShell from "@/components/layout-shell";
+import Head from "next/head";
+import Script from "next/script";
 
 const geistSans = Geist({ subsets: ["latin"] });
 
@@ -93,7 +95,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang='en' suppressHydrationWarning>
-			<head suppressHydrationWarning>
+			<Head>
 				<meta
 					name='viewport'
 					content='width=device-width, initial-scale=1'
@@ -109,7 +111,7 @@ export default function RootLayout({
 					content='default'
 				/>
 				{/* Structured Data - Organization */}
-				<script
+				<Script
 					type='application/ld+json'
 					suppressHydrationWarning
 					dangerouslySetInnerHTML={{
@@ -130,7 +132,7 @@ export default function RootLayout({
 					}}
 				/>
 				{/* Structured Data - WebSite */}
-				<script
+				<Script
 					type='application/ld+json'
 					suppressHydrationWarning
 					dangerouslySetInnerHTML={{
@@ -153,7 +155,7 @@ export default function RootLayout({
 					}}
 				/>
 				{/* Structured Data - Marketplace */}
-				<script
+				<Script
 					type='application/ld+json'
 					suppressHydrationWarning
 					dangerouslySetInnerHTML={{
@@ -169,11 +171,11 @@ export default function RootLayout({
 					}}
 				/>
 				{/* Google Analytics Script */}
-				<script
+				<Script
 					async
 					src='https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXX'
 				/>
-				<script
+				<Script
 					suppressHydrationWarning
 					dangerouslySetInnerHTML={{
 						__html: `
@@ -189,7 +191,7 @@ export default function RootLayout({
 					src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXX'
 					crossOrigin='anonymous'
 				/> */}
-			</head>
+			</Head>
 			<body
 				className={`${geistSans.className} bg-gray-50`}
 				suppressHydrationWarning>

@@ -1,5 +1,6 @@
 "use client";
 
+import Head from "next/head";
 import { useState, useEffect, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -186,6 +187,32 @@ export default function ListingDetail({
 
 	return (
 		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 pb-24 md:pb-8'>
+			<Head>
+				<title>
+					{listing.title} | {listing.category} | Deelzo.com
+				</title>
+				<meta
+					name='description'
+					content={
+						listing.description?.substring(0, 160) ||
+						"Check out this listing on Deelzo.com"
+					}
+					key='desc'
+				/>
+				<meta
+					name='image'
+					content={listing.thumbnail || "/deelzobanner.png"}
+				/>
+				<meta
+					name='url'
+					content={`${process.env.NEXT_PUBLIC_APP_URL}/listing/${
+						listing.slug || slugOrId
+					}`}
+				/>
+				<meta name='siteName' content='Deelzo.com' />
+				<meta name='locale' content='en_US' />
+				<meta name='type' content='website' />
+			</Head>
 			<div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-6'>
 				{/* Header */}
 				<div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6'>
