@@ -413,7 +413,10 @@ export default function ListingDetail({
 													target='_blank'
 													rel='noopener noreferrer'
 													className='text-sm font-semibold text-sky-600 hover:text-sky-700 break-all flex items-center gap-1 group'>
-													{listing.metrics.assetLink}
+													{
+														listing?.metrics
+															?.assetLink
+													}
 													<ArrowUpRight
 														size={14}
 														className='group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform'
@@ -433,7 +436,7 @@ export default function ListingDetail({
 												</p>
 												<p className='text-xl md:text-2xl font-bold text-emerald-700'>
 													$
-													{listing.metrics.monthlyRevenue.toLocaleString()}
+													{listing.metrics?.monthlyRevenue?.toLocaleString()}
 												</p>
 											</div>
 										)}
@@ -447,11 +450,11 @@ export default function ListingDetail({
 													Monthly Traffic
 												</p>
 												<p className='text-xl md:text-2xl font-bold text-slate-900'>
-													{listing.metrics.monthlyTraffic.toLocaleString()}
+													{listing.metrics?.monthlyTraffic?.toLocaleString()}
 												</p>
 											</div>
 										)}
-										{listing.metrics?.followers && (
+										{listing?.metrics?.followers && (
 											<div className='p-4 bg-slate-50 rounded-xl border border-slate-100'>
 												<p className='text-xs text-slate-600 mb-2 font-medium flex items-center gap-1'>
 													<Users
@@ -461,11 +464,11 @@ export default function ListingDetail({
 													Followers
 												</p>
 												<p className='text-xl md:text-2xl font-bold text-slate-900'>
-													{listing.metrics.followers.toLocaleString()}
+													{listing.metrics?.followers?.toLocaleString()}
 												</p>
 											</div>
 										)}
-										{listing.metrics?.country && (
+										{listing?.metrics?.country && (
 											<div className='p-4 bg-slate-50 rounded-xl border border-slate-100'>
 												<p className='text-xs text-slate-600 mb-2 font-medium flex items-center gap-1'>
 													<MapPin
@@ -475,11 +478,11 @@ export default function ListingDetail({
 													Country
 												</p>
 												<p className='text-xl md:text-2xl font-bold text-slate-900'>
-													{listing.metrics.country}
+													{listing?.metrics?.country}
 												</p>
 											</div>
 										)}
-										{listing.metrics?.age && (
+										{listing?.metrics?.age && (
 											<div className='p-4 bg-slate-50 rounded-xl border border-slate-100'>
 												<p className='text-xs text-slate-600 mb-2 font-medium flex items-center gap-1'>
 													<Calendar
@@ -489,7 +492,8 @@ export default function ListingDetail({
 													Age
 												</p>
 												<p className='text-xl md:text-2xl font-bold text-slate-900'>
-													{listing.metrics.age} months
+													{listing?.metrics?.age}{" "}
+													months
 												</p>
 											</div>
 										)}
