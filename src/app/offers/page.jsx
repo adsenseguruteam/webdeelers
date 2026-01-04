@@ -365,7 +365,7 @@ const paymentOptions = {
 	},
 };
 
-const whatsappNumber = "917755089819";
+const whatsappNumber = "447846137395";
 
 const testimonials = [
 	{
@@ -723,7 +723,7 @@ export default function OffersPage() {
 											)}
 										</ul>
 									</CardContent>
-									<CardFooter className='flex gap-2'>
+									<CardFooter className='flex justify-center gap-2'>
 										<Link
 											href={script?.liveDemo || ""}
 											target='_blank'>
@@ -733,7 +733,7 @@ export default function OffersPage() {
 											</Button>
 										</Link>
 										<Button
-											className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+											className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
 											onClick={() =>
 												handleOpenCheckout(script)
 											}>
@@ -986,7 +986,7 @@ export default function OffersPage() {
 											}{" "}
 											ID
 										</p>
-										<p className='text-xl font-semibold text-white mt-1'>
+										<p className='text-lg font-semibold text-white mt-1'>
 											{paymentOptions[paymentMethod].id}
 										</p>
 										<div className='mt-4 flex flex-col items-center gap-3'>

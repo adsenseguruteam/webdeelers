@@ -58,7 +58,7 @@ export default function BlogsPage() {
 		<div className='min-h-screen bg-slate-50 pb-20'>
 			{/* Hero Section */}
 			<div className='bg-slate-900 text-white py-20 relative overflow-hidden'>
-				<div className='absolute inset-0 bg-gradient-to-r from-purple-900/50 to-blue-900/50'></div>
+				<div className='absolute inset-0 bg-linear-to-r from-purple-900/50 to-blue-900/50'></div>
 				<div className='container mx-auto px-4 text-center relative z-10'>
 					<h1 className='text-4xl md:text-5xl font-bold mb-4'>
 						Our Blog
