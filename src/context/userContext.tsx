@@ -24,6 +24,7 @@ export interface User {
 	isActive: string;
 	isEmailVerified: boolean;
 	createdAt: string;
+	currentPlan?: string;
 }
 
 interface AuthContextType {

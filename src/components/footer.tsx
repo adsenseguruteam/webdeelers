@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EMAIL } from "@/lib/constant";
 import {
 	ShoppingBag,
-	BookOpen,
-	Info,
 	Mail,
-	FileText,
 	Shield,
 	HelpCircle,
 	ArrowRight,
@@ -135,7 +133,7 @@ export default function Footer() {
 							</li>
 							<li>
 								<a
-									href='mailto:evtnorg@gmail.com'
+									href={`mailto:${EMAIL}`}
 									className='group flex items-center gap-2 text-slate-600 hover:text-sky-600 text-sm transition-all duration-200'>
 									<Mail
 										size={14}
@@ -152,7 +150,7 @@ export default function Footer() {
 				<div className='border-t border-slate-200 pt-8'>
 					<div className='flex flex-col md:flex-row justify-between items-center gap-4'>
 						<p className='text-slate-500 text-sm'>
-							© 2025{" "}
+							© 2026{" "}
 							<span className='font-semibold text-slate-700'>
 								Deelzo
 							</span>

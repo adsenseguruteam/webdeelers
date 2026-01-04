@@ -1,3 +1,4 @@
+import { EMAIL } from "@/lib/constant";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -84,7 +85,7 @@ export default function Privacy() {
 						</h2>
 						<p className='leading-relaxed'>
 							If you have any questions about this Privacy Policy,
-							please contact us at evtnorg@gmail.com
+							please contact us at {EMAIL}
 						</p>
 					</section>
 				</div>

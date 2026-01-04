@@ -23,6 +23,7 @@ import {
 	Eye,
 	DollarSign,
 	TrendingUp,
+	BookOpen,
 	Trash2,
 	Edit2,
 	EyeIcon,
@@ -239,6 +240,18 @@ export default function Dashboard() {
 								<Button className='bg-linear-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white gap-2 shadow-lg shadow-emerald-500/20'>
 									<Plus size={18} />
 									Create Listing
+								</Button>
+							</Link>
+							<Link href='/dashboard/blogs'>
+								<Button className='bg-linear-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white gap-2 shadow-lg shadow-purple-500/20'>
+									<BookOpen size={18} />
+									Blogs
+								</Button>
+							</Link>
+							<Link href='/dashboard/upgrade'>
+								<Button className='bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white gap-2 shadow-lg shadow-orange-500/20'>
+									<TrendingUp size={18} />
+									Upgrade
 								</Button>
 							</Link>
 						</div>

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MessageCircle, Clock, MapPin } from "lucide-react";
 import type { Metadata } from "next";
+import { EMAIL, PHONE } from "@/lib/constant";
 
 export const metadata: Metadata = {
 	title: "Contact Us",
@@ -12,8 +13,8 @@ export default function Contact() {
 		{
 			icon: Mail,
 			title: "Email",
-			value: "evtnorg@gmail.com",
-			href: "mailto:evtnorg@gmail.com",
+			value: EMAIL,
+			href: `mailto:${EMAIL}`,
 			color: "from-blue-500 to-sky-500",
 			bgColor: "from-blue-50 to-sky-50",
 			borderColor: "border-blue-200",
@@ -22,8 +23,8 @@ export default function Contact() {
 		{
 			icon: MessageCircle,
 			title: "WhatsApp",
-			value: "+91 7755089819",
-			href: "https://wa.me/917755089819",
+			value: PHONE,
+			href: `https://wa.me/${PHONE}`,
 			color: "from-emerald-500 to-green-500",
 			bgColor: "from-emerald-50 to-green-50",
 			borderColor: "border-emerald-200",

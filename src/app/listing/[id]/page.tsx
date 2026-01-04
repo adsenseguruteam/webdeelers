@@ -36,6 +36,7 @@ import axios from "axios";
 import { userContext } from "@/context/userContext";
 import Link from "next/link";
 import { toast } from "sonner";
+import { PHONE } from "@/lib/constant";
 
 export default function ListingDetail({
 	params,
@@ -334,7 +335,7 @@ export default function ListingDetail({
 													variant='outline'
 													onClick={() =>
 														handleContactSeller(
-															"917755089819"
+															PHONE
 														)
 													}
 													className='flex-1 cursor-pointer border-white/30 text-sky-600 hover:bg-white/20 gap-2'>
@@ -749,9 +750,7 @@ export default function ListingDetail({
 											<Button
 												variant='outline'
 												onClick={() =>
-													handleContactSeller(
-														"917755089819"
-													)
+													handleContactSeller(PHONE)
 												}
 												className='flex-1 cursor-pointer border-white/30 text-sky-600 hover:text-white hover:bg-white/20 gap-2'>
 												<MessageCircle size={18} />

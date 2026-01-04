@@ -4,17 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogOut, User, CircleUserRound, ShoppingBag, BookOpen, Mail, Info, LayoutDashboard, Shield } from "lucide-react";
+import {
+	Menu,
+	X,
+	LogOut,
+	User,
+	ShoppingBag,
+	BookOpen,
+	Mail,
+	Info,
+	LayoutDashboard,
+	Shield,
+	Book,
+} from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
 	const router = useRouter();
@@ -28,10 +32,11 @@ export default function Navbar() {
 	};
 
 	const navLinks = [
-		{ href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
-		{ href: '/guide', label: 'Guide', icon: BookOpen },
-		{ href: '/contact', label: 'Contact', icon: Mail },
-		{ href: '/about', label: 'About', icon: Info },
+		{ href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
+		{ href: "/blogs", label: "Blogs", icon: Book },
+		{ href: "/guide", label: "Guide", icon: BookOpen },
+		{ href: "/contact", label: "Contact", icon: Mail },
+		{ href: "/about", label: "About", icon: Info },
 	];
 
 	return (
@@ -60,10 +65,17 @@ export default function Navbar() {
 									href={link.href}
 									className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
 										isActive
-											? 'text-sky-600 bg-linear-to-r from-sky-50 to-blue-50'
-											: 'text-slate-700 hover:text-sky-600 hover:bg-slate-50'
+											? "text-sky-600 bg-linear-to-r from-sky-50 to-blue-50"
+											: "text-slate-700 hover:text-sky-600 hover:bg-slate-50"
 									}`}>
-									<Icon size={16} className={isActive ? 'text-sky-600' : 'text-slate-500'} />
+									<Icon
+										size={16}
+										className={
+											isActive
+												? "text-sky-600"
+												: "text-slate-500"
+										}
+									/>
 									<span>{link.label}</span>
 									{isActive && (
 										<div className='absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-0.5 bg-linear-to-r from-sky-500 to-blue-500 rounded-full' />
@@ -77,9 +89,9 @@ export default function Navbar() {
 					<div className='hidden md:flex items-center gap-3'>
 						{user ? (
 							<div className='flex items-center gap-3'>
-								{user.role === 'admin' && (
+								{user.role === "admin" && (
 									<Link href='/admin'>
-										<Button 
+										<Button
 											variant='outline'
 											className='border-sky-200 text-sky-700 hover:bg-sky-50 gap-2'>
 											<Shield size={16} />
@@ -155,8 +167,8 @@ export default function Navbar() {
 										onClick={() => setIsOpen(false)}
 										className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
 											isActive
-												? 'text-sky-600 bg-linear-to-r from-sky-50 to-blue-50'
-												: 'text-slate-700 hover:bg-slate-50'
+												? "text-sky-600 bg-linear-to-r from-sky-50 to-blue-50"
+												: "text-slate-700 hover:bg-slate-50"
 										}`}>
 										<Icon size={18} />
 										<span>{link.label}</span>
@@ -173,7 +185,7 @@ export default function Navbar() {
 										<User size={18} />
 										<span>Profile</span>
 									</Link>
-									{user.role === 'admin' && (
+									{user.role === "admin" && (
 										<Link
 											href='/admin'
 											onClick={() => setIsOpen(false)}

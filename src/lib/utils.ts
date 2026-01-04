@@ -11,3 +11,9 @@ export function generateResetToken(): string {
 		Math.random().toString(36).substring(2, 15)
 	);
 }
+
+export function extractParamFromRequest(request: Request): string {
+	const url = new URL(request.url, process.env.NEXT_PUBLIC_APP_URL);
+	const pathParts = url.pathname.split("/");
+	return decodeURIComponent(pathParts[pathParts.length - 1]);
+}

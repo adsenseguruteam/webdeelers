@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import type { Metadata } from "next";
+import { EMAIL, PHONE } from "@/lib/constant";
 
 export const metadata: Metadata = {
 	title: "About Us",
@@ -219,16 +220,16 @@ export default function About() {
 										Follow on Facebook
 									</Link>
 									<a
-										href='mailto:evtnorg@gmail.com'
+										href={`mailto:${EMAIL}`}
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Mail size={18} />
 										Email
 									</a>
 									<a
-										href='tel:+917755089819'
+										href={`https://wa.me/${PHONE}`}
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Phone size={18} />
-										Call
+										WhatsApp
 									</a>
 								</div>
 							</div>
