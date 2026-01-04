@@ -74,6 +74,9 @@ export async function generateMetadata({
 			blog.seo?.metaDescription ||
 			blog.content.replace(/<[^>]*>?/gm, "").substring(0, 160),
 		keywords: blog.seo?.keywords?.split(","),
+		alternates: {
+			canonical: `${process.env.NEXT_PUBLIC_APP_URL}/blogs/${blog.slug}`,
+		},
 		openGraph: {
 			title: blog.seo?.metaTitle || blog.title,
 			description:
