@@ -1,8 +1,7 @@
+import { BASE_URL } from "@/lib/constant";
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-	const baseUrl = "https://www.deelzo.com";
-
 	return {
 		rules: [
 			{
@@ -19,6 +18,6 @@ export default function robots(): MetadataRoute.Robots {
 				],
 			},
 		],
-		sitemap: `${baseUrl}/sitemap.xml`,
+		sitemap: `${BASE_URL}/sitemap.xml`,
 	};
 }
