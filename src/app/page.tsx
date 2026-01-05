@@ -438,7 +438,9 @@ export default function Home() {
 						{listings.map((listing: any) => (
 							<Link
 								key={listing._id}
-								href={`/listing/${listing.slug || listing._id}`}
+								href={`/marketplace/${
+									listing.slug || listing._id
+								}`}
 								className='group'>
 								<Card className='bg-white p-0 border border-slate-200 hover:border-sky-500 transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 overflow-hidden h-full flex flex-col gap-1 cursor-pointer hover:-translate-y-1'>
 									{/* Image */}

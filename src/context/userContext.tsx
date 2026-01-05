@@ -48,12 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				const storedUser = localStorage.getItem("user");
 				if (storedUser) {
 					const parsedUser = JSON.parse(storedUser);
-					setUser(parsedUser);
+					const loggedInUser = await axios.get(
+						`/api/users/${parsedUser._id}`
+					);
+					if (loggedInUser.status === 200) {
+						setUser(loggedInUser.data);
+					}
 
 					if (parsedUser.role === "admin") {
 						document.cookie = `userRole=admin; path=/; max-age=${
 							60 * 60 * 24 * 30
-						}`; // 7 days
+						}`; // 30 days
 					}
 				}
 			} catch (error) {

@@ -13,7 +13,9 @@ export async function GET(request) {
 		await connectDB();
 		const id = extractIdFromRequest(request);
 
-		const user = await User.findById(id).populate("listings");
+		const user = await User.findById(id)
+			.populate("listings")
+			.select("-password");
 
 		if (!user) {
 			return NextResponse.json(

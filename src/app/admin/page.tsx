@@ -24,6 +24,7 @@ import AdminSidebar from "@/components/admin-sidebar";
 import axios from "axios";
 import { userContext } from "@/context/userContext";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function AdminPanel() {
 	const { user } = userContext();
@@ -350,9 +351,17 @@ export default function AdminPanel() {
 												{/* Header Section */}
 												<div className='flex items-start justify-between mb-4'>
 													<div className='flex-1'>
-														<h3 className='text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-sky-600 transition-colors'>
-															{listing.title}
-														</h3>
+														<Link
+															target='_blank'
+															href={`/marketplace/${
+																listing.slug ||
+																listing._id
+															}`}
+															className='block'>
+															<h3 className='text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-sky-600 transition-colors'>
+																{listing.title}
+															</h3>
+														</Link>
 														<p className='text-slate-600 mb-4 line-clamp-2 text-sm md:text-base'>
 															{
 																listing.description

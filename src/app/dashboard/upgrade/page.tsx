@@ -35,10 +35,9 @@ export default function UpgradePage() {
 
 	// Dummy payment details - In real app, fetch from settings or config
 	const paymentDetails = {
-		binanceId: "123456789",
-		qrCodeUrl:
-			"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=binance-payment-address", // Placeholder
-		walletAddress: "0x123...abc",
+		binanceId: "556105059",
+		qrCodeUrl: "/upiscanner.jpeg",
+		walletAddress: "adsenseservices90@axl",
 	};
 
 	useEffect(() => {
@@ -242,7 +241,7 @@ export default function UpgradePage() {
 													setPaymentMethod("qr")
 												}
 												className='flex-1'>
-												Crypto Address
+												UPI Payment
 											</Button>
 										</div>
 

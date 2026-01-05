@@ -182,7 +182,7 @@ export default function Marketplace() {
 							{filteredListings.map((listing: any) => (
 								<Link
 									key={listing._id}
-									href={`/listing/${
+									href={`/marketplace/${
 										listing.slug || listing._id
 									}`}
 									className='group'>

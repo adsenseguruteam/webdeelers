@@ -9,6 +9,7 @@ import {
 	Home,
 	ArrowRight,
 	Image as ImageIcon,
+	BookCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { connectDB } from "@/lib/mongodb";
@@ -115,10 +116,10 @@ export default async function BlogPostPage({
 	const readTime = Math.ceil(wordCount / 200);
 
 	return (
-		<div className='min-h-screen bg-slate-50 pb-20'>
+		<div className='min-h-screen bg-slate-50'>
 			{/* Breadcrumb Section */}
-			<div className='bg-white border-b sticky top-0 z-10'>
-				<div className='container mx-auto px-4 py-4'>
+			<div className='bg-white border-b sticky top-0  z-10'>
+				<div className='container mx-auto px-4 max-w-5xl py-4'>
 					<div className='flex items-center gap-2 text-sm text-slate-500'>
 						<Link
 							href='/'
@@ -140,19 +141,14 @@ export default async function BlogPostPage({
 				</div>
 			</div>
 
-			<article className='container mx-auto px-4 py-8 max-w-4xl'>
+			<article className='container mx-auto px-4 py-8 max-w-5xl'>
 				{/* Header Section */}
-				<div className='text-center mb-10'>
-					<Badge
-						variant='secondary'
-						className='mb-4 bg-purple-100 text-purple-700 hover:bg-purple-200 px-4 py-1 text-sm'>
-						{blog.category}
-					</Badge>
-					<h1 className='text-3xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight'>
+				<div className=' mb-6'>
+					<h1 className='text-3xl md:text-5xl font-bold text-slate-900 mb-3 leading-tight'>
 						{blog.title}
 					</h1>
 
-					<div className='flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm'>
+					<div className='flex flex-wrap items-center gap-2 md:gap-6 text-slate-500 text-sm'>
 						<div className='flex items-center gap-2'>
 							<div className='w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden relative'>
 								{blog.author?.avatar ? (
@@ -189,8 +185,8 @@ export default async function BlogPostPage({
 						</div>
 						<div className='w-1 h-1 rounded-full bg-slate-300'></div>
 						<div className='flex items-center gap-1'>
-							<Clock size={14} />
-							<span>{readTime} min read</span>
+							<BookCheck size={14} />
+							<span>{blog.category}</span>
 						</div>
 					</div>
 				</div>

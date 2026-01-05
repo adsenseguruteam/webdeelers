@@ -4,14 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import {
-	CheckCircle,
-	XCircle,
-	Plus,
-	Loader2,
-	Pencil,
-	Trash2,
-} from "lucide-react";
+import { CheckCircle, XCircle, Plus, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import AdminSidebar from "@/components/admin-sidebar";
 import Link from "next/link";
@@ -75,13 +68,13 @@ export default function AdminBlogsPage() {
 		}
 	};
 
-	if (loading) {
-		return (
-			<div className='flex justify-center p-8'>
-				<Loader2 className='animate-spin' />
-			</div>
-		);
-	}
+	// if (loading) {
+	// 	return (
+	// 		<div className='flex justify-center p-8'>
+	// 			<Loader2 className='animate-spin' />
+	// 		</div>
+	// 	);
+	// }
 
 	return (
 		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>

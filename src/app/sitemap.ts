@@ -1,10 +1,10 @@
 import { MetadataRoute } from "next";
 import connectDB from "@/lib/mongodb";
 import Listing from "@/models/Listing";
+import Blog from "@/models/Blog";
+import { BASE_URL as baseUrl } from "@/lib/constant";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const baseUrl = "https://www.deelzo.com";
-
 	// Static pages
 	const staticPages: MetadataRoute.Sitemap = [
 		{
@@ -66,11 +66,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			.lean();
 
 		listingPages = listings.map((listing) => ({
-			url: `${baseUrl}/listing/${listing.slug || listing._id}`,
+			url: `${baseUrl}/marketplace/${listing.slug || listing._id}`,
 			lastModified: listing.updatedAt
 				? new Date(listing.updatedAt)
 				: new Date(),
-			changeFrequency: "weekly" as const,
+			changeFrequency: "daily" as const,
 			priority: 0.8,
 		}));
 	} catch (error) {
@@ -78,5 +78,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		// Continue with static pages even if database connection fails
 	}
 
-	return [...staticPages, ...listingPages];
+	let blogPages: MetadataRoute.Sitemap = [];
+
+	try {
+		await connectDB();
+
+		// Get all active blogs
+		const blogs = await Blog.find({
+			status: "published",
+		})
+			.select("_id updatedAt slug")
+			.sort({ updatedAt: -1 })
+			.lean();
+
+		blogPages = blogs.map((blog) => ({
+			url: `${baseUrl}/blogs/${blog.slug || blog._id}`,
+			lastModified: blog.updatedAt
+				? new Date(blog.updatedAt)
+				: new Date(),
+			changeFrequency: "daily" as const,
+			priority: 0.8,
+		}));
+	} catch (error) {
+		console.error("Error generating blog sitemap:", error);
+		// Continue with static pages even if database connection fails
+	}
+
+	return [...staticPages, ...listingPages, ...blogPages];
 }

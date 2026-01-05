@@ -213,7 +213,7 @@ export default function AddBlogForm({
 
 	return (
 		<div className='max-w-6xl mx-auto space-y-8'>
-			<div className='flex items-center justify-between'>
+			<div className='flex flex-col md:flex-row gap-5 items-center md:justify-between'>
 				<div className='flex items-center gap-4'>
 					<Button
 						variant='ghost'
@@ -274,7 +274,7 @@ export default function AddBlogForm({
 										})
 									}
 									placeholder='Enter an engaging title'
-									className='text-lg font-medium'
+									className='text-lg md:text-xl font-medium'
 								/>
 							</div>
 
@@ -283,6 +283,7 @@ export default function AddBlogForm({
 								<div className='h-[500px] mb-12'>
 									<ReactQuill
 										theme='snow'
+										placeholder='Write your content here...'
 										value={formData.content}
 										onChange={(value: string) =>
 											setFormData({
@@ -332,7 +333,7 @@ export default function AddBlogForm({
 
 							<div className='space-y-2'>
 								<Label>Featured Image</Label>
-								{formData.image ? (
+								{formData.image && formData.image !== "" ? (
 									<div className='relative aspect-video rounded-lg overflow-hidden border'>
 										<Image
 											src={formData.image}

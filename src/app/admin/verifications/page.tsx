@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 
 export default function AdminVerificationsPage() {
@@ -63,7 +63,7 @@ export default function AdminVerificationsPage() {
 					Payment Verifications
 				</h1>
 
-				<div className='grid gap-4'>
+				<div className='grid gap-4 mt-3'>
 					{transactions.map((tx: any) => (
 						<Card key={tx._id} className='overflow-hidden'>
 							<CardContent className='p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
