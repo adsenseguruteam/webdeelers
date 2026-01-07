@@ -6,7 +6,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import MobileBottomNav from "@/components/mobile-bottom-nav";
 
-const HIDE_CHROME_PREFIXES = ["/admin"];
+const HIDE_CHROME_PREFIXES = ["/admin", "/dashboard"];
 
 export default function LayoutShell({ children }: { children: ReactNode }) {
 	const pathname = usePathname();
@@ -16,9 +16,9 @@ export default function LayoutShell({ children }: { children: ReactNode }) {
 
 	return (
 		<>
-			{!hideChrome && <Navbar />}
+			<Navbar />
 			{children}
-			{!hideChrome && <MobileBottomNav />}
+			<MobileBottomNav />
 			{!hideChrome && <Footer />}
 		</>
 	);

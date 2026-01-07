@@ -68,14 +68,6 @@ export default function AdminBlogsPage() {
 		}
 	};
 
-	// if (loading) {
-	// 	return (
-	// 		<div className='flex justify-center p-8'>
-	// 			<Loader2 className='animate-spin' />
-	// 		</div>
-	// 	);
-	// }
-
 	return (
 		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			<AdminSidebar />

@@ -52,7 +52,7 @@ const scripts = [
 	{
 		id: 1,
 		name: "ToolsHub AdSense Approval Script",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$40",
 		description:
 			"ToolsHub is a bundle of 50 tools that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get your AdSense approved in minutes.",
@@ -74,7 +74,7 @@ const scripts = [
 	{
 		id: 2,
 		name: "Image Converter AdSense Approval Script",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$20",
 		description:
 			"Image Converter is a tool that helps you convert images to different formats quickly and easily. It's a simple tool that you can use to convert images to different formats in minutes.",
@@ -96,7 +96,7 @@ const scripts = [
 	{
 		id: 3,
 		name: "WordPress Theme & Plugin detector",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"WordPress Theme & Plugin detector is a tool that helps you detect WordPress themes and plugins quickly and easily. It's a simple tool that you can use to detect WordPress themes and plugins in minutes.",
@@ -119,7 +119,7 @@ const scripts = [
 	{
 		id: 4,
 		name: "PDF to Word Converter",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"PDF to Word Converter is a tool that helps you convert PDF to Word quickly and easily. It's a simple tool that you can use to convert PDF to Word in minutes.",
@@ -136,7 +136,7 @@ const scripts = [
 	{
 		id: 5,
 		name: "Image & PDF Compressor",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$20",
 		description:
 			"Image & PDF Compressor is a tool that helps you compress images and PDF files quickly and easily. It's a simple tool that you can use to compress images and PDF files in minutes.",
@@ -155,7 +155,7 @@ const scripts = [
 	{
 		id: 6,
 		name: "PDF to Word Converter",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"PDF to Word Converter is a tool that helps you convert PDF to Word quickly and easily. It's a simple tool that you can use to convert PDF to Word in minutes.",
@@ -177,7 +177,7 @@ const scripts = [
 	{
 		id: 7,
 		name: "Age & EMI Calculator",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Age & EMI Calculator is a tool that helps you calculate your age and EMI quickly and easily. It's a simple tool that you can use to calculate your age and EMI in minutes.",
@@ -198,7 +198,7 @@ const scripts = [
 	{
 		id: 8,
 		name: "QR Code Generator",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"QR Code Generator is a tool that helps you generate QR codes quickly and easily. It's a simple tool that you can use to generate QR codes in minutes.",
@@ -218,7 +218,7 @@ const scripts = [
 	{
 		id: 9,
 		name: "Image Resizer",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Image Resizer is a tool that helps you resize images quickly and easily. It's a simple tool that you can use to resize images in minutes.",
@@ -238,7 +238,7 @@ const scripts = [
 	{
 		id: 10,
 		name: "DOB & Age Calculator",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"DOB & Age Calculator is a tool that helps you calculate your age and DOB quickly and easily. It's a simple tool that you can use to calculate your age and DOB in minutes.",
@@ -259,7 +259,7 @@ const scripts = [
 	{
 		id: 11,
 		name: "Online Quiz Script",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Quiz Maker is a tool that helps you make quizzes quickly and easily. It's a simple tool that you can use to make quizzes in minutes.",
@@ -274,7 +274,7 @@ const scripts = [
 	{
 		id: 12,
 		name: "Tool Hub: 15+ Professional Online Tools",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Tool Hub is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
@@ -289,7 +289,7 @@ const scripts = [
 	{
 		id: 13,
 		name: "Calc Hub: 8+ Calculator Tools",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Calc Hub is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
@@ -304,7 +304,7 @@ const scripts = [
 	{
 		id: 14,
 		name: "Downloader Pro",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Facebook, Instagram and Youtube Videos downloader tool that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
@@ -319,7 +319,7 @@ const scripts = [
 	{
 		id: 15,
 		name: "Quizwinz Quick Script",
-		price: "$10",
+		price: "$15",
 		originalPrice: "$29",
 		description:
 			"Quizwinz Quick Script is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",

@@ -26,8 +26,6 @@ import {
 	BookOpen,
 	Trash2,
 	Edit2,
-	EyeIcon,
-	ChevronDown,
 	Loader2,
 	User,
 	FileText,
@@ -45,9 +43,12 @@ import {
 	X,
 	Star,
 	ArrowUpRight,
+	Pencil,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import { toast } from "sonner";
+import axios from "axios";
+import Image from "next/image";
 
 export default function Dashboard() {
 	const { user } = userContext();
@@ -60,25 +61,38 @@ export default function Dashboard() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [deleting, setDeleting] = useState<any>(null);
 	const [updating, setUpdating] = useState<any>(null);
+	const [blogs, setBlogs] = useState([]);
 
 	const fetchDashboardData = async () => {
 		try {
 			if (!user) return;
 
-			const response = await fetch(`/api/users/${user?._id}`);
-			if (!response.ok) throw new Error("User not found");
-			const userData = await response.json();
+			const response = await axios.get(`/api/users/${user?._id}`);
+			const userData = response.data;
 			setProfile(userData);
-
-			setListings(userData.listings || []);
+			setListings(userData?.listings || []);
 		} catch (error) {
 			console.error("Failed to fetch dashboard data:", error);
 		} finally {
 			setLoading(false);
 		}
 	};
+	const fetchBlogs = async () => {
+		try {
+			if (!user) return;
+			const response = await axios.get(`/api/blogs?userId=${user?._id}`);
+			if (!response.data.success) throw new Error("Blogs not found");
+			const blogsData = response.data.blogs;
+			setBlogs(blogsData);
+		} catch (err) {
+			console.log(err);
+		} finally {
+			setLoading(false);
+		}
+	};
 	useEffect(() => {
 		fetchDashboardData();
+		fetchBlogs();
 	}, [user]);
 
 	const handleDeleteListing = async (listingId: string) => {
@@ -140,22 +154,30 @@ export default function Dashboard() {
 		}
 	};
 
+	const handleDeleteBlog = async (blogId: string) => {
+		if (!confirm("Are you sure you want to delete this blog?")) return;
+		try {
+			const res = await axios.delete(`/api/blogs/${blogId}`, {
+				method: "DELETE",
+			});
+			const data = await res.data;
+			if (data.success) {
+				toast.success("Blog deleted successfully");
+				fetchBlogs();
+			} else {
+				toast.error(data.message || "Failed to delete blog");
+			}
+		} catch (error) {
+			toast.error("An error occurred");
+		}
+	};
+
 	const getStatusConfig = (status: string) => {
 		const configs: any = {
 			active: {
 				bg: "bg-emerald-100 text-emerald-700 border-emerald-200",
 				icon: CheckCircle,
 				iconColor: "text-emerald-600",
-			},
-			sold: {
-				bg: "bg-blue-100 text-blue-700 border-blue-200",
-				icon: ShoppingBag,
-				iconColor: "text-blue-600",
-			},
-			pending: {
-				bg: "bg-amber-100 text-amber-700 border-amber-200",
-				icon: Clock,
-				iconColor: "text-amber-600",
 			},
 			rejected: {
 				bg: "bg-rose-100 text-rose-700 border-rose-200",
@@ -189,7 +211,6 @@ export default function Dashboard() {
 	const soldListings = listings.filter(
 		(l: any) => l.status === "sold"
 	).length;
-	const totalEarnings = profile?.totalSales || 0;
 	const totalViews = listings.reduce(
 		(sum: number, l: any) => sum + (l.views || 0),
 		0
@@ -298,26 +319,24 @@ export default function Dashboard() {
 							<div className='flex flex-col md:flex-row items-start md:items-center justify-between gap-2'>
 								<div className='flex-1 min-w-0'>
 									<p className='text-slate-600 text-xs md:text-sm font-medium mb-1'>
-										Total Earnings
+										Total Blogs
 									</p>
 									<p className='text-xl md:text-3xl font-bold text-emerald-600 mb-1 truncate'>
-										${totalEarnings.toLocaleString()}
+										{blogs.length}
 									</p>
 									<div className='flex items-center gap-1 text-[10px] md:text-xs text-slate-500'>
-										<DollarSign
+										<BookOpen
 											size={10}
 											className='md:w-3 md:h-3'
 										/>
 										<span className='hidden md:inline'>
 											All time
 										</span>
-										<span className='md:hidden'>
-											Earnings
-										</span>
+										<span className='md:hidden'>Blogs</span>
 									</div>
 								</div>
 								<div className='w-10 h-10 md:w-14 md:h-14 rounded-xl bg-linear-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20'>
-									<DollarSign
+									<BookOpen
 										size={18}
 										className='md:w-6 md:h-6 text-white'
 									/>
@@ -928,6 +947,116 @@ export default function Dashboard() {
 								</div>
 							</CardContent>
 						</Card>
+					</div>
+				</div>
+				<div className='grid mt-15'>
+					{/* Blogs */}
+					<div className='space-y-4'>
+						<div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4'>
+							<div>
+								<h2 className='text-xl font-bold text-slate-900'>
+									Your Blogs
+								</h2>
+								<p className='text-slate-600'>
+									Manage and monitor your blogs
+								</p>
+							</div>
+						</div>
+						{blogs.map((blog: any) => (
+							<Card
+								key={blog._id}
+								className='p-0 overflow-hidden border-none shadow-sm hover:shadow-md transition-all'>
+								<CardContent className='p-6 flex flex-col md:flex-row items-start gap-6'>
+									{blog.image && (
+										<div className='w-full md:w-48 h-32 relative rounded-lg overflow-hidden shrink-0 bg-slate-100'>
+											<Image
+												src={blog.image}
+												alt={blog.title}
+												fill
+												className='object-cover'
+											/>
+										</div>
+									)}
+									<div className='flex-1 w-full'>
+										<div className='flex flex-col md:flex-row justify-between items-start gap-4 mb-2'>
+											<div>
+												<div className='flex items-center gap-2 mb-2'>
+													<span
+														className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+															blog.status ===
+															"published"
+																? "bg-green-100 text-green-800"
+																: blog.status ===
+																  "rejected"
+																? "bg-red-100 text-red-800"
+																: blog.status ===
+																  "draft"
+																? "bg-slate-100 text-slate-800"
+																: "bg-yellow-100 text-yellow-800"
+														}`}>
+														{blog.status
+															.charAt(0)
+															.toUpperCase() +
+															blog.status.slice(
+																1
+															)}
+													</span>
+													<span className='text-xs text-slate-500'>
+														By {blog.author?.name}
+													</span>
+													<span className='text-xs text-slate-400'>
+														•
+													</span>
+													<span className='text-xs text-slate-400'>
+														{new Date(
+															blog.createdAt
+														).toLocaleDateString()}
+													</span>
+												</div>
+												<h3 className='font-bold text-lg text-slate-900'>
+													{blog.title}
+												</h3>
+												<p className='text-sm text-slate-600 line-clamp-2'>
+													{blog.seo
+														?.metaDescription ||
+														blog.content.replace(
+															/<[^>]*>?/gm,
+															""
+														)}
+												</p>
+											</div>
+											<div className='flex gap-2 shrink-0'>
+												<Link
+													href={`/dashboard/add-blog?id=${blog._id}`}>
+													<Button
+														variant='outline'
+														size='sm'>
+														<Pencil size={16} />
+														Edit
+													</Button>
+												</Link>
+												<Button
+													size='sm'
+													className='text-white bg-red-600 hover:bg-red-700'
+													onClick={() =>
+														handleDeleteBlog(
+															blog._id
+														)
+													}>
+													<Trash2 size={16} />
+													Delete
+												</Button>
+											</div>
+										</div>
+									</div>
+								</CardContent>
+							</Card>
+						))}
+						{blogs.length === 0 && (
+							<div className='text-center py-12 bg-white rounded-xl border border-dashed border-slate-200'>
+								<p className='text-slate-500'>No blogs found</p>
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

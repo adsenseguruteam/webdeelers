@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,18 +19,22 @@ import {
 	Shield,
 	FileText,
 	Eye,
-	Calendar,
-	MapPin,
 	Phone,
-	User,
 	AlertCircle,
 	Edit2,
 	Save,
 	X,
+	BookOpen,
+	Search,
+	ArrowRight,
+	Calendar,
+	User,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import { toast } from "sonner";
 import axios from "axios";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProfilePage({
 	params,
@@ -42,6 +45,7 @@ export default function ProfilePage({
 	const { user: currentUser } = userContext();
 	const [user, setUser] = useState<any>(null);
 	const [listings, setListings] = useState([]);
+	const [blogs, setBlogs] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [editFormData, setEditFormData] = useState({
@@ -54,29 +58,43 @@ export default function ProfilePage({
 
 	const isOwnProfile = currentUser && currentUser._id === id;
 
-	useEffect(() => {
-		const fetchUserProfile = async () => {
-			try {
-				const response = await fetch(`/api/users/${id}`);
-				if (!response.ok) throw new Error("User not found");
-				const userData = await response.json();
-				setUser(userData);
-				setListings(userData.listings);
-				// Initialize edit form data
-				setEditFormData({
-					name: userData.name || "",
-					email: userData.email || "",
-					phone: userData.phone || "",
-					bio: userData.bio || "",
-				});
-			} catch (err) {
-				console.log(err);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const fetchUserProfile = async () => {
+		try {
+			const response = await fetch(`/api/users/${id}`);
+			if (!response.ok) throw new Error("User not found");
+			const userData = await response.json();
+			setUser(userData);
+			setListings(userData.listings);
+			// Initialize edit form data
+			setEditFormData({
+				name: userData.name || "",
+				email: userData.email || "",
+				phone: userData.phone || "",
+				bio: userData.bio || "",
+			});
+		} catch (err) {
+			console.log(err);
+		} finally {
+			setLoading(false);
+		}
+	};
 
+	const fetchBlogs = async () => {
+		try {
+			const response = await axios.get(`/api/blogs?userId=${id}`);
+			if (!response.data.success) throw new Error("Blogs not found");
+			const blogsData = response.data.blogs;
+			setBlogs(blogsData);
+		} catch (err) {
+			console.log(err);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
 		fetchUserProfile();
+		fetchBlogs();
 	}, [id]);
 
 	const handleOpenEditDialog = () => {
@@ -165,9 +183,6 @@ export default function ProfilePage({
 	).length;
 	const soldListings = listings.filter(
 		(l: any) => l.status === "sold"
-	).length;
-	const pendingListings = listings.filter(
-		(l: any) => l.status === "pending"
 	).length;
 
 	return (
@@ -340,14 +355,14 @@ export default function ProfilePage({
 							<div className='flex items-center justify-between'>
 								<div className='flex-1 min-w-0'>
 									<p className='text-slate-600 text-xs md:text-sm font-medium mb-1'>
-										Sold
+										Total Blogs
 									</p>
 									<p className='text-2xl md:text-3xl font-bold text-emerald-600'>
-										{soldListings}
+										{blogs?.length || 0}
 									</p>
 								</div>
 								<div className='w-10 h-10 md:w-12 md:h-12 rounded-xl bg-linear-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20'>
-									<TrendingUp
+									<BookOpen
 										size={20}
 										className='text-white'
 									/>
@@ -490,6 +505,109 @@ export default function ProfilePage({
 							</CardContent>
 						</Card>
 					)}
+				</div>
+				{/* Blogs Section */}
+				<div>
+					<div className='flex items-center justify-between mt-8'>
+						<h2 className='text-2xl md:text-3xl font-bold text-slate-900'>
+							Active Blogs
+						</h2>
+						<span className='px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-semibold'>
+							{blogs.length}
+						</span>
+					</div>
+					<div className='container mx-auto px-4 mt-4'>
+						{loading ? (
+							<div className='flex justify-center py-20'>
+								<Loader2 className='animate-spin w-8 h-8 text-purple-600' />
+							</div>
+						) : blogs.length > 0 ? (
+							<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
+								{blogs.map((blog: any) => (
+									<Link
+										href={`/blogs/${blog.slug || blog._id}`}
+										key={blog._id}
+										className='group'>
+										<Card className='p-0 h-full overflow-hidden hover:shadow-xl transition-shadow border-0 shadow-md flex flex-col bg-white'>
+											<div className='relative h-48 w-full overflow-hidden bg-slate-200'>
+												{blog.image ? (
+													<Image
+														src={blog.image}
+														alt={blog.title}
+														fill
+														className='object-cover transition-transform duration-500 group-hover:scale-110'
+													/>
+												) : (
+													<div className='flex items-center justify-center h-full text-slate-400'>
+														No Image
+													</div>
+												)}
+												<div className='absolute top-4 left-4'>
+													<Badge className='bg-white/90 text-slate-900 hover:bg-white shadow-sm backdrop-blur-sm'>
+														{blog.category ||
+															"General"}
+													</Badge>
+												</div>
+											</div>
+											<CardContent className='p-6 flex-1 flex flex-col'>
+												<div className='flex items-center gap-4 text-xs text-slate-500 mb-3'>
+													<span className='flex items-center gap-1'>
+														<Calendar size={14} />
+														{new Date(
+															blog.createdAt
+														).toLocaleDateString()}
+													</span>
+													<span className='flex items-center gap-1'>
+														<User size={14} />
+														{blog.author?.name ||
+															"Admin"}
+													</span>
+												</div>
+												<h3 className='text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-purple-600 transition-colors'>
+													{blog.title}
+												</h3>
+												<p className='text-slate-600 mb-4 line-clamp-3 text-sm flex-1'>
+													{blog.seo
+														?.metaDescription ||
+														(blog.content
+															? blog.content
+																	.replace(
+																		/<[^>]*>/g,
+																		""
+																	)
+																	.substring(
+																		0,
+																		150
+																	) + "..."
+															: "No content")}
+												</p>
+												<div className='flex items-center text-purple-600 font-medium text-sm mt-auto group/btn'>
+													Read More{" "}
+													<ArrowRight
+														size={16}
+														className='ml-1 group-hover/btn:translate-x-1 transition-transform'
+													/>
+												</div>
+											</CardContent>
+										</Card>
+									</Link>
+								))}
+							</div>
+						) : (
+							<div className='text-center py-20'>
+								<div className='inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4'>
+									<Search className='w-8 h-8 text-slate-400' />
+								</div>
+								<h3 className='text-2xl font-bold text-slate-900 mb-2'>
+									No blogs found
+								</h3>
+								<p className='text-slate-600'>
+									Try adjusting your search or category
+									filter.
+								</p>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 

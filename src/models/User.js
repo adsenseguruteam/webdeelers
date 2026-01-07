@@ -59,6 +59,7 @@ const userSchema = new mongoose.Schema(
 				ref: "Listing",
 			},
 		],
+
 		emailVerificationOtp: String,
 		emailVerificationExpiry: Date,
 		passwordResetToken: String,

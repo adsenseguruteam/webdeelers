@@ -280,7 +280,7 @@ export default function AddBlogForm({
 
 							<div className='space-y-2'>
 								<Label>Content</Label>
-								<div className='h-[500px] mb-12'>
+								<div className='h-[600px] mb-12'>
 									<ReactQuill
 										theme='snow'
 										placeholder='Write your content here...'
