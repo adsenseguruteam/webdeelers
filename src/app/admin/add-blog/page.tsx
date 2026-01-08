@@ -44,7 +44,7 @@ function AddBlogContent() {
 
 export default function AdminAddBlogPage() {
 	return (
-		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
+		<div className='flex min-h-[calc(100vh-92px)] bg-linear-to-br from-slate-50 via-white to-slate-100'>
 			<AdminSidebar />
 			<div className='flex-1 md:ml-64 p-4 md:p-6 lg:p-8'>
 				<Suspense

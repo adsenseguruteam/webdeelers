@@ -29,6 +29,14 @@ import "react-quill-new/dist/quill.snow.css";
 import { toast } from "sonner";
 import axios from "axios";
 import { userContext } from "@/context/userContext";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+	DialogFooter,
+} from "@/components/ui/dialog";
 
 // Dynamic import for ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -59,6 +67,7 @@ export default function AddBlogForm({
 	const { user } = userContext();
 	const [loading, setLoading] = useState(false);
 	const [uploadingImage, setUploadingImage] = useState(false);
+	const [showGuidelines, setShowGuidelines] = useState(false);
 
 	const [formData, setFormData] = useState({
 		title: "",
@@ -85,6 +94,12 @@ export default function AddBlogForm({
 					keywords: initialData.seo?.keywords || "",
 				},
 			});
+		}
+	}, [initialData]);
+
+	useEffect(() => {
+		if (!initialData) {
+			setShowGuidelines(true);
 		}
 	}, [initialData]);
 
@@ -211,8 +226,67 @@ export default function AddBlogForm({
 		}
 	};
 
+	const formats = useMemo(
+		() => [
+			"header",
+			"bold",
+			"italic",
+			"underline",
+			"strike",
+			"blockquote",
+			"list",
+			"indent",
+			"link",
+			"image",
+			"size",
+			"align",
+			"code",
+			"code-block",
+		],
+		[]
+	);
+
 	return (
 		<div className='max-w-6xl mx-auto space-y-8'>
+			<Dialog open={showGuidelines} onOpenChange={setShowGuidelines}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Writing Guidelines</DialogTitle>
+						<DialogDescription>
+							Keep posts clear, helpful, and engaging.
+						</DialogDescription>
+					</DialogHeader>
+					<div className='space-y-2 text-sm text-slate-700'>
+						<p>• Use a concise, descriptive title (Only English)</p>
+						<p>
+							• Structure with headings (H2/H3) and short
+							paragraphs
+						</p>
+						<p>
+							• Add a featured image (Under 100KB) and relevant
+							category
+						</p>
+						<p>• Include internal/external links where useful</p>
+						<p>
+							• Casino/Gambling/Betting related content is
+							strictly prohibited
+						</p>
+						<p>
+							• Fill SEO fields: meta title, description, keywords
+						</p>
+						<p>• Proofread for grammar and clarity</p>
+						<p>• Every post must be original and not plagiarized</p>
+						<p>
+							• All Posts and Links are reviewed by Deelzo Team.
+						</p>
+					</div>
+					<DialogFooter>
+						<Button onClick={() => setShowGuidelines(false)}>
+							Got it
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 			<div className='flex flex-col md:flex-row gap-5 items-center md:justify-between'>
 				<div className='flex items-center gap-4'>
 					<Button
@@ -260,7 +334,7 @@ export default function AddBlogForm({
 
 			<div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 				<div className='lg:col-span-2 space-y-6'>
-					<Card className='border-none shadow-sm'>
+					<Card className='p-0 border-none shadow-sm'>
 						<CardContent className='p-6 space-y-6'>
 							<div className='space-y-2'>
 								<Label htmlFor='title'>Blog Title</Label>
@@ -280,20 +354,174 @@ export default function AddBlogForm({
 
 							<div className='space-y-2'>
 								<Label>Content</Label>
-								<div className='h-[600px] mb-12'>
-									<ReactQuill
-										theme='snow'
-										placeholder='Write your content here...'
-										value={formData.content}
-										onChange={(value: string) =>
-											setFormData({
-												...formData,
-												content: value,
-											})
+								<div className='mb-12'>
+									<div className='pro-editor h-[600px]'>
+										<ReactQuill
+											theme='snow'
+											placeholder='Write your content here...'
+											value={formData.content}
+											onChange={(value: string) =>
+												setFormData({
+													...formData,
+													content: value,
+												})
+											}
+											modules={{
+												...modules,
+												toolbar: [
+													[
+														{
+															header: [
+																1,
+																2,
+																3,
+																4,
+																5,
+																6,
+																false,
+															],
+														},
+													],
+													[
+														{
+															size: [
+																"small",
+																false,
+																"large",
+																"huge",
+															],
+														},
+													],
+													[
+														"bold",
+														"italic",
+														"underline",
+														"strike",
+														"blockquote",
+													],
+													[
+														{ list: "ordered" },
+														{ list: "bullet" },
+														{ indent: "-1" },
+														{ indent: "+1" },
+													],
+													[{ align: [] }],
+													["link", "image"],
+													["clean"],
+												],
+											}}
+											formats={formats}
+											className='h-full'
+										/>
+									</div>
+									<style jsx>{`
+										.pro-editor :global(.ql-toolbar) {
+											border: 1px solid #e2e8f0;
+											border-radius: 12px 12px 0 0;
+											background: #f8fafc;
+											padding: 12px 14px;
+											position: sticky;
+											top: 0;
+											z-index: 10;
 										}
-										modules={modules}
-										className='h-full'
-									/>
+										.pro-editor
+											:global(
+												.ql-toolbar .ql-formats button
+											),
+										.pro-editor
+											:global(.ql-toolbar .ql-picker),
+										.pro-editor
+											:global(
+												.ql-toolbar .ql-picker-label
+											),
+										.pro-editor
+											:global(
+												.ql-toolbar .ql-picker-item
+											) {
+											font-size: 15px;
+										}
+										.pro-editor :global(.ql-container) {
+											border: 1px solid #e2e8f0;
+											border-top: none;
+											border-radius: 0 0 12px 12px;
+											box-shadow: 0 10px 16px -4px rgba(15, 23, 42, 0.08);
+											height: calc(100% - 10px);
+										}
+										.pro-editor :global(.ql-editor) {
+											font-size: 18px;
+											line-height: 1.9;
+											letter-spacing: 0.01em;
+											word-spacing: 0.06em;
+											color: #0f172a;
+											padding: 24px;
+										}
+										.pro-editor :global(.ql-editor p) {
+											margin: 0 0 1.2em 0;
+										}
+										.pro-editor :global(.ql-editor h1) {
+											font-size: 2.25rem;
+											line-height: 1.2;
+											margin: 1.2em 0 0.6em;
+											font-weight: 800;
+											letter-spacing: -0.01em;
+										}
+										.pro-editor :global(.ql-editor h2) {
+											font-size: 1.745rem;
+											line-height: 1.25;
+											margin: 1.1em 0 0.55em;
+											font-weight: 700;
+										}
+										.pro-editor :global(.ql-editor h3) {
+											font-size: 1.5rem;
+											line-height: 1.35;
+											margin: 1em 0 0.5em;
+											font-weight: 700;
+										}
+										.pro-editor
+											:global(.ql-editor blockquote) {
+											border-left: 4px solid #38bdf8;
+											padding-left: 16px;
+											margin: 1.2em 0;
+											color: #334155;
+											background: #f0f9ff;
+											border-radius: 8px;
+										}
+										.pro-editor :global(.ql-editor a) {
+											color: #0284c7;
+											text-decoration: underline;
+											font-weight: 600;
+										}
+										.pro-editor :global(.ql-editor ul),
+										.pro-editor :global(.ql-editor ol) {
+											padding-left: 1.25rem;
+											margin: 0.8em 0 1.2em;
+										}
+										.pro-editor :global(.ql-editor img) {
+											border-radius: 12px;
+											box-shadow: 0 12px 20px -6px rgba(15, 23, 42, 0.2);
+											margin: 1rem auto;
+											display: block;
+											max-width: 100%;
+										}
+										.pro-editor :global(.ql-editor pre),
+										.pro-editor :global(.ql-editor code) {
+											background: #0b1220;
+											color: #e5e7eb;
+											border-radius: 8px;
+											padding: 0.5rem 0.75rem;
+											font-family: ui-monospace,
+												SFMono-Regular, Menlo, Monaco,
+												Consolas, "Liberation Mono",
+												"Courier New", monospace;
+										}
+										.pro-editor
+											:global(
+												.ql-editor.ql-blank::before
+											) {
+											color: #94a3b8;
+											font-size: 1rem;
+										}
+									`}</style>
 								</div>
 							</div>
 						</CardContent>
@@ -354,7 +582,7 @@ export default function AddBlogForm({
 										<Input
 											type='file'
 											accept='image/*'
-											className='absolute inset-0 opacity-0 cursor-pointer'
+											className='absolute inset-0 h-full opacity-0 cursor-pointer'
 											onChange={handleImageUpload}
 											disabled={uploadingImage}
 										/>
