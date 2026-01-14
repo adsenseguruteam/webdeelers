@@ -71,6 +71,7 @@ export default function AddBlogForm({
 
 	const [formData, setFormData] = useState({
 		title: "",
+		slug: "",
 		content: "",
 		category: "General",
 		image: "",
@@ -80,11 +81,24 @@ export default function AddBlogForm({
 			keywords: "",
 		},
 	});
+	const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
+	// Helper function to slugify title
+	const slugifyTitle = (title: string) => {
+		return title
+			.toString()
+			.toLowerCase()
+			.trim()
+			.replace(/[^a-z0-9\s-]/g, "")
+			.replace(/\s+/g, "-")
+			.replace(/-+/g, "-");
+	};
 
 	useEffect(() => {
 		if (initialData) {
 			setFormData({
 				title: initialData.title || "",
+				slug: initialData.slug || "",
 				content: initialData.content || "",
 				category: initialData.category || "General",
 				image: initialData.image || "",
@@ -94,8 +108,17 @@ export default function AddBlogForm({
 					keywords: initialData.seo?.keywords || "",
 				},
 			});
+			setIsSlugManuallyEdited(!!initialData.slug);
 		}
 	}, [initialData]);
+
+	// Auto-generate slug from title when title changes (if slug hasn't been manually edited)
+	useEffect(() => {
+		if (!isSlugManuallyEdited && formData.title) {
+			const generatedSlug = slugifyTitle(formData.title);
+			setFormData((prev) => ({ ...prev, slug: generatedSlug }));
+		}
+	}, [formData.title, isSlugManuallyEdited]);
 
 	useEffect(() => {
 		if (!initialData) {
@@ -350,6 +373,27 @@ export default function AddBlogForm({
 									placeholder='Enter an engaging title'
 									className='text-lg md:text-xl font-medium'
 								/>
+							</div>
+
+							<div className='space-y-2'>
+								<Label htmlFor='slug'>URL Slug</Label>
+								<Input
+									id='slug'
+									value={formData.slug}
+									onChange={(e) => {
+										setFormData({
+											...formData,
+											slug: slugifyTitle(e.target.value),
+										});
+										setIsSlugManuallyEdited(true);
+									}}
+									placeholder='blog-post-url-slug'
+									className='font-mono text-sm'
+								/>
+								<p className='text-xs text-slate-500'>
+									Auto-generated from title. You can customize
+									it.
+								</p>
 							</div>
 
 							<div className='space-y-2'>

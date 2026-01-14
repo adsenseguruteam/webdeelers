@@ -136,6 +136,24 @@ export async function PUT(request) {
 			);
 		}
 
+		// Ensure slug uniqueness (excluding current blog)
+		if (body.slug) {
+			const existingBlog = await Blog.findOne({
+				slug: body.slug,
+				_id: { $ne: id },
+			});
+			if (existingBlog) {
+				return NextResponse.json(
+					{
+						success: false,
+						message:
+							"A blog with this slug already exists. Please choose a different slug.",
+					},
+					{ status: 400 }
+				);
+			}
+		}
+
 		const updatedBlog = await Blog.findByIdAndUpdate(id, body, {
 			new: true,
 		});

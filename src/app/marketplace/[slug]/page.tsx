@@ -12,7 +12,6 @@ import {
 } from "@/components/listing-view";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { BASE_URL } from "@/lib/constant";
 
 // Helper to fetch listing
 async function getListing(slug: string) {

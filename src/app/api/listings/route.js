@@ -13,34 +13,64 @@ export async function GET(request) {
 		const category = searchParams.get("category");
 		const page = Number.parseInt(searchParams.get("page")) || 1;
 		const limit = 12;
+		const skip = (page - 1) * limit;
+
+		const userId = searchParams.get("userId");
 
 		const query = {};
 		if (category) query.category = category;
 
-		const userId = searchParams.get("userId");
-
 		let listings;
+
 		if (userId) {
+			// User listings (no status priority needed)
 			listings = await Listing.find({ seller: userId })
 				.sort({ createdAt: -1 })
-				.skip((page - 1) * limit)
+				.skip(skip)
 				.limit(limit);
 		} else {
-			const publicQuery = {
-				...query,
-				status: { $in: ["active", "sold"] },
-			};
-			listings = await Listing.find(publicQuery)
-				.populate("seller", "name avatar rating")
-				.sort({ createdAt: -1 })
-				.skip((page - 1) * limit)
-				.limit(limit);
+			// Public listings: active first, then sold
+			listings = await Listing.aggregate([
+				{
+					$match: {
+						...query,
+						status: { $in: ["active", "sold"] },
+					},
+				},
+				{
+					$addFields: {
+						statusOrder: {
+							$cond: [{ $eq: ["$status", "active"] }, 1, 2],
+						},
+					},
+				},
+				{
+					$sort: {
+						statusOrder: 1, // active first
+						createdAt: -1, // newest first inside each status
+					},
+				},
+				{ $skip: skip },
+				{ $limit: limit },
+				{
+					$lookup: {
+						from: "users",
+						localField: "seller",
+						foreignField: "_id",
+						as: "seller",
+						pipeline: [
+							{ $project: { name: 1, avatar: 1, rating: 1 } },
+						],
+					},
+				},
+				{ $unwind: "$seller" },
+			]);
 		}
 
 		const total = await Listing.countDocuments(
 			userId
 				? { seller: userId }
-				: { ...query, status: { $ne: "pending" } }
+				: { ...query, status: { $in: ["active", "sold"] } }
 		);
 
 		return NextResponse.json({
