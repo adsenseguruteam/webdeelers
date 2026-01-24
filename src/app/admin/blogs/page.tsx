@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CheckCircle, XCircle, Plus, Pencil, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, Plus, Pencil, Trash2, Eye } from "lucide-react";
 import Image from "next/image";
 import AdminSidebar from "@/components/admin-sidebar";
 import Link from "next/link";
@@ -183,6 +183,14 @@ export default function AdminBlogsPage() {
 													variant='outline'
 													size='icon'>
 													<Pencil size={16} />
+												</Button>
+											</Link>
+											<Link
+												href={`/blogs/${blog.slug}`} target="_blank">
+												<Button
+													variant='outline'
+													size='icon'>
+													<Eye size={16} />
 												</Button>
 											</Link>
 											<Button

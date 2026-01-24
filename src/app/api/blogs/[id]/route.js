@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Plan from "@/models/Plan";
 import { connectDB } from "@/lib/mongodb";
 import Blog from "@/models/Blog";
 import User from "@/models/User";
@@ -12,6 +11,7 @@ export async function GET(request) {
 		await connectDB();
 
 		const id = extractParamFromRequest(request);
+		console.log(id)
 		let blog;
 
 		if (mongoose.Types.ObjectId.isValid(id)) {
@@ -80,60 +80,6 @@ export async function PUT(request) {
 			if (body.status !== "draft") {
 				body.status = "pending";
 			}
-		}
-
-		// Fetch Plan details
-		// Assuming plan names in User match Plan names in DB (case insensitive)
-		const plan = await Plan.findOne({
-			name: { $regex: new RegExp(`^${user.currentPlan}$`, "i") },
-		});
-
-		if (!plan) {
-			// Fallback if plan not found in DB (should not happen if seeded)
-			// Default to Free: 1 per week
-			// Or return error. Let's return error to enforce plan creation.
-			return NextResponse.json(
-				{ success: false, message: "Plan configuration not found." },
-				{ status: 400 }
-			);
-		}
-
-		const now = new Date();
-		let canPost = false;
-
-		if (plan.frequency === "daily") {
-			if (
-				!user.lastPostDate ||
-				new Date(user.lastPostDate).toDateString() !==
-					now.toDateString()
-			) {
-				canPost = true;
-			}
-		} else {
-			// Weekly
-			const oneWeek = 7 * 24 * 60 * 60 * 1000;
-			if (
-				!user.periodStartDate ||
-				now - new Date(user.periodStartDate) > oneWeek
-			) {
-				// Reset period
-				user.postCount = 0;
-				user.periodStartDate = now;
-			}
-
-			if (user.postCount < plan.postLimit) {
-				canPost = true;
-			}
-		}
-
-		if (!canPost) {
-			return NextResponse.json(
-				{
-					success: false,
-					message: `You have reached your limit for the ${user.currentPlan} plan.`,
-				},
-				{ status: 403 }
-			);
 		}
 
 		// Ensure slug uniqueness (excluding current blog)

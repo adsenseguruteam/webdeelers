@@ -37,6 +37,7 @@ import {
 	DialogDescription,
 	DialogFooter,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 // Dynamic import for ReactQuill to avoid SSR issues
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -282,8 +283,7 @@ export default function AddBlogForm({
 					<div className='space-y-2 text-sm text-slate-700'>
 						<p>• Use a concise, descriptive title (Only English)</p>
 						<p>
-							• Structure with headings (H2/H3) and short
-							paragraphs
+							• Structure with headings (H2/H3) like <Link className="font-semibold text-green-600" target="_blank" href='https://www.deelzo.com/blogs/what-fountain-is-gwynn-at'>Demo Blog</Link>
 						</p>
 						<p>
 							• Add a featured image (Under 100KB) and relevant
@@ -648,6 +648,7 @@ export default function AddBlogForm({
 									</div>
 								)}
 							</div>
+							<div><p>Thumbnail Template - <Link target="_blank" className="text-blue-600" href='https://www.canva.com/design/DAG_UdJDzos/de15RUfbt_iJ5W2MT42WuA/edit?utm_content=DAG_UdJDzos&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton'>Create Thumbnail</Link></p></div>
 						</CardContent>
 					</Card>
 

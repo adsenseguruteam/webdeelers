@@ -26,7 +26,7 @@ async function getBlog(slug: string) {
 	const _ = UserModel;
 
 	// Try by slug first
-	let blog = await Blog.findOne({ slug, status: "published" }).populate(
+	let blog = await Blog.findOne({ slug, status: { $in: ["published", "pending", "rejected"] } }).populate(
 		"author",
 		"name avatar"
 	);
