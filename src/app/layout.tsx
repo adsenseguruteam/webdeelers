@@ -92,6 +92,26 @@ export default function RootLayout({
 	return (
 		<html lang='en' suppressHydrationWarning>
 			<Head>
+				{/* Taboola Pixel Code */}
+				<Script
+					type='text/javascript'
+					suppressHydrationWarning
+					dangerouslySetInnerHTML={{
+						__html: `
+		window._tfa = window._tfa || [];
+		window._tfa.push({notify: 'event', name: 'page_view', id: 1989620});
+		!function (t, f, a, x) {
+			if (!document.getElementById(x)) {
+				t.async = 1;t.src = a;t.id=x;f.parentNode.insertBefore(t, f);
+			}
+		}(document.createElement('script'),
+		document.getElementsByTagName('script')[0],
+		'//cdn.taboola.com/libtrc/unip/1989620/tfa.js',
+		'tb_tfa_script');
+`,
+					}}
+				/>
+				{/* End of Taboola Pixel Code */}
 				<meta
 					name='viewport'
 					content='width=device-width, initial-scale=1'
