@@ -839,17 +839,23 @@ export default function Home() {
 			</section>
 
 			{/* About Section */}
-			<section className='relative overflow-hidden'>
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+				{/* Top wave transition from Featured Listings */}
+				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent' />
+				
 				{/* Background decoration */}
-				<div className='absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 pointer-events-none' />
-				<div className='absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-100/30 to-rose-100/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4' />
-				<div className='absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-br from-sky-100/30 to-blue-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4' />
+				<div className='absolute top-20 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 animate-pulse' />
+				<div className='absolute bottom-20 left-0 w-[400px] h-[400px] bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 animate-pulse' style={{ animationDelay: '0.5s' }} />
+				
+				{/* Floating elements */}
+				<div className='absolute top-40 left-20 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
+				<div className='absolute bottom-40 right-20 w-16 h-16 bg-gradient-to-br from-sky-400/20 to-blue-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
 					<div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
 						{/* Left Content */}
 						<div className='space-y-8'>
-							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200'>
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300'>
 								<Sparkles size={16} className='text-orange-500' />
 								<span className='text-sm font-semibold text-orange-700'>About Us</span>
 							</div>
@@ -870,24 +876,22 @@ export default function Home() {
 							
 							{/* Stats */}
 							<div className='grid grid-cols-3 gap-6 py-6 border-y border-slate-200'>
-								<div className='text-center'>
-									<p className='text-3xl md:text-4xl font-bold text-slate-900'>4+</p>
-									<p className='text-sm text-slate-500 mt-1'>Years Experience</p>
-								</div>
-								<div className='text-center border-x border-slate-200'>
-									<p className='text-3xl md:text-4xl font-bold text-slate-900'>2.5K+</p>
-									<p className='text-sm text-slate-500 mt-1'>Happy Clients</p>
-								</div>
-								<div className='text-center'>
-									<p className='text-3xl md:text-4xl font-bold text-slate-900'>98%</p>
-									<p className='text-sm text-slate-500 mt-1'>Success Rate</p>
-								</div>
+								{[
+									{ value: "4+", label: "Years Experience", gradient: "from-orange-500 to-rose-500" },
+									{ value: "2.5K+", label: "Happy Clients", gradient: "from-sky-500 to-blue-500" },
+									{ value: "98%", label: "Success Rate", gradient: "from-emerald-500 to-teal-500" },
+								].map((stat, i) => (
+									<div key={i} className={`text-center group cursor-pointer ${i === 1 ? 'border-x border-slate-200' : ''}`}>
+										<p className={`text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} group-hover:scale-110 transition-transform duration-300`}>{stat.value}</p>
+										<p className='text-sm text-slate-500 mt-1 group-hover:text-slate-700 transition-colors'>{stat.label}</p>
+									</div>
+								))}
 							</div>
 							
 							{/* Contact Info */}
 							<div className='flex flex-wrap gap-6'>
-								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow'>
-									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-rose-100 flex items-center justify-center'>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
+									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-rose-100 flex items-center justify-center group-hover:scale-110 transition-transform'>
 										<Mail size={18} className='text-orange-600' />
 									</div>
 									<div>
@@ -895,8 +899,8 @@ export default function Home() {
 										<p className='text-sm font-semibold text-slate-900'>{EMAIL}</p>
 									</div>
 								</div>
-								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow'>
-									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center'>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
+									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform'>
 										<MessageCircle size={18} className='text-sky-600' />
 									</div>
 									<div>
@@ -908,9 +912,9 @@ export default function Home() {
 							
 							<div className='flex flex-wrap gap-4'>
 								<Link href='/about' className='inline-flex'>
-									<Button className='bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white px-8 py-6 text-base font-semibold shadow-lg shadow-orange-500/25 transition-all duration-300 hover:scale-105 rounded-xl'>
+									<Button className='bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white px-8 py-6 text-base font-semibold shadow-lg shadow-orange-500/25 transition-all duration-300 hover:scale-105 rounded-xl group'>
 										Learn More
-										<ArrowRight size={18} className='ml-2' />
+										<ArrowRight size={18} className='ml-2 group-hover:translate-x-1 transition-transform' />
 									</Button>
 								</Link>
 								<Link
@@ -920,8 +924,8 @@ export default function Home() {
 									className='inline-flex'>
 									<Button
 										variant='outline'
-										className='border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl group'>
-										<Facebook size={18} className='mr-2 text-blue-600' />
+										className='border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl group hover:scale-105'>
+										<Facebook size={18} className='mr-2 text-blue-600 group-hover:scale-110 transition-transform' />
 										Follow Us
 									</Button>
 								</Link>
@@ -931,10 +935,10 @@ export default function Home() {
 						{/* Right Content - Community Card */}
 						<div className='relative'>
 							{/* Decorative elements */}
-							<div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-400 rounded-2xl opacity-20 rotate-12' />
-							<div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full opacity-20' />
+							<div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-400 rounded-2xl opacity-20 rotate-12 animate-pulse' />
+							<div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full opacity-20 animate-pulse' style={{ animationDelay: '0.5s' }} />
 							
-							<div className='relative bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 md:p-10'>
+							<div className='relative bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 md:p-10 hover:shadow-orange-500/10 transition-shadow duration-500'>
 								<div className='flex items-center gap-3 mb-8'>
 									<div className='w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
 										<Users size={24} className='text-white' />
@@ -950,7 +954,7 @@ export default function Home() {
 										href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
 										target='_blank'
 										rel='noopener noreferrer'
-										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-xl border border-green-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-xl border border-green-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'>
 										<div className='w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-110 transition-transform'>
 											<MessageCircle size={24} className='text-white' />
 										</div>
@@ -965,7 +969,7 @@ export default function Home() {
 										href='https://www.facebook.com/groups/adsenseguruteam'
 										target='_blank'
 										rel='noopener noreferrer'
-										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-blue-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-blue-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'>
 										<div className='w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-transform'>
 											<Facebook size={24} className='text-white' />
 										</div>
@@ -980,7 +984,7 @@ export default function Home() {
 										href={`https://wa.me/${PHONE}`}
 										target='_blank'
 										rel='noopener noreferrer'
-										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-sky-50 hover:from-cyan-100 hover:to-sky-100 rounded-xl border border-cyan-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-sky-50 hover:from-cyan-100 hover:to-sky-100 rounded-xl border border-cyan-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-1'>
 										<div className='w-12 h-12 rounded-xl bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-110 transition-transform'>
 											<Phone size={24} className='text-white' />
 										</div>
@@ -997,7 +1001,7 @@ export default function Home() {
 									<p className='text-xs text-slate-400 text-center mb-4'>Trusted by digital entrepreneurs worldwide</p>
 									<div className='flex justify-center gap-4'>
 										{[Shield, Zap, Star].map((Icon, i) => (
-											<div key={i} className='w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center'>
+											<div key={i} className='w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center hover:bg-slate-100 hover:scale-110 transition-all cursor-pointer'>
 												<Icon size={18} className='text-slate-400' />
 											</div>
 										))}
@@ -1007,26 +1011,34 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
+				
+				{/* Bottom wave transition to Features */}
+				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
 			</section>
 			{/* Features */}
-			<section className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'>
-				{/* Background pattern */}
-				<div className='absolute inset-0 opacity-10'>
-					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
-				</div>
-				<div className='absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-orange-500/20 to-rose-500/20 rounded-full blur-3xl' />
-				<div className='absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-sky-500/20 to-blue-500/20 rounded-full blur-3xl' />
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+				{/* Top wave transition */}
+				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent' />
+				
+				{/* Background decorations */}
+				<div className='absolute top-40 left-20 w-96 h-96 bg-gradient-to-br from-emerald-200/30 to-teal-200/30 rounded-full blur-3xl animate-pulse' />
+				<div className='absolute bottom-40 right-20 w-96 h-96 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '0.5s' }} />
+				<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-sky-100/20 to-blue-100/20 rounded-full blur-3xl' />
+				
+				{/* Floating elements */}
+				<div className='absolute top-20 right-20 w-20 h-20 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
+				<div className='absolute bottom-32 left-32 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
 					<div className='text-center mb-16 md:mb-20'>
-						<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6'>
-							<Sparkles size={16} className='text-orange-400' />
-							<span className='text-sm font-semibold text-white'>Why Choose Us</span>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-full border border-emerald-200 mb-6 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300'>
+							<Sparkles size={16} className='text-emerald-500' />
+							<span className='text-sm font-semibold text-emerald-700'>Why Choose Us</span>
 						</div>
-						<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6'>
-							Built for Success
+						<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6'>
+							Built for <span className='text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500'>Success</span>
 						</h2>
-						<p className='text-slate-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed'>
+						<p className='text-slate-600 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed'>
 							Experience a platform designed with security, speed, and transparency at its core
 						</p>
 					</div>
@@ -1040,19 +1052,34 @@ export default function Home() {
 								"from-sky-500 to-blue-500",
 								"from-violet-500 to-purple-500",
 							];
-							const glowColors = [
-								"group-hover:shadow-emerald-500/25",
-								"group-hover:shadow-orange-500/25",
-								"group-hover:shadow-sky-500/25",
-								"group-hover:shadow-violet-500/25",
+							const bgGradients = [
+								"from-emerald-50 to-teal-50",
+								"from-orange-50 to-rose-50",
+								"from-sky-50 to-blue-50",
+								"from-violet-50 to-purple-50",
+							];
+							const borderColors = [
+								"group-hover:border-emerald-300",
+								"group-hover:border-orange-300",
+								"group-hover:border-sky-300",
+								"group-hover:border-violet-300",
+							];
+							const shadowColors = [
+								"group-hover:shadow-emerald-500/20",
+								"group-hover:shadow-orange-500/20",
+								"group-hover:shadow-sky-500/20",
+								"group-hover:shadow-violet-500/20",
 							];
 							
 							return (
 								<div
 									key={index}
-									className={`group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 hover:shadow-2xl ${glowColors[index]} hover:-translate-y-2 overflow-hidden`}>
-									{/* Gradient border on hover */}
-									<div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl`} />
+									className={`group relative bg-white border border-slate-200 ${borderColors[index]} rounded-2xl p-8 transition-all duration-500 hover:shadow-2xl ${shadowColors[index]} hover:-translate-y-3 overflow-hidden`}>
+									{/* Top gradient bar */}
+									<div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradients[index]} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+									
+									{/* Background glow on hover */}
+									<div className={`absolute inset-0 bg-gradient-to-br ${bgGradients[index]} opacity-0 group-hover:opacity-50 transition-opacity duration-500`} />
 									
 									{/* Icon */}
 									<div className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${gradients[index]} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
@@ -1060,17 +1087,20 @@ export default function Home() {
 									</div>
 									
 									{/* Content */}
-									<h3 className='relative text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300 transition-all duration-300'>
+									<h3 className='relative text-xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-600 transition-all duration-300'>
 										{feature.title}
 									</h3>
-									<p className='relative text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors duration-300'>
+									<p className='relative text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300'>
 										{feature.description}
 									</p>
 									
 									{/* Arrow indicator */}
-									<div className='absolute bottom-6 right-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2'>
-										<ArrowRight size={14} className='text-white' />
+									<div className='absolute bottom-6 right-6 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2 group-hover:bg-gradient-to-br group-hover:from-slate-200 group-hover:to-slate-300'>
+										<ArrowRight size={18} className='text-slate-600' />
 									</div>
+									
+									{/* Decorative corner */}
+									<div className={`absolute -bottom-8 -right-8 w-24 h-24 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
 								</div>
 							);
 						})}
@@ -1079,34 +1109,45 @@ export default function Home() {
 					{/* Bottom stats */}
 					<div className='mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8'>
 						{[
-							{ value: "$10000+", label: "Assets Sold" },
-							{ value: "10k+", label: "Active Users" },
-							{ value: "99.9%", label: "Uptime" },
-							{ value: "24/7", label: "Support" },
+							{ value: "$10000+", label: "Assets Sold", gradient: "from-emerald-500 to-teal-500" },
+							{ value: "10k+", label: "Active Users", gradient: "from-orange-500 to-rose-500" },
+							{ value: "99.9%", label: "Uptime", gradient: "from-sky-500 to-blue-500" },
+							{ value: "24/7", label: "Support", gradient: "from-violet-500 to-purple-500" },
 						].map((stat, i) => (
-							<div key={i} className='text-center'>
-								<p className='text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400'>{stat.value}</p>
-								<p className='text-slate-400 text-sm mt-1'>{stat.label}</p>
+							<div key={i} className='group text-center p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300 cursor-pointer'>
+								<p className={`text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} group-hover:scale-110 transition-transform duration-300`}>{stat.value}</p>
+								<p className='text-slate-500 text-sm mt-1 group-hover:text-slate-700 transition-colors'>{stat.label}</p>
 							</div>
 						))}
 					</div>
 				</div>
+				
+				{/* Bottom wave transition to next section */}
+				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
 			</section>
 
 			{/* How It Works Section */}
 			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-				<div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
-				<div className='absolute top-40 left-20 w-72 h-72 bg-gradient-to-br from-orange-200/20 to-rose-200/20 rounded-full blur-3xl' />
-				<div className='absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-sky-200/20 to-blue-200/20 rounded-full blur-3xl' />
+				{/* Top wave transition from Features */}
+				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-50 to-transparent' />
+				
+				{/* Background decorations */}
+				<div className='absolute top-40 left-20 w-72 h-72 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' />
+				<div className='absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '0.5s' }} />
+				<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-emerald-100/20 to-teal-100/20 rounded-full blur-3xl' />
+				
+				{/* Floating elements */}
+				<div className='absolute top-32 right-32 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
+				<div className='absolute bottom-32 left-32 w-20 h-20 bg-gradient-to-br from-sky-400/20 to-blue-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
 					<div className='text-center mb-16 md:mb-20'>
-						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6'>
-							<Sparkles size={16} className='text-orange-500' />
-							<span className='text-sm font-semibold text-orange-700'>Simple Process</span>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-50 to-blue-50 rounded-full border border-sky-200 mb-6 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300'>
+							<Sparkles size={16} className='text-sky-500' />
+							<span className='text-sm font-semibold text-sky-700'>Simple Process</span>
 						</div>
 						<h2 className='text-4xl md:text-5xl font-bold text-slate-900 mb-4'>
-							How It Works
+							How It <span className='text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-500'>Works</span>
 						</h2>
 						<p className='text-slate-600 text-lg max-w-2xl mx-auto'>
 							Get started in minutes with our simple 3-step process
@@ -1120,72 +1161,99 @@ export default function Home() {
 								title: "Browse Listings", 
 								description: "Explore thousands of verified digital assets across multiple categories. Filter by price, metrics, and location.",
 								icon: Globe,
-								color: "from-orange-500 to-rose-500"
+								color: "from-orange-500 to-rose-500",
+								bgGradient: "from-orange-50 to-rose-50",
+								borderColor: "group-hover:border-orange-300"
 							},
 							{ 
 								step: "02", 
 								title: "Connect & Negotiate", 
 								description: "Message sellers directly, ask questions, and negotiate terms. Our secure platform protects both parties.",
 								icon: MessageCircle,
-								color: "from-sky-500 to-blue-500"
+								color: "from-sky-500 to-blue-500",
+								bgGradient: "from-sky-50 to-blue-50",
+								borderColor: "group-hover:border-sky-300"
 							},
 							{ 
 								step: "03", 
 								title: "Secure Transaction", 
 								description: "Complete your purchase with our escrow protection. Transfer assets safely and receive payment securely.",
 								icon: Shield,
-								color: "from-emerald-500 to-teal-500"
+								color: "from-emerald-500 to-teal-500",
+								bgGradient: "from-emerald-50 to-teal-50",
+								borderColor: "group-hover:border-emerald-300"
 							},
 						].map((item, index) => {
 							const Icon = item.icon;
 							return (
 								<div key={index} className='relative group'>
-									{/* Connector line */}
+									{/* Connector line with animated gradient */}
 									{index < 2 && (
-										<div className='hidden md:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-slate-200 to-slate-200'>
-											<div className='absolute inset-0 bg-gradient-to-r from-orange-200 via-sky-200 to-emerald-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+										<div className='hidden md:block absolute top-16 left-full w-full h-1 bg-slate-200 rounded-full overflow-hidden'>
+											<div className='absolute inset-0 bg-gradient-to-r from-orange-400 via-sky-400 to-emerald-400 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-1000' />
 										</div>
 									)}
 									
-									<div className='relative bg-white rounded-2xl border border-slate-200 p-8 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 group-hover:border-slate-300'>
-										{/* Step number */}
-										<div className={`absolute -top-4 left-8 w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+									<div className={`relative bg-white rounded-2xl border border-slate-200 ${item.borderColor} p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 overflow-hidden`}>
+										{/* Top gradient bar */}
+										<div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${item.color} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+										
+										{/* Background glow on hover */}
+										<div className={`absolute inset-0 bg-gradient-to-br ${item.bgGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500`} />
+										
+										{/* Step number with pulse animation */}
+										<div className={`relative w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300`}>
 											<span className='text-white font-bold text-lg'>{item.step}</span>
+											<div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} animate-ping opacity-20`} />
 										</div>
 										
-										<div className='pt-6'>
-											<div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} opacity-10 flex items-center justify-center mb-6 group-hover:opacity-20 transition-opacity`}>
-												<Icon size={32} className={`text-transparent bg-clip-text bg-gradient-to-br ${item.color}`} />
+										<div className='relative'>
+											<div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} opacity-10 flex items-center justify-center mb-4 group-hover:opacity-20 transition-opacity`}>
+												<Icon size={28} className={`text-transparent bg-clip-text bg-gradient-to-br ${item.color}`} />
 											</div>
-											<h3 className='text-xl font-bold text-slate-900 mb-3'>{item.title}</h3>
-											<p className='text-slate-600 leading-relaxed'>{item.description}</p>
+											<h3 className='text-xl font-bold text-slate-900 mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-900 group-hover:to-slate-600 transition-all duration-300'>{item.title}</h3>
+											<p className='text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors'>{item.description}</p>
 										</div>
+										
+										{/* Arrow indicator */}
+										<div className='absolute bottom-6 right-6 w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2 group-hover:bg-gradient-to-br group-hover:from-slate-200 group-hover:to-slate-300'>
+											<ArrowRight size={18} className='text-slate-600' />
+										</div>
+										
+										{/* Decorative corner */}
+										<div className={`absolute -bottom-8 -right-8 w-24 h-24 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
 									</div>
 								</div>
 							);
 						})}
 					</div>
 				</div>
+				
+				{/* Bottom wave transition to Testimonials */}
+				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
 			</section>
 
 			{/* Testimonials Section */}
-			<section className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'>
-				<div className='absolute inset-0 opacity-5'>
-					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-				</div>
-				<div className='absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-rose-500/10 rounded-full blur-3xl' />
-				<div className='absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-sky-500/10 to-blue-500/10 rounded-full blur-3xl' />
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+				{/* Background decoration */}
+				<div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
+				<div className='absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' />
+				<div className='absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1s' }} />
+				
+				{/* Floating elements */}
+				<div className='absolute top-40 left-10 w-20 h-20 bg-gradient-to-br from-orange-400/10 to-rose-400/10 rounded-full blur-xl animate-bounce' style={{ animationDuration: '3s' }} />
+				<div className='absolute bottom-40 right-10 w-16 h-16 bg-gradient-to-br from-sky-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce' style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
 					<div className='text-center mb-16'>
-						<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6'>
-							<Star size={16} className='text-orange-400' />
-							<span className='text-sm font-semibold text-white'>Testimonials</span>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300'>
+							<Star size={16} className='text-orange-500 fill-orange-500' />
+							<span className='text-sm font-semibold text-orange-700'>Testimonials</span>
 						</div>
-						<h2 className='text-4xl md:text-5xl font-bold text-white mb-4'>
-							Loved by Entrepreneurs
+						<h2 className='text-4xl md:text-5xl font-bold text-slate-900 mb-4'>
+							Loved by <span className='text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500'>Entrepreneurs</span>
 						</h2>
-						<p className='text-slate-400 text-lg max-w-2xl mx-auto'>
+						<p className='text-slate-600 text-lg max-w-2xl mx-auto'>
 							See what our community has to say about their experience
 						</p>
 					</div>
@@ -1196,45 +1264,66 @@ export default function Home() {
 								quote: "Deelzo made selling my website incredibly easy. The verification process gave buyers confidence, and I got a great price!",
 								author: "Rajesh Kumar",
 								role: "Sold Website for $45K",
-								rating: 5
+								rating: 5,
+								gradient: "from-orange-500 to-rose-500",
+								bgGradient: "from-orange-50 to-rose-50",
+								borderColor: "group-hover:border-orange-300",
+								shadowColor: "group-hover:shadow-orange-500/20"
 							},
 							{
 								quote: "I've bought multiple YouTube channels through Deelzo. The detailed metrics and secure transactions are unmatched.",
 								author: "Priya Sharma",
 								role: "Digital Investor",
-								rating: 5
+								rating: 5,
+								gradient: "from-sky-500 to-blue-500",
+								bgGradient: "from-sky-50 to-blue-50",
+								borderColor: "group-hover:border-sky-300",
+								shadowColor: "group-hover:shadow-sky-500/20"
 							},
 							{
 								quote: "The support team is amazing! They guided me through my first purchase and made sure everything went smoothly.",
 								author: "Amit Patel",
 								role: "First-time Buyer",
-								rating: 5
+								rating: 5,
+								gradient: "from-emerald-500 to-teal-500",
+								bgGradient: "from-emerald-50 to-teal-50",
+								borderColor: "group-hover:border-emerald-300",
+								shadowColor: "group-hover:shadow-emerald-500/20"
 							},
 						].map((testimonial, index) => (
-							<div key={index} className='group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2'>
+							<div key={index} className={`group relative bg-white border border-slate-200 rounded-2xl p-8 ${testimonial.borderColor} transition-all duration-500 hover:-translate-y-3 hover:shadow-2xl ${testimonial.shadowColor} overflow-hidden`}>
+								{/* Top gradient bar */}
+								<div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${testimonial.gradient} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+								
+								{/* Background glow on hover */}
+								<div className={`absolute inset-0 bg-gradient-to-br ${testimonial.bgGradient} opacity-0 group-hover:opacity-50 transition-opacity duration-500`} />
+								
 								{/* Quote icon */}
-								<div className='absolute -top-4 -left-2 w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg'>
+								<div className={`relative w-12 h-12 rounded-xl bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center shadow-lg mb-6 group-hover:scale-110 transition-transform duration-300`}>
 									<span className='text-white text-2xl font-serif'>"</span>
 								</div>
 								
 								{/* Rating */}
 								<div className='flex gap-1 mb-4'>
 									{[...Array(testimonial.rating)].map((_, i) => (
-										<Star key={i} size={16} className='text-amber-400 fill-amber-400' />
+										<Star key={i} size={16} className='text-amber-400 fill-amber-400 group-hover:scale-110 transition-transform' style={{ transitionDelay: `${i * 50}ms` }} />
 									))}
 								</div>
 								
-								<p className='text-slate-300 leading-relaxed mb-6'>{testimonial.quote}</p>
+								<p className='text-slate-600 leading-relaxed mb-6 relative group-hover:text-slate-700 transition-colors'>{testimonial.quote}</p>
 								
-								<div className='flex items-center gap-3'>
-									<div className='w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-rose-400 flex items-center justify-center'>
+								<div className='flex items-center gap-3 relative'>
+									<div className={`w-12 h-12 rounded-full bg-gradient-to-br ${testimonial.gradient} flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow`}>
 										<span className='text-white font-bold'>{testimonial.author.charAt(0)}</span>
 									</div>
 									<div>
-										<p className='text-white font-semibold'>{testimonial.author}</p>
-										<p className='text-slate-400 text-sm'>{testimonial.role}</p>
+										<p className='text-slate-900 font-semibold'>{testimonial.author}</p>
+										<p className='text-slate-500 text-sm'>{testimonial.role}</p>
 									</div>
 								</div>
+								
+								{/* Decorative corner */}
+								<div className={`absolute -bottom-8 -right-8 w-24 h-24 bg-gradient-to-br ${testimonial.gradient} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
 							</div>
 						))}
 					</div>
@@ -1242,34 +1331,36 @@ export default function Home() {
 			</section>
 
 			{/* CTA Section */}
-			<section className='relative overflow-hidden'>
-				<div className='absolute inset-0 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600' />
-				<div className='absolute inset-0 opacity-20'>
-					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-				</div>
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+				{/* Top border line */}
+				<div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
 				
-				{/* Floating elements */}
-				<div className='absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse' />
-				<div className='absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse' style={{ animationDelay: '1s' }} />
-				<div className='absolute top-1/2 left-20 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse' style={{ animationDelay: '0.5s' }} />
+				{/* Background decorations */}
+				<div className='absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-orange-200/40 to-rose-200/40 rounded-full blur-3xl animate-pulse' />
+				<div className='absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-sky-200/40 to-blue-200/40 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1s' }} />
+				
+				{/* Floating animated shapes */}
+				<div className='absolute top-40 right-40 w-24 h-24 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
+				<div className='absolute bottom-40 left-40 w-20 h-20 bg-gradient-to-br from-sky-400/20 to-blue-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '0.5s' }} />
+				<div className='absolute top-1/2 right-20 w-16 h-16 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-xl -rotate-12 animate-pulse' style={{ animationDelay: '0.3s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
 					<div className='grid lg:grid-cols-2 gap-12 items-center'>
 						<div className='text-center lg:text-left'>
-							<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 mb-6'>
-								<Zap size={16} className='text-white' />
-								<span className='text-sm font-semibold text-white'>Start Today</span>
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300 group cursor-pointer'>
+								<Zap size={16} className='text-orange-500 group-hover:scale-110 transition-transform' />
+								<span className='text-sm font-semibold text-orange-700'>Start Today</span>
 							</div>
-							<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight'>
+							<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight'>
 								Ready to Transform
-								<span className='block'>Your Digital Portfolio?</span>
+								<span className='block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500'>Your Digital Portfolio?</span>
 							</h2>
-							<p className='text-white/90 text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0'>
+							<p className='text-slate-600 text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0'>
 								Join 10,000+ entrepreneurs who trust Deelzo for buying and selling premium digital assets.
 							</p>
 							<div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
 								<Link href='/marketplace'>
-									<Button className='bg-white hover:bg-slate-50 text-slate-900 px-8 py-6 text-base font-semibold shadow-2xl hover:scale-105 transition-all duration-300 rounded-xl group'>
+									<Button className='bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white px-8 py-6 text-base font-semibold shadow-xl shadow-orange-500/25 hover:shadow-2xl hover:shadow-orange-500/30 hover:scale-105 transition-all duration-300 rounded-xl group'>
 										Explore Marketplace
 										<ArrowRight size={20} className='ml-2 group-hover:translate-x-1 transition-transform' />
 									</Button>
@@ -1277,7 +1368,7 @@ export default function Home() {
 								<Link href='/signup'>
 									<Button 
 										variant='outline' 
-										className='border-2 border-white/50 text-gray-900 hover:bg-white/10 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl backdrop-blur-sm'>
+										className='border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-orange-300 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl hover:scale-105 hover:shadow-lg'>
 										Create Free Account
 									</Button>
 								</Link>
@@ -1285,49 +1376,56 @@ export default function Home() {
 						</div>
 						
 						<div className='hidden lg:block relative'>
-							<div className='relative bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8'>
+							{/* Decorative elements */}
+							<div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-400 rounded-2xl opacity-20 rotate-12 animate-pulse' />
+							<div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full opacity-20 animate-pulse' style={{ animationDelay: '0.5s' }} />
+							
+							<div className='relative bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 hover:shadow-orange-500/10 transition-shadow duration-500'>
 								<div className='flex items-center gap-4 mb-6'>
 									<div className='flex -space-x-3'>
 										{[0, 1, 2, 3, 4].map((i) => (
 											<div
 												key={i}
-												className='w-10 h-10 rounded-full border-2 border-white/20 bg-gradient-to-br from-orange-300 to-rose-300 flex items-center justify-center'
+												className='w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br from-orange-200 to-rose-200 flex items-center justify-center hover:scale-110 transition-transform cursor-pointer'
 											>
-												<span className='text-xs font-bold text-slate-800'>{String.fromCharCode(65 + i)}</span>
+												<span className='text-xs font-bold text-slate-700'>{String.fromCharCode(65 + i)}</span>
 											</div>
 										))}
 									</div>
-									<div className='text-white'>
+									<div className='text-slate-900'>
 										<p className='font-bold'>10,000+</p>
-										<p className='text-sm text-white/70'>Active Users</p>
+										<p className='text-sm text-slate-500'>Active Users</p>
 									</div>
 								</div>
 								
 								<div className='space-y-4'>
-									<div className='flex items-center gap-3 text-white/90'>
-										<div className='w-6 h-6 rounded-full bg-emerald-400/20 flex items-center justify-center'>
-											<Shield size={14} className='text-emerald-300' />
+									<div className='flex items-center gap-3 text-slate-700 group/item hover:bg-slate-50 p-2 rounded-lg transition-colors cursor-pointer'>
+										<div className='w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center group-hover/item:scale-110 transition-transform'>
+											<Shield size={16} className='text-emerald-600' />
 										</div>
-										<span className='text-sm'>Secure Escrow Protection</span>
+										<span className='text-sm font-medium'>Secure Escrow Protection</span>
+										<ArrowRight size={14} className='ml-auto text-slate-400 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all' />
 									</div>
-									<div className='flex items-center gap-3 text-white/90'>
-										<div className='w-6 h-6 rounded-full bg-sky-400/20 flex items-center justify-center'>
-											<Zap size={14} className='text-sky-300' />
+									<div className='flex items-center gap-3 text-slate-700 group/item hover:bg-slate-50 p-2 rounded-lg transition-colors cursor-pointer'>
+										<div className='w-8 h-8 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center group-hover/item:scale-110 transition-transform'>
+											<Zap size={16} className='text-sky-600' />
 										</div>
-										<span className='text-sm'>Instant Asset Transfer</span>
+										<span className='text-sm font-medium'>Instant Asset Transfer</span>
+										<ArrowRight size={14} className='ml-auto text-slate-400 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all' />
 									</div>
-									<div className='flex items-center gap-3 text-white/90'>
-										<div className='w-6 h-6 rounded-full bg-amber-400/20 flex items-center justify-center'>
-											<Users size={14} className='text-amber-300' />
+									<div className='flex items-center gap-3 text-slate-700 group/item hover:bg-slate-50 p-2 rounded-lg transition-colors cursor-pointer'>
+										<div className='w-8 h-8 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center group-hover/item:scale-110 transition-transform'>
+											<Users size={16} className='text-amber-600' />
 										</div>
-										<span className='text-sm'>24/7 Expert Support</span>
+										<span className='text-sm font-medium'>24/7 Expert Support</span>
+										<ArrowRight size={14} className='ml-auto text-slate-400 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all' />
 									</div>
 								</div>
 								
-								<div className='mt-6 pt-6 border-t border-white/10'>
-									<div className='flex items-center justify-between text-white'>
-										<span className='text-sm text-white/70'>Platform Fee</span>
-										<span className='font-bold text-emerald-300'>Only 5%</span>
+								<div className='mt-6 pt-6 border-t border-slate-100'>
+									<div className='flex items-center justify-between'>
+										<span className='text-sm text-slate-500'>Platform Fee</span>
+										<span className='font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500'>Only 5%</span>
 									</div>
 								</div>
 							</div>
