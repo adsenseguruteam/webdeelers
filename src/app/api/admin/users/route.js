@@ -60,6 +60,8 @@ export async function PUT(request) {
 			if (updates.email !== undefined) updateData.email = updates.email;
 			if (updates.phone !== undefined) updateData.phone = updates.phone;
 			if (updates.bio !== undefined) updateData.bio = updates.bio;
+			if (updates.location !== undefined) updateData.location = updates.location;
+			if (updates.company !== undefined) updateData.company = updates.company;
 
 			await User.findByIdAndUpdate(userId, updateData);
 		}

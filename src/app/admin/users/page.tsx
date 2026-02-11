@@ -24,7 +24,6 @@ import {
 	Star,
 	X,
 	Save,
-	User as UserIcon,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { userContext } from "@/context/userContext";
@@ -339,7 +338,7 @@ export default function AdminUsersPage() {
 									</p>
 								</div>
 							) : filteredUsers.length > 0 ? (
-								<div className='overflow-x-auto'>
+								<div className='w-[360px] md:w-full overflow-x-auto'>
 									<table className='w-full'>
 										<thead>
 											<tr className='border-b border-slate-200 bg-linear-to-r from-slate-50 to-slate-100/50'>

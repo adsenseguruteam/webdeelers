@@ -4,6 +4,7 @@ import AddBlogForm from "@/components/add-blog-form";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import AdminSidebar from "@/components/admin-sidebar";
 
 function AddBlogContent() {
 	const searchParams = useSearchParams();
@@ -33,7 +34,7 @@ function AddBlogContent() {
 	}
 
 	return (
-		<div className='p-6'>
+		<div className='md:ml-64 p-6'>
 			<AddBlogForm
 				redirectPath='/dashboard/blogs'
 				initialData={initialData}
@@ -46,11 +47,13 @@ function AddBlogContent() {
 export default function AddBlogPage() {
 	return (
 		<Suspense
+
 			fallback={
 				<div className='flex justify-center p-8'>
 					<Loader2 className='animate-spin' />
 				</div>
 			}>
+			<AdminSidebar role="user" />
 			<AddBlogContent />
 		</Suspense>
 	);

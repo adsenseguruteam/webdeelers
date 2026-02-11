@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2, Check, Copy } from "lucide-react";
 import { userContext } from "@/context/userContext";
+import AdminSidebar from "@/components/admin-sidebar";
 
 interface Plan {
 	_id: string;
@@ -97,17 +98,12 @@ export default function UpgradePage() {
 		toast.success("Copied to clipboard");
 	};
 
-	// if (loading) {
-	// 	return (
-	// 		<div className='flex justify-center p-8'>
-	// 			<Loader2 className='animate-spin' />
-	// 		</div>
-	// 	);
-	// }
+
 
 	return (
-		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
-			<div className='max-w-6xl mx-auto'>
+		<div className='min-h-[calc(100vh-85px)] bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
+			<AdminSidebar role="user" />
+			<div className='md:ml-64 mx-auto'>
 				<div className='mb-8'>
 					<h1 className='text-3xl font-bold text-slate-900'>
 						Upgrade Plan

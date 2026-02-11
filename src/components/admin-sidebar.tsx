@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -9,38 +8,53 @@ import {
 	FileText,
 	Users,
 	LogOut,
-	Menu,
-	X,
 	Mail,
 	Shield,
 	ChevronRight,
 	BookOpen,
 	CreditCard,
 	CheckCircle,
+	Plus,
+	TrendingUp,
+	User,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+	role?: "admin" | "user";
+}
+
+// Export menu items so they can be used by mobile-bottom-nav
+export const adminMenuItems = [
+	{ icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+	{ icon: FileText, label: "Listings", href: "/admin/listings" },
+	{ icon: Users, label: "Users", href: "/admin/users" },
+	{ icon: Mail, label: "Emails", href: "/admin/emails" },
+	{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },
+	{ icon: CreditCard, label: "Plans", href: "/admin/plans" },
+	{
+		icon: CheckCircle,
+		label: "Verifications",
+		href: "/admin/verifications",
+	},
+];
+
+export const userMenuItems = [
+	{ icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
+	{ icon: Plus, label: "Create Listing", href: "/dashboard/create-listing" },
+	{ icon: BookOpen, label: "My Blogs", href: "/dashboard/blogs" },
+	{ icon: TrendingUp, label: "Upgrade Plan", href: "/dashboard/upgrade" },
+	{ icon: User, label: "Profile", href: "/dashboard/profile" },
+];
+
+export default function AdminSidebar({ role = "admin" }: AdminSidebarProps) {
 	const { signOut, user } = userContext();
 	const pathname = usePathname();
-	const [isOpen, setIsOpen] = useState(false);
 
-	const menuItems = [
-		{ icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
-		{ icon: FileText, label: "Listings", href: "/admin/listings" },
-		{ icon: Users, label: "Users", href: "/admin/users" },
-		{ icon: Mail, label: "Emails", href: "/admin/emails" },
-		{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },
-		{ icon: CreditCard, label: "Plans", href: "/admin/plans" },
-		{
-			icon: CheckCircle,
-			label: "Verifications",
-			href: "/admin/verifications",
-		},
-		// { icon: TrendingUp, label: "Analytics", href: "/admin/analytics" },
-		// { icon: Settings, label: "Settings", href: "/admin/settings" },
-	];
+	const isAdmin = role === "admin" || user?.role === "admin";
+
+	const menuItems = isAdmin ? adminMenuItems : userMenuItems;
 
 	const handleLogout = async () => {
 		await signOut();
@@ -49,23 +63,12 @@ export default function AdminSidebar() {
 
 	return (
 		<>
-			{/* Mobile Menu Toggle */}
-			<Button
-				variant='ghost'
-				size='icon'
-				className='fixed top-4 left-4 z-50 md:hidden bg-white shadow-lg border border-slate-200 hover:bg-slate-50'
-				onClick={() => setIsOpen(!isOpen)}>
-				{isOpen ? <X size={24} /> : <Menu size={24} />}
-			</Button>
-
-			{/* Sidebar */}
+			{/* Sidebar - Always visible on desktop (md+), hidden on mobile */}
 			<aside
-				className={`fixed left-0 top-0 h-screen w-64 bg-linear-to-b from-slate-50 via-white to-slate-50 border-r border-slate-200/80 shadow-xl p-6 z-40 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-					isOpen ? "translate-x-0" : "-translate-x-full"
-				}`}>
+				className='fixed left-0 top-0 h-screen w-64 bg-linear-to-b from-slate-50 via-white to-slate-50 border-r border-slate-200/80 shadow-xl p-6 z-40 hidden md:block'>
 				{/* Logo Section */}
 				<div className='mb-8'>
-					<Link href='/' className='block mb-6'>
+					<Link href='/' className='block mb-10'>
 						<Image
 							src='/newlogo.png'
 							alt='Deelzo'
@@ -77,26 +80,34 @@ export default function AdminSidebar() {
 
 					{/* User Profile Section */}
 					{user && (
-						<div className='bg-linear-to-br from-sky-50 to-blue-50 rounded-xl p-4 border border-sky-100/50 shadow-sm'>
+						<div className={`rounded-xl p-4 border shadow-sm ${
+							isAdmin 
+								? "bg-linear-to-br from-sky-50 to-blue-50 border-sky-100/50" 
+								: "bg-linear-to-br from-emerald-50 to-teal-50 border-emerald-100/50"
+						}`}>
 							<div className='flex items-center gap-3'>
 								<div className='relative'>
-									<div className='w-12 h-12 rounded-full bg-linear-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-md'>
+									<div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ${
+										isAdmin
+											? "bg-linear-to-br from-sky-400 to-blue-500"
+											: "bg-linear-to-br from-emerald-400 to-teal-500"
+									}`}>
 										{user.name?.charAt(0).toUpperCase() ||
-											"A"}
+											"U"}
 									</div>
 									<div className='absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm'></div>
 								</div>
 								<div className='flex-1 min-w-0'>
 									<p className='font-semibold text-slate-900 truncate text-sm'>
-										{user.name || "Admin"}
+										{user.name || "User"}
 									</p>
 									<div className='flex items-center gap-1 mt-0.5'>
 										<Shield
 											size={12}
-											className='text-sky-500'
+											className={isAdmin ? "text-sky-500" : "text-emerald-500"}
 										/>
 										<p className='text-xs text-slate-600 truncate'>
-											Administrator
+											{isAdmin ? "Administrator" : "Member"}
 										</p>
 									</div>
 								</div>
@@ -109,17 +120,23 @@ export default function AdminSidebar() {
 				<nav className='space-y-1.5 mb-8 flex-1'>
 					{menuItems.map((item) => {
 						const Icon = item.icon;
-						const isActive = pathname === item.href;
+						// For root paths like /admin or /dashboard, only match exact
+						// For sub-paths like /admin/listings, match if pathname starts with the href
+						const isRootPath = item.href === "/admin" || item.href === "/dashboard";
+						const isActive = isRootPath 
+							? pathname === item.href 
+							: pathname === item.href || pathname.startsWith(item.href + "/");
 						return (
-							<Link key={item.href} href={item.href}>
+							<Link key={`${item.label}-${item.href}`} href={item.href}>
 								<Button
 									variant='ghost'
 									className={`w-full justify-start cursor-pointer gap-3 h-11 relative group transition-all duration-200 ${
 										isActive
-											? "bg-linear-to-r from-sky-500 to-blue-500 text-white shadow-lg shadow-sky-500/30 hover:from-sky-600 hover:to-blue-600"
+											? isAdmin
+												? "bg-linear-to-r from-sky-500 to-blue-500 text-white shadow-lg shadow-sky-500/30 hover:from-sky-600 hover:to-blue-600"
+												: "bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 hover:from-emerald-600 hover:to-teal-600"
 											: "text-slate-700 hover:text-slate-900 hover:bg-slate-100/80"
-									}`}
-									onClick={() => setIsOpen(false)}>
+										}`}>
 									<Icon
 										size={20}
 										className={`transition-transform group-hover:scale-110 ${
@@ -156,14 +173,6 @@ export default function AdminSidebar() {
 					</Button>
 				</div>
 			</aside>
-
-			{/* Overlay */}
-			{isOpen && (
-				<div
-					className='fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden transition-opacity duration-300'
-					onClick={() => setIsOpen(false)}
-				/>
-			)}
 		</>
 	);
 }

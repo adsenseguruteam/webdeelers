@@ -181,7 +181,7 @@ export default function AdminListingsPage() {
 			{/* Main Content */}
 			<main className='flex-1 md:ml-64 p-4 md:p-6 lg:p-8'>
 				{/* Header */}
-				<div className='mb-8 mt-16 md:mt-0'>
+				<div className='mb-8 mt-5 md:mt-0'>
 					<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6'>
 						<div>
 							<h1 className='text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-2'>
@@ -332,7 +332,7 @@ export default function AdminListingsPage() {
 				</div>
 
 				{/* Filter Tabs */}
-				<div className='flex items-center gap-3 mb-6 overflow-x-auto pb-2'>
+				<div className='flex w-[360px] md:w-full items-center gap-3 mb-6 overflow-x-auto pb-2'>
 					<div className='flex items-center gap-2 text-slate-600 text-sm font-medium'>
 						<Filter size={18} />
 						<span>Filter:</span>
@@ -393,7 +393,7 @@ export default function AdminListingsPage() {
 							return (
 								<Card
 									key={listing._id}
-									className='bg-white border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 '>
+									className='bg-white w-[360px] md:w-full border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 '>
 									<CardContent className='p-6'>
 										<div className='flex flex-col lg:flex-row gap-6'>
 											{/* Thumbnail Section */}

@@ -25,8 +25,15 @@ import {
 	Facebook,
 	Mail,
 	Phone,
+	Sparkles,
+	ArrowUpRight,
+	Activity,
+	Target,
+	Layers,
+	Cpu,
+	MousePointer,
 } from "lucide-react";
-import Image from "next/image";
+import { EMAIL, PHONE } from "@/lib/constant";
 
 export default function Home() {
 	const [listings, setListings] = useState([]);
@@ -149,103 +156,314 @@ export default function Home() {
 	];
 
 	return (
-		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
+		<div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+			<style jsx global>{`
+				@keyframes float {
+					0%, 100% { transform: translateY(0px); }
+					50% { transform: translateY(-10px); }
+				}
+			`}</style>
+			
 			{/* Hero Section */}
-			<section className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-20 lg:py-28 overflow-hidden'>
-				{/* Background decoration */}
-				<div className='absolute top-0 right-0 w-96 h-96 bg-linear-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl -z-10' />
-				<div className='absolute bottom-0 left-0 w-96 h-96 bg-linear-to-br from-cyan-200/30 to-emerald-200/30 rounded-full blur-3xl -z-10' />
-
-				<div className='grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10'>
-					<div className='text-center lg:text-left'>
-						<div className='inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-sky-50 to-blue-50 rounded-full border border-sky-200 mb-6'>
-							<Shield size={16} className='text-sky-600' />
-							<span className='text-sm font-semibold text-sky-700'>
-								Trusted Marketplace
-							</span>
-						</div>
-						<h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-6 leading-tight'>
-							Buy & Sell Digital Assets with Confidence
-						</h1>
-						<p className='text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0'>
-							Deelzo is the trusted marketplace for digital
-							entrepreneurs. Discover, evaluate, and acquire
-							high-quality digital properties.
-						</p>
-						<div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-							<Link href='/marketplace'>
-								<Button className='bg-linear-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white px-8 py-6 text-base md:text-lg gap-2 shadow-lg shadow-sky-500/20 transition-all duration-200 hover:scale-105'>
-									Browse Marketplace
-									<ArrowRight size={20} />
-								</Button>
-							</Link>
-							<Link href='/guide'>
-								<Button
-									variant='outline'
-									className='border-2 border-slate-300 cursor-pointer text-slate-700 hover:bg-slate-50 hover:border-slate-400 px-8 py-6 text-base md:text-lg transition-all duration-200'>
-									Learn More
-								</Button>
-							</Link>
-						</div>
-					</div>
-
-					{/* Hero Image */}
-					<div className='relative'>
-						<Image
-							src='./home.svg'
-							height={500}
-							width={500}
-							alt='hero image'
-						/>
-						{/* <div className='absolute inset-0 bg-linear-to-br from-gray-100 to-gray-200 rounded-2xl blur-3xl opacity-10' />
-						<div className='relative bg-linear-to-br from-white to-gray-50 rounded-2xl p-8 border border-gray-200 shadow-lg'>
-							<div className='space-y-4'>
-								{[1, 2, 3].map((i) => (
-									<div
-										key={i}
-										className='h-20 bg-gray-200 rounded-lg animate-pulse'
-									/>
-								))}
-							</div>
-						</div> */}
+			<section className='relative overflow-hidden'>
+				{/* Animated Background Elements */}
+				<div className='absolute inset-0 overflow-hidden pointer-events-none'>
+					<div className='absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-orange-200/40 to-rose-200/40 rounded-full blur-3xl animate-pulse' />
+					<div className='absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-sky-200/40 to-cyan-200/40 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1s' }} />
+					<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-br from-amber-100/20 to-orange-100/20 rounded-full blur-3xl' />
+					
+					{/* Floating dots pattern */}
+					<div className='absolute inset-0 opacity-30'>
+						{[...Array(20)].map((_, i) => (
+							<div suppressHydrationWarning
+								key={i}
+								className='absolute w-2 h-2 bg-orange-400/40 rounded-full animate-bounce'
+								style={{
+									left: `${Math.random() * 100}%`,
+									top: `${Math.random() * 100}%`,
+									animationDelay: `${Math.random() * 2}s`,
+									animationDuration: `${3 + Math.random() * 2}s`,
+								}}
+							/>
+						))}
 					</div>
 				</div>
+
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24 lg:py-32'>
+					<div className='grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center'>
+						{/* Left Content */}
+						<div className='text-center lg:text-left relative z-10'>
+							{/* Badge */}
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-orange-200 shadow-lg shadow-orange-500/10 mb-6'>
+								<span className='text-xs font-bold text-orange-600 uppercase tracking-wider'>#1 Digital Asset Marketplace</span>
+							</div>
+
+							{/* Main Heading */}
+							<h1 className='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-slate-900 mb-6 leading-[1.1]'>
+								Buy & Sell
+								<br />
+								Digital Assets{" "}
+								<span className='text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500 italic font-serif'>
+									Smarter
+								</span>
+							</h1>
+
+							{/* Description */}
+							<p className='text-lg md:text-xl text-slate-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0'>
+								Deelzo gives you the tools to discover, evaluate, and acquire 
+								high-quality digital properties. From websites to social media accounts.
+							</p>
+
+							{/* CTA Buttons */}
+							<div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10'>
+								<Link href='/marketplace'>
+									<Button className='bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white px-8 py-6 text-base font-semibold shadow-xl shadow-orange-500/25 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/30 rounded-xl'>
+										Get Started
+									</Button>
+								</Link>
+								<Link href='/guide'>
+									<Button
+										variant='outline'
+										className='border-2 border-slate-200 cursor-pointer text-slate-700 hover:bg-white hover:border-orange-300 px-8 py-6 text-base font-semibold transition-all duration-300 hover:scale-105 rounded-xl group'>
+										Book a Demo
+										<ArrowRight size={18} className='ml-2 group-hover:translate-x-1 transition-transform' />
+									</Button>
+								</Link>
+							</div>
+
+							{/* Social Proof */}
+							<div className='flex items-center gap-4 justify-center lg:justify-start'>
+								{/* Avatar Stack */}
+								<div className='flex -space-x-3'>
+									{[0, 1, 2].map((i) => (
+										<div
+											key={i}
+											className='w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br from-orange-100 to-rose-100 flex items-center justify-center overflow-hidden shadow-md'
+										>
+											<span className='text-sm font-bold text-orange-600'>{String.fromCharCode(65 + i)}</span>
+										</div>
+									))}
+								</div>
+								<div>
+									<div className='flex items-center gap-1'>
+										<Star size={16} className='text-amber-400 fill-amber-400' />
+										<span className='font-bold text-slate-900'>4.9</span>
+									</div>
+									<p className='text-xs text-slate-500'>(2,500+ reviews)</p>
+								</div>
+							</div>
+						</div>
+
+						{/* Right Content - Hero Visual */}
+						<div className='relative lg:h-[600px] flex items-center justify-center'>
+							{/* Main Image Container */}
+							<div className='relative w-full max-w-lg'>
+								{/* Background Card */}
+								<div className='absolute inset-0 bg-gradient-to-br from-orange-100/50 to-rose-100/50 rounded-3xl transform rotate-3 scale-105' />
+								
+								{/* Main Image */}
+								<div className='relative bg-white rounded-3xl shadow-2xl shadow-orange-500/10 overflow-hidden border border-slate-100'>
+									<video
+										src='/main.mp4'
+										height={500}
+										width={500}
+										autoPlay
+										muted
+										loop
+										className='w-full h-auto object-cover'
+									/>
+								</div>
+
+								{/* Floating Stats Card - Blog Traffic */}
+								<div className='absolute -left-4 md:-left-8 top-1/4 bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-4 border border-slate-100' style={{ animation: 'float 3s ease-in-out infinite' }}>
+									<div className='flex items-center gap-2 mb-2'>
+										<Activity size={16} className='text-emerald-500' />
+										<span className='text-xs font-medium text-slate-600'>Blog Traffic</span>
+										<span className='text-xs font-bold text-emerald-500 flex items-center gap-0.5'>
+											<ArrowUpRight size={10} />
+											+16.5%
+										</span>
+									</div>
+									<p className='text-2xl font-bold text-slate-900'>125,536</p>
+									<p className='text-xs text-slate-400'>Since last week</p>
+								</div>
+
+								{/* Floating Stats Card - SEO Analytics */}
+								<div className='absolute -right-2 md:-right-4 bottom-1/4 bg-white rounded-2xl shadow-xl shadow-slate-200/50 p-4 border border-slate-100' style={{ animation: 'float 3s ease-in-out infinite', animationDelay: '0.5s' }}>
+									<div className='flex items-center gap-2 mb-3'>
+										<Target size={16} className='text-orange-500' />
+										<span className='text-xs font-medium text-slate-600'>SEO Analytics</span>
+										<span className='text-xs font-bold text-emerald-500 flex items-center gap-0.5'>
+											<ArrowUpRight size={10} />
+											+20%
+										</span>
+									</div>
+									{/* Circular Progress */}
+									<div className='relative w-20 h-20 mx-auto'>
+										<svg className='w-full h-full transform -rotate-90'>
+											<circle
+												cx='40'
+												cy='40'
+												r='32'
+												stroke='#f1f5f9'
+												strokeWidth='8'
+												fill='none'
+											/>
+											<circle
+												cx='40'
+												cy='40'
+												r='32'
+												stroke='url(#gradient)'
+												strokeWidth='8'
+												fill='none'
+												strokeLinecap='round'
+												strokeDasharray={`${0.8 * 2 * Math.PI * 32} ${2 * Math.PI * 32}`}
+												className='transition-all duration-1000'
+											/>
+											<defs>
+												<linearGradient id='gradient' x1='0%' y1='0%' x2='100%' y2='0%'>
+													<stop offset='0%' stopColor='#f97316' />
+													<stop offset='100%' stopColor='#f43f5e' />
+												</linearGradient>
+											</defs>
+										</svg>
+										<div className='absolute inset-0 flex items-center justify-center'>
+											<span className='text-lg font-bold text-slate-900'>80%</span>
+										</div>
+									</div>
+								</div>
+
+								{/* AI Badge */}
+								<div className='absolute -right-2 top-8 bg-gradient-to-r from-rose-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg shadow-rose-500/25' style={{ animation: 'float 3s ease-in-out infinite', animationDelay: '1s' }}>
+									<div className='flex items-center gap-2'>
+										<Sparkles size={14} />
+										<span className='text-sm font-semibold'>Free Listing</span>
+									</div>
+								</div>
+
+								{/* Side Icons Panel */}
+								<div className='absolute -right-12 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-3'>
+									{[Layers, MousePointer, Cpu, Zap].map((Icon, i) => (
+										<div
+											key={i}
+											className='w-10 h-10 bg-white rounded-xl shadow-lg shadow-slate-200/50 flex items-center justify-center border border-slate-100 hover:scale-110 transition-transform cursor-pointer'
+											style={{ animationDelay: `${i * 0.1}s` }}
+										>
+											<Icon size={18} className='text-slate-400' />
+										</div>
+									))}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 			</section>
 
 			{/* Categories */}
-			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
-				<div className='text-center mb-8 md:mb-12'>
-					<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-3'>
+			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-16'>
+				<div className='text-center mb-12 md:mb-16'>
+					<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-50 to-blue-50 rounded-full border border-sky-200 mb-6'>
+						<Sparkles size={16} className='text-sky-600' />
+						<span className='text-sm font-semibold text-sky-700'>Popular Categories</span>
+					</div>
+					<h2 className='text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4'>
 						Browse by Category
 					</h2>
-					<p className='text-slate-600 text-base md:text-lg'>
-						Explore digital assets across different categories
+					<p className='text-slate-600 text-base md:text-lg max-w-2xl mx-auto'>
+						Discover premium digital assets across diverse categories, curated for entrepreneurs and investors
 					</p>
 				</div>
-				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4'>
-					{categories.map((cat) => {
+				
+				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6'>
+					{categories.map((cat, index) => {
 						const Icon = cat.icon;
+						const gradients = [
+							"from-orange-500 to-rose-500",
+							"from-sky-500 to-blue-500",
+							"from-emerald-500 to-teal-500",
+							"from-violet-500 to-purple-500",
+							"from-amber-500 to-orange-500",
+							"from-cyan-500 to-sky-500",
+						];
+						const bgGradients = [
+							"from-orange-50 to-rose-50",
+							"from-sky-50 to-blue-50",
+							"from-emerald-50 to-teal-50",
+							"from-violet-50 to-purple-50",
+							"from-amber-50 to-orange-50",
+							"from-cyan-50 to-sky-50",
+						];
+						const borderColors = [
+							"group-hover:border-orange-300",
+							"group-hover:border-sky-300",
+							"group-hover:border-emerald-300",
+							"group-hover:border-violet-300",
+							"group-hover:border-amber-300",
+							"group-hover:border-cyan-300",
+						];
+						const iconColors = [
+							"text-orange-500",
+							"text-sky-500",
+							"text-emerald-500",
+							"text-violet-500",
+							"text-amber-500",
+							"text-cyan-500",
+						];
+						const shadowColors = [
+							"group-hover:shadow-orange-500/20",
+							"group-hover:shadow-sky-500/20",
+							"group-hover:shadow-emerald-500/20",
+							"group-hover:shadow-violet-500/20",
+							"group-hover:shadow-amber-500/20",
+							"group-hover:shadow-cyan-500/20",
+						];
+						
 						return (
 							<Link
 								key={cat.name}
-								href={`/marketplace?category=${cat.name}`}>
-								<Card className='bg-white border border-slate-200 hover:border-sky-500 cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 group'>
-									<CardContent className='p-4 md:p-6 text-center'>
-										<div className='w-12 h-12 md:w-14 md:h-14 mx-auto mb-3 rounded-xl bg-linear-to-br from-sky-50 to-blue-50 flex items-center justify-center group-hover:from-sky-100 group-hover:to-blue-100 transition-all duration-300'>
-											<Icon
-												size={24}
-												className='text-sky-600 group-hover:scale-110 transition-transform duration-300'
-											/>
+								href={`/marketplace?category=${cat.name}`}
+								className='group'>
+								<div className={`relative bg-white rounded-2xl border border-slate-200 ${borderColors[index]} cursor-pointer transition-all duration-500 hover:shadow-2xl ${shadowColors[index]} hover:-translate-y-2 overflow-hidden h-full`}>
+									{/* Top gradient bar */}
+									<div className={`h-1 w-full bg-gradient-to-r ${gradients[index]} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500`} />
+									
+									<div className='p-6 md:p-8 text-center relative'>
+										{/* Background glow effect */}
+										<div className={`absolute inset-0 bg-gradient-to-br ${bgGradients[index]} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+										
+										<div className='relative z-10'>
+											{/* Icon container with animated border */}
+											<div className={`w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${bgGradients[index]} flex items-center justify-center group-hover:scale-110 transition-all duration-500 shadow-lg`}>
+												<div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl bg-white flex items-center justify-center shadow-md`}>
+													<Icon
+														size={28}
+														className={`${iconColors[index]} group-hover:scale-110 transition-transform duration-300`}
+													/>
+												</div>
+											</div>
+											
+											{/* Category name */}
+											<h3 className='text-slate-900 font-bold text-sm md:text-base group-hover:text-slate-800 transition-colors mb-2'>
+												{cat.name}
+											</h3>
+											
+											{/* Explore link */}
+											<div className={`inline-flex items-center gap-1 text-xs font-semibold ${iconColors[index]} opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300`}>
+												<span>Explore</span>
+												<ArrowRight size={12} className='group-hover:translate-x-1 transition-transform duration-300' />
+											</div>
 										</div>
-										<p className='text-slate-900 font-semibold text-xs md:text-sm group-hover:text-sky-600 transition-colors'>
-											{cat.name}
-										</p>
-									</CardContent>
-								</Card>
+									</div>
+									
+									{/* Corner decoration */}
+									<div className={`absolute -bottom-8 -right-8 w-24 h-24 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity duration-500`} />
+								</div>
 							</Link>
 						);
 					})}
 				</div>
+				
 			</section>
 
 			{/* Featured Listings with Filters */}
@@ -621,148 +839,498 @@ export default function Home() {
 			</section>
 
 			{/* About Section */}
-			<section className='max-w-7xl mx-auto px-4 md:px-8 py-12'>
-				<div className='grid md:grid-cols-2 gap-12 items-center'>
-					<div className='space-y-6'>
-						<h2 className='text-3xl md:text-4xl font-bold text-gray-900'>
-							About Deelzo
-						</h2>
-						<p className='text-lg text-gray-600'>
-							Deelzo is a premier marketplace for digital assets,
-							founded by AdSense Guru (Amit Singh). With over 4
-							years of experience in digital marketing and website
-							development, we've created a trusted platform for
-							buying and selling digital properties.
-						</p>
-						<div className='flex flex-wrap gap-4'>
-							<div className='flex items-center gap-2 text-gray-600'>
-								<Mail size={18} className='text-gray-500' />
-								<span>evtnorg@gmail.com</span>
+			<section className='relative overflow-hidden'>
+				{/* Background decoration */}
+				<div className='absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 pointer-events-none' />
+				<div className='absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-100/30 to-rose-100/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4' />
+				<div className='absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-br from-sky-100/30 to-blue-100/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4' />
+				
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					<div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
+						{/* Left Content */}
+						<div className='space-y-8'>
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200'>
+								<Sparkles size={16} className='text-orange-500' />
+								<span className='text-sm font-semibold text-orange-700'>About Us</span>
 							</div>
-							<div className='flex items-center gap-2 text-gray-600'>
-								<Phone size={18} className='text-gray-500' />
-								<span>+91 7755089819</span>
+							
+							<h2 className='text-4xl md:text-5xl font-bold text-slate-900 leading-tight'>
+								The Most Trusted
+								<span className='block text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500'>
+									Digital Marketplace
+								</span>
+							</h2>
+							
+							<p className='text-lg text-slate-600 leading-relaxed'>
+								Deelzo is a premier marketplace for digital assets, founded by 
+								<span className='font-semibold text-slate-900'>AdSense Guru (Amit Singh)</span>. 
+								With over 4 years of experience in digital marketing and website development, 
+								we've created a trusted platform for buying and selling digital properties worldwide.
+							</p>
+							
+							{/* Stats */}
+							<div className='grid grid-cols-3 gap-6 py-6 border-y border-slate-200'>
+								<div className='text-center'>
+									<p className='text-3xl md:text-4xl font-bold text-slate-900'>4+</p>
+									<p className='text-sm text-slate-500 mt-1'>Years Experience</p>
+								</div>
+								<div className='text-center border-x border-slate-200'>
+									<p className='text-3xl md:text-4xl font-bold text-slate-900'>2.5K+</p>
+									<p className='text-sm text-slate-500 mt-1'>Happy Clients</p>
+								</div>
+								<div className='text-center'>
+									<p className='text-3xl md:text-4xl font-bold text-slate-900'>98%</p>
+									<p className='text-sm text-slate-500 mt-1'>Success Rate</p>
+								</div>
+							</div>
+							
+							{/* Contact Info */}
+							<div className='flex flex-wrap gap-6'>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow'>
+									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-rose-100 flex items-center justify-center'>
+										<Mail size={18} className='text-orange-600' />
+									</div>
+									<div>
+										<p className='text-xs text-slate-500'>Email</p>
+										<p className='text-sm font-semibold text-slate-900'>{EMAIL}</p>
+									</div>
+								</div>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow'>
+									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center'>
+										<MessageCircle size={18} className='text-sky-600' />
+									</div>
+									<div>
+										<p className='text-xs text-slate-500'>WhatsApp</p>
+										<p className='text-sm font-semibold text-slate-900'>{PHONE}</p>
+									</div>
+								</div>
+							</div>
+							
+							<div className='flex flex-wrap gap-4'>
+								<Link href='/about' className='inline-flex'>
+									<Button className='bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white px-8 py-6 text-base font-semibold shadow-lg shadow-orange-500/25 transition-all duration-300 hover:scale-105 rounded-xl'>
+										Learn More
+										<ArrowRight size={18} className='ml-2' />
+									</Button>
+								</Link>
+								<Link
+									href='https://www.facebook.com/adsenseguruteam'
+									target='_blank'
+									rel='noopener noreferrer'
+									className='inline-flex'>
+									<Button
+										variant='outline'
+										className='border-2 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl group'>
+										<Facebook size={18} className='mr-2 text-blue-600' />
+										Follow Us
+									</Button>
+								</Link>
 							</div>
 						</div>
-						<div className='flex flex-wrap gap-4'>
-							<Link href='/about' className='inline-flex'>
-								<Button className='bg-blue-600 hover:bg-blue-700 text-white px-6 py-3'>
-									About Us
-								</Button>
-							</Link>
-							<Link
-								href='https://www.facebook.com/adsenseguruteam'
-								target='_blank'
-								rel='noopener noreferrer'
-								className='inline-flex'>
-								<Button
-									variant='outline'
-									className='border-gray-300 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors hover:bg-gray-50 px-6 py-3'>
-									<Facebook size={18} />
-									Follow on Facebook
-								</Button>
-							</Link>
-						</div>
-					</div>
-					<div className='space-y-6'>
-						<div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm'>
-							<h3 className='text-xl font-semibold text-gray-900 mb-4'>
-								Join Our Community
-							</h3>
-							<div className='space-y-3'>
-								<a
-									href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg border border-green-200 text-green-700 transition-colors'>
-									<MessageCircle className='w-5 h-5' />
-									<span>Join WhatsApp Group</span>
-								</a>
-								<a
-									href='https://www.facebook.com/groups/adsenseguruteam'
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 text-blue-700 transition-colors'>
-									<Facebook className='w-5 h-5' />
-									<span>Join Facebook Group</span>
-								</a>
-								<a
-									href='https://wa.me/917755089819'
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center gap-3 p-3 bg-cyan-50 hover:bg-cyan-100 rounded-lg border border-cyan-200 text-cyan-700 transition-colors'>
-									<MessageCircle className='w-5 h-5' />
-									<span>Connect on WhatsApp</span>
-								</a>
+						
+						{/* Right Content - Community Card */}
+						<div className='relative'>
+							{/* Decorative elements */}
+							<div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-400 rounded-2xl opacity-20 rotate-12' />
+							<div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full opacity-20' />
+							
+							<div className='relative bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 md:p-10'>
+								<div className='flex items-center gap-3 mb-8'>
+									<div className='w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
+										<Users size={24} className='text-white' />
+									</div>
+									<div>
+										<h3 className='text-2xl font-bold text-slate-900'>Join Our Community</h3>
+										<p className='text-sm text-slate-500'>Connect with 10,000+ members</p>
+									</div>
+								</div>
+								
+								<div className='space-y-4'>
+									<a
+										href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
+										target='_blank'
+										rel='noopener noreferrer'
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-xl border border-green-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										<div className='w-12 h-12 rounded-xl bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/25 group-hover:scale-110 transition-transform'>
+											<MessageCircle size={24} className='text-white' />
+										</div>
+										<div className='flex-1'>
+											<p className='font-semibold text-slate-900'>WhatsApp Group</p>
+											<p className='text-sm text-slate-500'>Daily updates & discussions</p>
+										</div>
+										<ArrowRight size={18} className='text-green-600 group-hover:translate-x-1 transition-transform' />
+									</a>
+									
+									<a
+										href='https://www.facebook.com/groups/adsenseguruteam'
+										target='_blank'
+										rel='noopener noreferrer'
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-xl border border-blue-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										<div className='w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:scale-110 transition-transform'>
+											<Facebook size={24} className='text-white' />
+										</div>
+										<div className='flex-1'>
+											<p className='font-semibold text-slate-900'>Facebook Group</p>
+											<p className='text-sm text-slate-500'>Community support & tips</p>
+										</div>
+										<ArrowRight size={18} className='text-blue-600 group-hover:translate-x-1 transition-transform' />
+									</a>
+									
+									<a
+										href={`https://wa.me/${PHONE}`}
+										target='_blank'
+										rel='noopener noreferrer'
+										className='group flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-sky-50 hover:from-cyan-100 hover:to-sky-100 rounded-xl border border-cyan-200 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5'>
+										<div className='w-12 h-12 rounded-xl bg-cyan-500 flex items-center justify-center shadow-lg shadow-cyan-500/25 group-hover:scale-110 transition-transform'>
+											<Phone size={24} className='text-white' />
+										</div>
+										<div className='flex-1'>
+											<p className='font-semibold text-slate-900'>Direct Support</p>
+											<p className='text-sm text-slate-500'>24/7 personal assistance</p>
+										</div>
+										<ArrowRight size={18} className='text-cyan-600 group-hover:translate-x-1 transition-transform' />
+									</a>
+								</div>
+								
+								{/* Trust badges */}
+								<div className='mt-8 pt-6 border-t border-slate-100'>
+									<p className='text-xs text-slate-400 text-center mb-4'>Trusted by digital entrepreneurs worldwide</p>
+									<div className='flex justify-center gap-4'>
+										{[Shield, Zap, Star].map((Icon, i) => (
+											<div key={i} className='w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center'>
+												<Icon size={18} className='text-slate-400' />
+											</div>
+										))}
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
 			{/* Features */}
-			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
-				<div className='text-center mb-8 md:mb-12'>
-					<h2 className='text-3xl md:text-4xl font-bold text-slate-900 mb-3'>
-						Why Choose Deelzo?
-					</h2>
-					<p className='text-slate-600 text-base md:text-lg'>
-						Experience the best in digital asset trading
-					</p>
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'>
+				{/* Background pattern */}
+				<div className='absolute inset-0 opacity-10'>
+					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
 				</div>
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
-					{features.map((feature, index) => {
-						const Icon = feature.icon;
-						return (
-							<Card
-								key={index}
-								className='bg-white border border-slate-200 hover:border-sky-500 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-sky-500/10 hover:-translate-y-1 group'>
-								<CardContent className='p-6'>
-									<div className='w-14 h-14 rounded-xl bg-linear-to-br from-sky-50 to-blue-50 flex items-center justify-center mb-4 group-hover:from-sky-100 group-hover:to-blue-100 transition-all duration-300'>
-										<Icon
-											size={28}
-											className='text-sky-600 group-hover:scale-110 transition-transform duration-300'
-										/>
+				<div className='absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-orange-500/20 to-rose-500/20 rounded-full blur-3xl' />
+				<div className='absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-br from-sky-500/20 to-blue-500/20 rounded-full blur-3xl' />
+				
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					<div className='text-center mb-16 md:mb-20'>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6'>
+							<Sparkles size={16} className='text-orange-400' />
+							<span className='text-sm font-semibold text-white'>Why Choose Us</span>
+						</div>
+						<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6'>
+							Built for Success
+						</h2>
+						<p className='text-slate-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed'>
+							Experience a platform designed with security, speed, and transparency at its core
+						</p>
+					</div>
+					
+					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8'>
+						{features.map((feature, index) => {
+							const Icon = feature.icon;
+							const gradients = [
+								"from-emerald-500 to-teal-500",
+								"from-orange-500 to-rose-500",
+								"from-sky-500 to-blue-500",
+								"from-violet-500 to-purple-500",
+							];
+							const glowColors = [
+								"group-hover:shadow-emerald-500/25",
+								"group-hover:shadow-orange-500/25",
+								"group-hover:shadow-sky-500/25",
+								"group-hover:shadow-violet-500/25",
+							];
+							
+							return (
+								<div
+									key={index}
+									className={`group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 hover:shadow-2xl ${glowColors[index]} hover:-translate-y-2 overflow-hidden`}>
+									{/* Gradient border on hover */}
+									<div className={`absolute inset-0 bg-gradient-to-br ${gradients[index]} opacity-0 group-hover:opacity-10 transition-opacity duration-500 rounded-2xl`} />
+									
+									{/* Icon */}
+									<div className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${gradients[index]} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-500`}>
+										<Icon size={32} className='text-white' />
 									</div>
-									<h3 className='font-bold text-slate-900 mb-2 text-lg'>
+									
+									{/* Content */}
+									<h3 className='relative text-xl font-bold text-white mb-3 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-slate-300 transition-all duration-300'>
 										{feature.title}
 									</h3>
-									<p className='text-slate-600 text-sm leading-relaxed'>
+									<p className='relative text-slate-400 leading-relaxed group-hover:text-slate-300 transition-colors duration-300'>
 										{feature.description}
 									</p>
-								</CardContent>
-							</Card>
-						);
-					})}
+									
+									{/* Arrow indicator */}
+									<div className='absolute bottom-6 right-6 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-0 translate-x-2'>
+										<ArrowRight size={14} className='text-white' />
+									</div>
+								</div>
+							);
+						})}
+					</div>
+					
+					{/* Bottom stats */}
+					<div className='mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8'>
+						{[
+							{ value: "$10000+", label: "Assets Sold" },
+							{ value: "10k+", label: "Active Users" },
+							{ value: "99.9%", label: "Uptime" },
+							{ value: "24/7", label: "Support" },
+						].map((stat, i) => (
+							<div key={i} className='text-center'>
+								<p className='text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-rose-400'>{stat.value}</p>
+								<p className='text-slate-400 text-sm mt-1'>{stat.label}</p>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+
+			{/* How It Works Section */}
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
+				<div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
+				<div className='absolute top-40 left-20 w-72 h-72 bg-gradient-to-br from-orange-200/20 to-rose-200/20 rounded-full blur-3xl' />
+				<div className='absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-sky-200/20 to-blue-200/20 rounded-full blur-3xl' />
+				
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					<div className='text-center mb-16 md:mb-20'>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6'>
+							<Sparkles size={16} className='text-orange-500' />
+							<span className='text-sm font-semibold text-orange-700'>Simple Process</span>
+						</div>
+						<h2 className='text-4xl md:text-5xl font-bold text-slate-900 mb-4'>
+							How It Works
+						</h2>
+						<p className='text-slate-600 text-lg max-w-2xl mx-auto'>
+							Get started in minutes with our simple 3-step process
+						</p>
+					</div>
+					
+					<div className='grid md:grid-cols-3 gap-8 md:gap-12'>
+						{[
+							{ 
+								step: "01", 
+								title: "Browse Listings", 
+								description: "Explore thousands of verified digital assets across multiple categories. Filter by price, metrics, and location.",
+								icon: Globe,
+								color: "from-orange-500 to-rose-500"
+							},
+							{ 
+								step: "02", 
+								title: "Connect & Negotiate", 
+								description: "Message sellers directly, ask questions, and negotiate terms. Our secure platform protects both parties.",
+								icon: MessageCircle,
+								color: "from-sky-500 to-blue-500"
+							},
+							{ 
+								step: "03", 
+								title: "Secure Transaction", 
+								description: "Complete your purchase with our escrow protection. Transfer assets safely and receive payment securely.",
+								icon: Shield,
+								color: "from-emerald-500 to-teal-500"
+							},
+						].map((item, index) => {
+							const Icon = item.icon;
+							return (
+								<div key={index} className='relative group'>
+									{/* Connector line */}
+									{index < 2 && (
+										<div className='hidden md:block absolute top-16 left-full w-full h-0.5 bg-gradient-to-r from-slate-200 to-slate-200'>
+											<div className='absolute inset-0 bg-gradient-to-r from-orange-200 via-sky-200 to-emerald-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+										</div>
+									)}
+									
+									<div className='relative bg-white rounded-2xl border border-slate-200 p-8 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 group-hover:border-slate-300'>
+										{/* Step number */}
+										<div className={`absolute -top-4 left-8 w-12 h-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+											<span className='text-white font-bold text-lg'>{item.step}</span>
+										</div>
+										
+										<div className='pt-6'>
+											<div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.color} opacity-10 flex items-center justify-center mb-6 group-hover:opacity-20 transition-opacity`}>
+												<Icon size={32} className={`text-transparent bg-clip-text bg-gradient-to-br ${item.color}`} />
+											</div>
+											<h3 className='text-xl font-bold text-slate-900 mb-3'>{item.title}</h3>
+											<p className='text-slate-600 leading-relaxed'>{item.description}</p>
+										</div>
+									</div>
+								</div>
+							);
+						})}
+					</div>
+				</div>
+			</section>
+
+			{/* Testimonials Section */}
+			<section className='relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'>
+				<div className='absolute inset-0 opacity-5'>
+					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+				</div>
+				<div className='absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-rose-500/10 rounded-full blur-3xl' />
+				<div className='absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-sky-500/10 to-blue-500/10 rounded-full blur-3xl' />
+				
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					<div className='text-center mb-16'>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6'>
+							<Star size={16} className='text-orange-400' />
+							<span className='text-sm font-semibold text-white'>Testimonials</span>
+						</div>
+						<h2 className='text-4xl md:text-5xl font-bold text-white mb-4'>
+							Loved by Entrepreneurs
+						</h2>
+						<p className='text-slate-400 text-lg max-w-2xl mx-auto'>
+							See what our community has to say about their experience
+						</p>
+					</div>
+					
+					<div className='grid md:grid-cols-3 gap-6 md:gap-8'>
+						{[
+							{
+								quote: "Deelzo made selling my website incredibly easy. The verification process gave buyers confidence, and I got a great price!",
+								author: "Rajesh Kumar",
+								role: "Sold Website for $45K",
+								rating: 5
+							},
+							{
+								quote: "I've bought multiple YouTube channels through Deelzo. The detailed metrics and secure transactions are unmatched.",
+								author: "Priya Sharma",
+								role: "Digital Investor",
+								rating: 5
+							},
+							{
+								quote: "The support team is amazing! They guided me through my first purchase and made sure everything went smoothly.",
+								author: "Amit Patel",
+								role: "First-time Buyer",
+								rating: 5
+							},
+						].map((testimonial, index) => (
+							<div key={index} className='group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2'>
+								{/* Quote icon */}
+								<div className='absolute -top-4 -left-2 w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg'>
+									<span className='text-white text-2xl font-serif'>"</span>
+								</div>
+								
+								{/* Rating */}
+								<div className='flex gap-1 mb-4'>
+									{[...Array(testimonial.rating)].map((_, i) => (
+										<Star key={i} size={16} className='text-amber-400 fill-amber-400' />
+									))}
+								</div>
+								
+								<p className='text-slate-300 leading-relaxed mb-6'>{testimonial.quote}</p>
+								
+								<div className='flex items-center gap-3'>
+									<div className='w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-rose-400 flex items-center justify-center'>
+										<span className='text-white font-bold'>{testimonial.author.charAt(0)}</span>
+									</div>
+									<div>
+										<p className='text-white font-semibold'>{testimonial.author}</p>
+										<p className='text-slate-400 text-sm'>{testimonial.role}</p>
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
 				</div>
 			</section>
 
 			{/* CTA Section */}
-			<section className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 md:py-16'>
-				<div className='relative bg-linear-to-br from-sky-600 via-blue-600 to-cyan-600 rounded-2xl md:rounded-3xl p-8 md:p-12 lg:p-16 text-center shadow-2xl overflow-hidden'>
-					{/* Background decoration */}
-					<div className='absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl' />
-					<div className='absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl' />
-
-					<div className='relative z-10'>
-						<h2 className='text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4'>
-							Ready to Get Started?
-						</h2>
-						<p className='text-white/90 mb-8 text-base md:text-lg max-w-2xl mx-auto'>
-							Join thousands of digital entrepreneurs buying and
-							selling assets on Deelzo
-						</p>
-						<div className='flex flex-col sm:flex-row gap-4 justify-center'>
-							<Link href='/marketplace'>
-								<Button className='bg-white hover:bg-slate-50 cursor-pointer text-sky-600 px-8 py-6 text-base md:text-md font-semibold shadow-lg hover:scale-105 transition-all duration-200'>
-									Start Browsing
-									<ArrowRight size={20} className='ml-2' />
-								</Button>
-							</Link>
-							<Link href='/guide'>
-								<Button className='bg-white hover:bg-slate-50 cursor-pointer text-sky-600 px-8 py-6 text-base md:text-md font-semibold shadow-lg hover:scale-105 transition-all duration-200'>
-									Learn How to Sell
-								</Button>
-							</Link>
+			<section className='relative overflow-hidden'>
+				<div className='absolute inset-0 bg-gradient-to-br from-orange-500 via-rose-500 to-purple-600' />
+				<div className='absolute inset-0 opacity-20'>
+					<div className='absolute inset-0' style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+				</div>
+				
+				{/* Floating elements */}
+				<div className='absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl animate-pulse' />
+				<div className='absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse' style={{ animationDelay: '1s' }} />
+				<div className='absolute top-1/2 left-20 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse' style={{ animationDelay: '0.5s' }} />
+				
+				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					<div className='grid lg:grid-cols-2 gap-12 items-center'>
+						<div className='text-center lg:text-left'>
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30 mb-6'>
+								<Zap size={16} className='text-white' />
+								<span className='text-sm font-semibold text-white'>Start Today</span>
+							</div>
+							<h2 className='text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight'>
+								Ready to Transform
+								<span className='block'>Your Digital Portfolio?</span>
+							</h2>
+							<p className='text-white/90 text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0'>
+								Join 10,000+ entrepreneurs who trust Deelzo for buying and selling premium digital assets.
+							</p>
+							<div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
+								<Link href='/marketplace'>
+									<Button className='bg-white hover:bg-slate-50 text-slate-900 px-8 py-6 text-base font-semibold shadow-2xl hover:scale-105 transition-all duration-300 rounded-xl group'>
+										Explore Marketplace
+										<ArrowRight size={20} className='ml-2 group-hover:translate-x-1 transition-transform' />
+									</Button>
+								</Link>
+								<Link href='/signup'>
+									<Button 
+										variant='outline' 
+										className='border-2 border-white/50 text-gray-900 hover:bg-white/10 px-8 py-6 text-base font-semibold transition-all duration-300 rounded-xl backdrop-blur-sm'>
+										Create Free Account
+									</Button>
+								</Link>
+							</div>
+						</div>
+						
+						<div className='hidden lg:block relative'>
+							<div className='relative bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 p-8'>
+								<div className='flex items-center gap-4 mb-6'>
+									<div className='flex -space-x-3'>
+										{[0, 1, 2, 3, 4].map((i) => (
+											<div
+												key={i}
+												className='w-10 h-10 rounded-full border-2 border-white/20 bg-gradient-to-br from-orange-300 to-rose-300 flex items-center justify-center'
+											>
+												<span className='text-xs font-bold text-slate-800'>{String.fromCharCode(65 + i)}</span>
+											</div>
+										))}
+									</div>
+									<div className='text-white'>
+										<p className='font-bold'>10,000+</p>
+										<p className='text-sm text-white/70'>Active Users</p>
+									</div>
+								</div>
+								
+								<div className='space-y-4'>
+									<div className='flex items-center gap-3 text-white/90'>
+										<div className='w-6 h-6 rounded-full bg-emerald-400/20 flex items-center justify-center'>
+											<Shield size={14} className='text-emerald-300' />
+										</div>
+										<span className='text-sm'>Secure Escrow Protection</span>
+									</div>
+									<div className='flex items-center gap-3 text-white/90'>
+										<div className='w-6 h-6 rounded-full bg-sky-400/20 flex items-center justify-center'>
+											<Zap size={14} className='text-sky-300' />
+										</div>
+										<span className='text-sm'>Instant Asset Transfer</span>
+									</div>
+									<div className='flex items-center gap-3 text-white/90'>
+										<div className='w-6 h-6 rounded-full bg-amber-400/20 flex items-center justify-center'>
+											<Users size={14} className='text-amber-300' />
+										</div>
+										<span className='text-sm'>24/7 Expert Support</span>
+									</div>
+								</div>
+								
+								<div className='mt-6 pt-6 border-t border-white/10'>
+									<div className='flex items-center justify-between text-white'>
+										<span className='text-sm text-white/70'>Platform Fee</span>
+										<span className='font-bold text-emerald-300'>Only 5%</span>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

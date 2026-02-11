@@ -33,6 +33,7 @@ import {
 	Link as LinkIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AdminSidebar from "@/components/admin-sidebar";
 
 const categories = [
 	{ id: "website", label: "Website" },
@@ -494,8 +495,9 @@ export default function CreateListing() {
 	};
 
 	return (
-		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
-			<div className='max-w-6xl mx-auto'>
+		<div className='min-h-[calc(100vh-85px)] bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
+			<AdminSidebar role="user" />
+			<div className='md:ml-64 mx-auto'>
 				{/* Header */}
 				<div className='mb-6'>
 					<div className='text-center mb-6'>

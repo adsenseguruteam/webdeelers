@@ -14,6 +14,7 @@ import {
 import Image from "next/image";
 import { userContext } from "@/context/userContext";
 import Link from "next/link";
+import AdminSidebar from "@/components/admin-sidebar";
 
 export default function UserBlogsPage() {
 	const { user } = userContext();
@@ -57,17 +58,11 @@ export default function UserBlogsPage() {
 		}
 	};
 
-	if (loading) {
-		return (
-			<div className='flex justify-center p-8'>
-				<Loader2 className='animate-spin' />
-			</div>
-		);
-	}
 
 	return (
-		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
-			<div className='max-w-6xl mx-auto'>
+		<div className='min-h-[calc(100vh-85px)] bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
+			<AdminSidebar role="user" />
+			<div className='md:ml-64 mx-auto'>
 				<div className='flex justify-between mb-8 items-center'>
 					<div>
 						<h1 className='text-3xl font-bold text-slate-900'>
@@ -78,7 +73,7 @@ export default function UserBlogsPage() {
 						</p>
 					</div>
 					<Link href='/dashboard/add-blog'>
-						<Button className='gap-2 cursor-pointer shadow-sm hover:shadow-md transition-all'>
+						<Button  className='gap-2 cursor-pointer shadow-sm hover:shadow-md transition-all'>
 							<Plus size={16} /> New Blog
 						</Button>
 					</Link>
