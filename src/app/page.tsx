@@ -838,24 +838,30 @@ export default function Home() {
 				)}
 			</section>
 
-			{/* About Section */}
+			{/* Combined About, Features & Testimonials Section */}
 			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
 				{/* Top wave transition from Featured Listings */}
 				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent' />
 				
-				{/* Background decoration */}
-				<div className='absolute top-20 right-0 w-[600px] h-[600px] bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 animate-pulse' />
-				<div className='absolute bottom-20 left-0 w-[400px] h-[400px] bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 animate-pulse' style={{ animationDelay: '0.5s' }} />
+				{/* Unified flowing background decorations */}
+				<div className='absolute top-20 right-0 w-[700px] h-[700px] bg-gradient-to-br from-orange-200/25 to-rose-200/25 rounded-full blur-3xl animate-pulse' />
+				<div className='absolute top-1/4 left-0 w-[500px] h-[500px] bg-gradient-to-br from-sky-200/25 to-blue-200/25 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '0.5s' }} />
+				<div className='absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-emerald-200/20 to-teal-200/20 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1s' }} />
+				<div className='absolute bottom-1/4 left-1/3 w-[500px] h-[500px] bg-gradient-to-br from-violet-200/20 to-purple-200/20 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1.5s' }} />
 				
-				{/* Floating elements */}
-				<div className='absolute top-40 left-20 w-20 h-20 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
-				<div className='absolute bottom-40 right-20 w-16 h-16 bg-gradient-to-br from-sky-400/20 to-blue-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
+				{/* Floating elements throughout entire section */}
+				<div className='absolute top-40 left-20 w-20 h-20 bg-gradient-to-br from-orange-400/15 to-rose-400/15 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
+				<div className='absolute top-1/3 right-32 w-16 h-16 bg-gradient-to-br from-sky-400/15 to-blue-400/15 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '0.5s' }} />
+				<div className='absolute top-2/3 left-32 w-24 h-24 bg-gradient-to-br from-emerald-400/15 to-teal-400/15 rounded-xl -rotate-12 animate-bounce' style={{ animationDuration: '6s', animationDelay: '1s' }} />
+				<div className='absolute bottom-40 right-20 w-16 h-16 bg-gradient-to-br from-violet-400/15 to-purple-400/15 rounded-full animate-bounce' style={{ animationDuration: '4.5s', animationDelay: '1.5s' }} />
 				
 				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
-					<div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center'>
+					
+					{/* PART 1: About Content */}
+					<div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-24 md:mb-32'>
 						{/* Left Content */}
 						<div className='space-y-8'>
-							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300'>
+							<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300'>
 								<Sparkles size={16} className='text-orange-500' />
 								<span className='text-sm font-semibold text-orange-700'>About Us</span>
 							</div>
@@ -875,13 +881,13 @@ export default function Home() {
 							</p>
 							
 							{/* Stats */}
-							<div className='grid grid-cols-3 gap-6 py-6 border-y border-slate-200'>
+							<div className='grid grid-cols-3 gap-6 py-6 border-y border-slate-200/80'>
 								{[
 									{ value: "4+", label: "Years Experience", gradient: "from-orange-500 to-rose-500" },
 									{ value: "2.5K+", label: "Happy Clients", gradient: "from-sky-500 to-blue-500" },
 									{ value: "98%", label: "Success Rate", gradient: "from-emerald-500 to-teal-500" },
 								].map((stat, i) => (
-									<div key={i} className={`text-center group cursor-pointer ${i === 1 ? 'border-x border-slate-200' : ''}`}>
+									<div key={i} className={`text-center group cursor-pointer ${i === 1 ? 'border-x border-slate-200/80' : ''}`}>
 										<p className={`text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} group-hover:scale-110 transition-transform duration-300`}>{stat.value}</p>
 										<p className='text-sm text-slate-500 mt-1 group-hover:text-slate-700 transition-colors'>{stat.label}</p>
 									</div>
@@ -890,7 +896,7 @@ export default function Home() {
 							
 							{/* Contact Info */}
 							<div className='flex flex-wrap gap-6'>
-								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
 									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-orange-100 to-rose-100 flex items-center justify-center group-hover:scale-110 transition-transform'>
 										<Mail size={18} className='text-orange-600' />
 									</div>
@@ -899,7 +905,7 @@ export default function Home() {
 										<p className='text-sm font-semibold text-slate-900'>{EMAIL}</p>
 									</div>
 								</div>
-								<div className='flex items-center gap-3 px-4 py-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
+								<div className='flex items-center gap-3 px-4 py-3 bg-white/80 backdrop-blur-sm rounded-xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer group'>
 									<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform'>
 										<MessageCircle size={18} className='text-sky-600' />
 									</div>
@@ -938,7 +944,7 @@ export default function Home() {
 							<div className='absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-orange-400 to-rose-400 rounded-2xl opacity-20 rotate-12 animate-pulse' />
 							<div className='absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-sky-400 to-blue-400 rounded-full opacity-20 animate-pulse' style={{ animationDelay: '0.5s' }} />
 							
-							<div className='relative bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 md:p-10 hover:shadow-orange-500/10 transition-shadow duration-500'>
+							<div className='relative bg-white/90 backdrop-blur-sm rounded-3xl border border-slate-200 shadow-2xl shadow-slate-200/50 p-8 md:p-10 hover:shadow-orange-500/10 transition-shadow duration-500'>
 								<div className='flex items-center gap-3 mb-8'>
 									<div className='w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
 										<Users size={24} className='text-white' />
@@ -1010,26 +1016,19 @@ export default function Home() {
 							</div>
 						</div>
 					</div>
-				</div>
-				
-				{/* Bottom wave transition to Features */}
-				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
-			</section>
-			{/* Features */}
-			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-				{/* Top wave transition */}
-				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-white to-transparent' />
-				
-				{/* Background decorations */}
-				<div className='absolute top-40 left-20 w-96 h-96 bg-gradient-to-br from-emerald-200/30 to-teal-200/30 rounded-full blur-3xl animate-pulse' />
-				<div className='absolute bottom-40 right-20 w-96 h-96 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '0.5s' }} />
-				<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-sky-100/20 to-blue-100/20 rounded-full blur-3xl' />
-				
-				{/* Floating elements */}
-				<div className='absolute top-20 right-20 w-20 h-20 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-2xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
-				<div className='absolute bottom-32 left-32 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
-				
-				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					
+					{/* Visual connector - About to Features */}
+					<div className='flex items-center justify-center mb-20 md:mb-24'>
+						<div className='flex items-center gap-6'>
+							<div className='h-px w-32 bg-gradient-to-r from-transparent via-orange-300 to-orange-300' />
+							<div className='w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25 animate-pulse'>
+								<ArrowRight size={24} className='text-white rotate-90' />
+							</div>
+							<div className='h-px w-32 bg-gradient-to-l from-transparent via-emerald-300 to-emerald-300' />
+						</div>
+					</div>
+					
+					{/* PART 2: Why Choose Us (Features) */}
 					<div className='text-center mb-16 md:mb-20'>
 						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-full border border-emerald-200 mb-6 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300'>
 							<Sparkles size={16} className='text-emerald-500' />
@@ -1107,40 +1106,32 @@ export default function Home() {
 					</div>
 					
 					{/* Bottom stats */}
-					<div className='mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8'>
+					<div className='mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 mb-20'>
 						{[
 							{ value: "$10000+", label: "Assets Sold", gradient: "from-emerald-500 to-teal-500" },
 							{ value: "10k+", label: "Active Users", gradient: "from-orange-500 to-rose-500" },
 							{ value: "99.9%", label: "Uptime", gradient: "from-sky-500 to-blue-500" },
 							{ value: "24/7", label: "Support", gradient: "from-violet-500 to-purple-500" },
 						].map((stat, i) => (
-							<div key={i} className='group text-center p-4 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300 cursor-pointer'>
+							<div key={i} className='group text-center p-4 rounded-2xl hover:bg-white/90 hover:shadow-lg transition-all duration-300 cursor-pointer backdrop-blur-sm'>
 								<p className={`text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${stat.gradient} group-hover:scale-110 transition-transform duration-300`}>{stat.value}</p>
 								<p className='text-slate-500 text-sm mt-1 group-hover:text-slate-700 transition-colors'>{stat.label}</p>
 							</div>
 						))}
 					</div>
-				</div>
-				
-				{/* Bottom wave transition to next section */}
-				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
-			</section>
-
-			{/* How It Works Section */}
-			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-				{/* Top wave transition from Features */}
-				<div className='absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-slate-50 to-transparent' />
-				
-				{/* Background decorations */}
-				<div className='absolute top-40 left-20 w-72 h-72 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' />
-				<div className='absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '0.5s' }} />
-				<div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-emerald-100/20 to-teal-100/20 rounded-full blur-3xl' />
-				
-				{/* Floating elements */}
-				<div className='absolute top-32 right-32 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-rose-400/20 rounded-xl rotate-12 animate-bounce' style={{ animationDuration: '4s' }} />
-				<div className='absolute bottom-32 left-32 w-20 h-20 bg-gradient-to-br from-sky-400/20 to-blue-400/20 rounded-full animate-bounce' style={{ animationDuration: '5s', animationDelay: '1s' }} />
-				
-				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					
+					{/* Visual connector - Features to How It Works */}
+					<div className='flex items-center justify-center mb-20 md:mb-24'>
+						<div className='flex items-center gap-6'>
+							<div className='h-px w-32 bg-gradient-to-r from-transparent via-emerald-300 to-emerald-300' />
+							<div className='w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 animate-pulse'>
+								<ArrowRight size={24} className='text-white rotate-90' />
+							</div>
+							<div className='h-px w-32 bg-gradient-to-l from-transparent via-sky-300 to-sky-300' />
+						</div>
+					</div>
+					
+					{/* PART 3: How It Works */}
 					<div className='text-center mb-16 md:mb-20'>
 						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-50 to-blue-50 rounded-full border border-sky-200 mb-6 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300'>
 							<Sparkles size={16} className='text-sky-500' />
@@ -1227,31 +1218,26 @@ export default function Home() {
 							);
 						})}
 					</div>
-				</div>
-				
-				{/* Bottom wave transition to Testimonials */}
-				<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
-			</section>
-
-			{/* Testimonials Section */}
-			<section className='relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100'>
-				{/* Background decoration */}
-				<div className='absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent' />
-				<div className='absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-orange-200/30 to-rose-200/30 rounded-full blur-3xl animate-pulse' />
-				<div className='absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-sky-200/30 to-blue-200/30 rounded-full blur-3xl animate-pulse' style={{ animationDelay: '1s' }} />
-				
-				{/* Floating elements */}
-				<div className='absolute top-40 left-10 w-20 h-20 bg-gradient-to-br from-orange-400/10 to-rose-400/10 rounded-full blur-xl animate-bounce' style={{ animationDuration: '3s' }} />
-				<div className='absolute bottom-40 right-10 w-16 h-16 bg-gradient-to-br from-sky-400/10 to-blue-400/10 rounded-full blur-xl animate-bounce' style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
-				
-				<div className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-20 md:py-28'>
+					
+					{/* Visual connector - How It Works to Testimonials */}
+					<div className='flex items-center justify-center mb-20 md:mb-24 mt-20'>
+						<div className='flex items-center gap-6'>
+							<div className='h-px w-32 bg-gradient-to-r from-transparent via-sky-300 to-sky-300' />
+							<div className='w-14 h-14 rounded-full bg-gradient-to-br from-sky-500 to-blue-500 flex items-center justify-center shadow-lg shadow-sky-500/25 animate-pulse'>
+								<ArrowRight size={24} className='text-white rotate-90' />
+							</div>
+							<div className='h-px w-32 bg-gradient-to-l from-transparent via-amber-300 to-amber-300' />
+						</div>
+					</div>
+					
+					{/* PART 4: Testimonials */}
 					<div className='text-center mb-16'>
-						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-50 to-rose-50 rounded-full border border-orange-200 mb-6 hover:shadow-lg hover:shadow-orange-500/10 transition-all duration-300'>
-							<Star size={16} className='text-orange-500 fill-orange-500' />
-							<span className='text-sm font-semibold text-orange-700'>Testimonials</span>
+						<div className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-50 to-orange-50 rounded-full border border-amber-200 mb-6 hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300'>
+							<Star size={16} className='text-amber-500 fill-amber-500' />
+							<span className='text-sm font-semibold text-amber-700'>Testimonials</span>
 						</div>
 						<h2 className='text-4xl md:text-5xl font-bold text-slate-900 mb-4'>
-							Loved by <span className='text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-500'>Entrepreneurs</span>
+							Loved by <span className='text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-500'>Entrepreneurs</span>
 						</h2>
 						<p className='text-slate-600 text-lg max-w-2xl mx-auto'>
 							See what our community has to say about their experience
@@ -1327,6 +1313,9 @@ export default function Home() {
 							</div>
 						))}
 					</div>
+					
+					{/* Bottom wave transition to CTA */}
+					<div className='absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-50 to-transparent' />
 				</div>
 			</section>
 
