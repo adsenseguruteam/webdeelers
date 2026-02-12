@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import dynamic from "next/dynamic";
+import "react-quill-new/dist/quill.snow.css";
 import {
 	Select,
 	SelectContent,
@@ -40,6 +42,9 @@ import axios from "axios";
 import AdminSidebar from "@/components/admin-sidebar";
 import Link from "next/link";
 import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
+
+// Dynamic import for ReactQuill to avoid SSR issues
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface Product {
 	_id: string;
@@ -491,12 +496,160 @@ export default function AdminProductsPage() {
 				
 				<div className="col-span-2">
 					<Label>Full Description</Label>
-					<Textarea
-						value={formData.description}
-						onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-						placeholder="Detailed product description"
-						rows={4}
-					/>
+					<div className='mb-12'>
+						<div className='pro-editor h-[300px]'>
+							<ReactQuill
+								theme='snow'
+								placeholder='Write your detailed product description here...'
+								value={formData.description}
+								onChange={(value: string) =>
+									setFormData({
+										...formData,
+										description: value,
+									})
+								}
+								modules={{
+									toolbar: [
+										[{ header: [1, 2, 3, 4, 5, 6, false] }],
+										["bold", "italic", "underline", "strike", "blockquote"],
+										[
+											{ list: "ordered" },
+											{ list: "bullet" },
+											{ indent: "-1" },
+											{ indent: "+1" },
+										],
+										["link", "image"],
+										["clean"],
+									],
+								}}
+								formats={[
+									"header",
+									"bold",
+									"italic",
+									"underline",
+									"strike",
+									"blockquote",
+									"list",
+									"indent",
+									"link",
+									"image",
+									"size",
+									"align",
+									"code",
+									"code-block",
+								]}
+								className='h-full'
+							/>
+						</div>
+						<style jsx>{`
+							.pro-editor :global(.ql-toolbar) {
+								border: 1px solid #e2e8f0;
+								border-radius: 12px 12px 0 0;
+								background: #f8fafc;
+								padding: 12px 14px;
+								position: sticky;
+								top: 0;
+								z-index: 10;
+							}
+							.pro-editor
+								:global(
+									.ql-toolbar .ql-formats button
+								),
+							.pro-editor
+								:global(.ql-toolbar .ql-picker),
+							.pro-editor
+								:global(
+									.ql-toolbar .ql-picker-label
+								),
+							.pro-editor
+								:global(
+									.ql-toolbar .ql-picker-item
+								) {
+								font-size: 15px;
+							}
+							.pro-editor :global(.ql-container) {
+								border: 1px solid #e2e8f0;
+								border-top: none;
+								border-radius: 0 0 12px 12px;
+								box-shadow: 0 10px 16px -4px rgba(15, 23, 42, 0.08);
+								height: calc(100% - 10px);
+							}
+							.pro-editor :global(.ql-editor) {
+								font-size: 16px;
+								line-height: 1.6;
+								letter-spacing: 0.01em;
+								word-spacing: 0.06em;
+								color: #0f172a;
+								padding: 20px;
+							}
+							.pro-editor :global(.ql-editor p) {
+								margin: 0 0 1em 0;
+							}
+							.pro-editor :global(.ql-editor h1) {
+								font-size: 2rem;
+								line-height: 1.3;
+								margin: 1em 0 0.5em;
+								font-weight: 700;
+								letter-spacing: -0.01em;
+							}
+							.pro-editor :global(.ql-editor h2) {
+								font-size: 1.5rem;
+								line-height: 1.35;
+								margin: 0.8em 0 0.4em;
+								font-weight: 700;
+							}
+							.pro-editor :global(.ql-editor h3) {
+								font-size: 1.25rem;
+								line-height: 1.4;
+								margin: 0.7em 0 0.3em;
+								font-weight: 700;
+							}
+							.pro-editor
+								:global(.ql-editor blockquote) {
+								border-left: 4px solid #38bdf8;
+								padding-left: 16px;
+								margin: 1em 0;
+								color: #334155;
+								background: #f0f9ff;
+								border-radius: 8px;
+							}
+							.pro-editor :global(.ql-editor a) {
+								color: #0284c7;
+								text-decoration: underline;
+								font-weight: 600;
+							}
+							.pro-editor :global(.ql-editor ul),
+							.pro-editor :global(.ql-editor ol) {
+								padding-left: 1.25rem;
+								margin: 0.8em 0 1em;
+							}
+							.pro-editor :global(.ql-editor img) {
+								border-radius: 8px;
+								box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.1);
+								margin: 1rem auto;
+								display: block;
+								max-width: 100%;
+							}
+							.pro-editor :global(.ql-editor pre),
+							.pro-editor :global(.ql-editor code) {
+								background: #0b1220;
+								color: #e5e7eb;
+								border-radius: 6px;
+								padding: 0.3rem 0.5rem;
+								font-family: ui-monospace,
+									SFMono-Regular, Menlo, Monaco,
+									Consolas, "Liberation Mono",
+									"Courier New", monospace;
+							}
+							.pro-editor
+								:global(
+									.ql-editor.ql-blank::before
+								) {
+								color: #94a3b8;
+								font-size: 1rem;
+							}
+						`}</style>
+					</div>
 				</div>
 				
 				<div className="col-span-2">
@@ -837,7 +990,7 @@ export default function AdminProductsPage() {
 									Add Product
 								</Button>
 							</DialogTrigger>
-							<DialogContent className="max-w-2xl">
+							<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
 								<DialogHeader>
 									<DialogTitle>Add New Product</DialogTitle>
 								</DialogHeader>
@@ -1017,7 +1170,7 @@ export default function AdminProductsPage() {
 
 				{/* Edit Dialog */}
 				<Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-					<DialogContent className="max-w-2xl">
+					<DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
 						<DialogHeader>
 							<DialogTitle>Edit Product</DialogTitle>
 						</DialogHeader>
