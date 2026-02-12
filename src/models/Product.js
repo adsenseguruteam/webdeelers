@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema(
 		},
 		currency: {
 			type: String,
-			default: "USD",
+			default: "INR",
 			enum: ["USD", "EUR", "GBP", "INR"],
 		},
 		images: [{
@@ -87,6 +87,7 @@ const productSchema = new mongoose.Schema(
 				url: { type: String, default: "" },
 				size: { type: String, default: "" },
 				type: { type: String, default: "" },
+				imageKitFileId: { type: String, default: "" }, // Store ImageKit file ID
 			}, { _id: false }),
 			link: {
 				type: String,

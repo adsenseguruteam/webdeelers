@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import AdminSidebar from "@/components/admin-sidebar";
 import Link from "next/link";
+import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Order {
 	_id: string;
@@ -98,6 +99,7 @@ export default function AdminOrdersPage() {
 	const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [deleteLoading, setDeleteLoading] = useState(false);
+	const [userCurrency, setUserCurrency] = useState<string>("USD");
 
 	const fetchOrders = async () => {
 		try {
@@ -108,14 +110,32 @@ export default function AdminOrdersPage() {
 			if (searchQuery) params.append("search", searchQuery);
 			
 			const response = await axios.get(`/api/admin/orders?${params.toString()}`);
-			setOrders(response.data.orders || []);
-			setStats(response.data.stats || {
+			const fetchedOrders = response.data.orders || [];
+			
+			// Calculate display prices for each order
+			const ordersWithConvertedPrices = fetchedOrders.map((order: Order) => ({
+				...order,
+				finalAmount: convertPrice(order.finalAmount, order.currency, userCurrency),
+				currency: userCurrency,
+			}));
+			setOrders(ordersWithConvertedPrices);
+			
+			// Calculate stats in user's currency
+			const fetchedStats = response.data.stats || {
 				totalRevenue: 0,
 				totalOrders: 0,
 				completedOrders: 0,
 				pendingOrders: 0,
 				failedOrders: 0,
-			});
+			};
+			
+			// Convert total revenue to user's currency
+			const convertedStats = {
+				...fetchedStats,
+				totalRevenue: convertPrice(fetchedStats.totalRevenue, "INR", userCurrency), // Assuming original revenue is in INR
+			};
+			
+			setStats(convertedStats);
 		} catch (error) {
 			toast.error("Failed to fetch orders");
 		} finally {
@@ -124,6 +144,18 @@ export default function AdminOrdersPage() {
 	};
 
 	useEffect(() => {
+		// Fetch user's currency
+		const fetchUserCurrency = async () => {
+			try {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			} catch (error) {
+				console.error("Error fetching user currency:", error);
+				setUserCurrency("USD"); // Default to USD on error
+			}
+		};
+		
+		fetchUserCurrency();
 		fetchOrders();
 	}, [selectedStatus, selectedPaymentStatus]);
 
@@ -194,10 +226,9 @@ export default function AdminOrdersPage() {
 	};
 
 	const formatCurrency = (amount: number, currency: string) => {
-		return new Intl.NumberFormat("en-IN", {
-			style: "currency",
-			currency: currency || "INR",
-		}).format(amount);
+		// Convert the amount from the product's currency to the user's currency
+		const convertedAmount = convertPrice(amount, currency, userCurrency);
+		return formatPrice(convertedAmount, userCurrency);
 	};
 
 	const handleDeleteOrder = async () => {

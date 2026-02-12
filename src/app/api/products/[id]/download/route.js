@@ -41,6 +41,7 @@ export async function GET(request, { params }) {
 		let downloadUrl = null;
 		
 		if (product.downloadOptions.type === "upload" && product.downloadOptions.file?.url) {
+			// Use the direct URL from ImageKit
 			downloadUrl = product.downloadOptions.file.url;
 		} else if (product.downloadOptions.type === "link" && product.downloadOptions.link) {
 			downloadUrl = product.downloadOptions.link;

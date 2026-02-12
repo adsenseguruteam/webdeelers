@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import AdminSidebar from "@/components/admin-sidebar";
 import Link from "next/link";
+import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Product {
 	_id: string;
@@ -109,6 +110,7 @@ export default function AdminProductsPage() {
 	const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+	const [userCurrency, setUserCurrency] = useState<string>("USD");
 	const [formData, setFormData] = useState({
 		title: "",
 		description: "",
@@ -116,7 +118,7 @@ export default function AdminProductsPage() {
 		category: "script",
 		price: "",
 		comparePrice: "",
-		currency: "USD",
+		currency: "INR",
 		status: "draft",
 		stock: "-1",
 		isFeatured: false,
@@ -155,6 +157,18 @@ export default function AdminProductsPage() {
 	};
 
 	useEffect(() => {
+		// Fetch user's currency
+		const fetchUserCurrency = async () => {
+			try {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			} catch (error) {
+				console.error("Error fetching user currency:", error);
+				setUserCurrency("USD"); // Default to USD on error
+			}
+		};
+		
+		fetchUserCurrency();
 		fetchProducts();
 	}, []);
 
@@ -219,7 +233,7 @@ export default function AdminProductsPage() {
 			category: product.category,
 			price: product.price.toString(),
 			comparePrice: product.comparePrice?.toString() || "",
-			currency: product.currency,
+			currency: product.currency || "INR",
 			status: product.status,
 			stock: product.stock.toString(),
 			isFeatured: product.isFeatured,
@@ -247,6 +261,7 @@ export default function AdminProductsPage() {
 		setIsEditDialogOpen(true);
 	};
 
+	// Reset form to default values
 	const resetForm = () => {
 		setFormData({
 			title: "",
@@ -255,7 +270,7 @@ export default function AdminProductsPage() {
 			category: "script",
 			price: "",
 			comparePrice: "",
-			currency: "USD",
+			currency: "INR",
 			status: "draft",
 			stock: "-1",
 			isFeatured: false,
@@ -287,27 +302,49 @@ export default function AdminProductsPage() {
 		if (!file || !editingProduct) return;
 
 		try {
-			const formData = new FormData();
-			formData.append("file", file);
-			formData.append("productId", editingProduct._id);
+			setUploadingImage(true);
 
-			const response = await axios.post("/api/products/upload-download", formData, {
-				headers: { "Content-Type": "multipart/form-data" },
-			});
+			// Get ImageKit auth
+			const authRes = await axios.get("/api/imagekit/auth");
+			const { token, expire, signature, publicKey } = authRes.data;
 
-			if (response.data.success) {
+			const form = new FormData();
+			form.append("file", file);
+			form.append("fileName", file.name);
+			form.append("publicKey", publicKey);
+			form.append("signature", signature);
+			form.append("expire", String(expire));
+			form.append("token", token);
+			form.append("useUniqueFileName", "true");
+			form.append("folder", "/downloads");
+
+			const uploadRes = await axios.post(
+				"https://upload.imagekit.io/api/v1/files/upload",
+				form
+			);
+
+			if (uploadRes.data && uploadRes.data.url) {
 				setFormData(prev => ({
 					...prev,
 					downloadOptions: {
 						...prev.downloadOptions,
 						type: "upload",
-						file: response.data.file
+						file: {
+							name: file.name,
+							url: uploadRes.data.url,
+							size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
+							type: file.type,
+							imageKitFileId: uploadRes.data.fileId, // Store ImageKit file ID
+						}
 					}
 				}));
 				toast.success("Download file uploaded successfully");
 			}
-		} catch (error) {
-			toast.error("Failed to upload download file");
+		} catch (error: any) {
+			console.error("Upload failed:", error);
+			toast.error(error.response?.data?.message || "Failed to upload download file");
+		} finally {
+			setUploadingImage(false);
 		}
 	};
 
@@ -929,11 +966,11 @@ export default function AdminProductsPage() {
 									<div className="flex items-center justify-between mb-3">
 										<div className="flex items-baseline gap-2">
 											<span className="text-lg font-bold text-slate-900">
-												{product.currency} {product.price}
+												{formatPrice(convertPrice(product.price, product.currency, userCurrency), userCurrency)}
 											</span>
 											{product.comparePrice && product.comparePrice > 0 && (
 												<span className="text-sm text-slate-400 line-through">
-													{product.currency} {product.comparePrice}
+													{formatPrice(convertPrice(product.comparePrice, product.currency, userCurrency), userCurrency)}
 												</span>
 											)}
 										</div>

@@ -33,6 +33,7 @@ import {
 	X,
 } from "lucide-react";
 import axios from "axios";
+import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Product {
 	_id: string;
@@ -55,6 +56,11 @@ interface Product {
 	isFeatured: boolean;
 	isBestseller: boolean;
 	features: string[];
+}
+
+interface ProductWithDisplayPrices extends Product {
+	displayPrice?: number;
+	displayComparePrice?: number;
 }
 
 const categories = [
@@ -88,18 +94,25 @@ const sortOptions = [
 ];
 
 export default function ShopPage() {
-	const [products, setProducts] = useState<Product[]>([]);
-	const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+	const [products, setProducts] = useState<ProductWithDisplayPrices[]>([]);
+	const [featuredProducts, setFeaturedProducts] = useState<ProductWithDisplayPrices[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [sortBy, setSortBy] = useState("newest");
 	const [showFilters, setShowFilters] = useState(false);
+	const [userCurrency, setUserCurrency] = useState("USD");
 
 	const fetchProducts = async () => {
 		try {
 			setLoading(true);
 			const params = new URLSearchParams();
+			
+			// Get user's currency if not already set
+			if (!userCurrency) {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			}
 			params.append("status", "active");
 			params.append("limit", "100");
 			
@@ -130,11 +143,39 @@ export default function ShopPage() {
 			}
 			
 			const response = await axios.get(`/api/products?${params.toString()}`);
-			setProducts(response.data.products || []);
+			const fetchedProducts = response.data.products || [];
+			// Calculate display prices based on user's currency
+			const productsWithDisplayPrices = fetchedProducts.map((product: Product) => {
+				const displayPrice = convertPrice(product.price, product.currency, userCurrency);
+				let displayComparePrice;
+				if (product.comparePrice && product.comparePrice > 0) {
+					displayComparePrice = convertPrice(product.comparePrice, product.currency, userCurrency);
+				}
+				return {
+					...product,
+					displayPrice,
+					displayComparePrice
+				};
+			});
+			setProducts(productsWithDisplayPrices);
 			
 			// Fetch featured products separately
 			const featuredResponse = await axios.get("/api/products?featured=true&limit=4&status=active");
-			setFeaturedProducts(featuredResponse.data.products || []);
+			const featuredFetchedProducts = featuredResponse.data.products || [];
+			// Calculate display prices for featured products
+			const featuredProductsWithDisplayPrices = featuredFetchedProducts.map((product: Product) => {
+				const displayPrice = convertPrice(product.price, product.currency, userCurrency);
+				let displayComparePrice;
+				if (product.comparePrice && product.comparePrice > 0) {
+					displayComparePrice = convertPrice(product.comparePrice, product.currency, userCurrency);
+				}
+				return {
+					...product,
+					displayPrice,
+					displayComparePrice
+				};
+			});
+			setFeaturedProducts(featuredProductsWithDisplayPrices);
 		} catch (error) {
 			console.error("Error fetching products:", error);
 		} finally {
@@ -143,6 +184,17 @@ export default function ShopPage() {
 	};
 
 	useEffect(() => {
+		const fetchUserCurrency = async () => {
+			try {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			} catch (error) {
+				console.error("Error fetching user currency:", error);
+				setUserCurrency("USD"); // Default to USD on error
+			}
+		};
+		
+		fetchUserCurrency();
 		fetchProducts();
 	}, [selectedCategory, sortBy]);
 
@@ -152,36 +204,9 @@ export default function ShopPage() {
 			fetchProducts();
 		}, 500);
 		return () => clearTimeout(timer);
-	}, [searchQuery]);
+	}, [searchQuery, userCurrency]);
 
-	const getCategoryIcon = (categoryValue: string) => {
-		const catConfig = categories.find((c) => c.value === categoryValue);
-		const Icon = catConfig?.icon || Package;
-		return <Icon size={18} />;
-	};
-
-	const getCategoryColor = (categoryValue: string) => {
-		const colors: Record<string, string> = {
-			script: "from-blue-500 to-indigo-500",
-			tool: "from-emerald-500 to-teal-500",
-			course: "from-amber-500 to-orange-500",
-			service: "from-rose-500 to-pink-500",
-			template: "from-violet-500 to-purple-500",
-			ebook: "from-cyan-500 to-sky-500",
-			wordpress: "from-slate-500 to-slate-600",
-			react: "from-blue-400 to-cyan-400",
-			nextjs: "from-slate-600 to-slate-800",
-			nodejs: "from-green-500 to-emerald-500",
-			python: "from-yellow-500 to-amber-500",
-			php: "from-indigo-400 to-purple-400",
-			automation: "from-orange-400 to-red-400",
-			seo: "from-emerald-400 to-teal-400",
-			marketing: "from-pink-400 to-rose-400",
-			adsense: "from-blue-500 to-blue-600",
-			monetization: "from-green-500 to-teal-500",
-		};
-		return colors[categoryValue] || "from-slate-500 to-slate-600";
-	};
+	
 
 	const hasActiveFilters = selectedCategory !== "all" || searchQuery;
 
@@ -267,7 +292,7 @@ export default function ShopPage() {
 						
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 							{featuredProducts.map((product) => (
-								<ProductCard key={product._id} product={product} featured />
+								<ProductCard key={product._id} product={product} featured userCurrency={userCurrency} />
 							))}
 						</div>
 					</div>
@@ -348,7 +373,7 @@ export default function ShopPage() {
 					) : (
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 							{products.map((product) => (
-								<ProductCard key={product._id} product={product} />
+								<ProductCard key={product._id} product={product} userCurrency={userCurrency} />
 							))}
 						</div>
 					)}
@@ -383,9 +408,9 @@ export default function ShopPage() {
 	);
 }
 
-function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
-	const discount = product.comparePrice && product.comparePrice > product.price
-		? Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100)
+function ProductCard({ product, featured = false, userCurrency }: { product: ProductWithDisplayPrices; featured?: boolean; userCurrency: string }) {
+	const discount = product.displayComparePrice && product.displayComparePrice > (product.displayPrice || product.price)
+		? Math.round(((product.displayComparePrice - (product.displayPrice || product.price)) / product.displayComparePrice) * 100)
 		: 0;
 
 	return (
@@ -464,11 +489,11 @@ function ProductCard({ product, featured = false }: { product: Product; featured
 					{/* Price */}
 					<div className="flex items-baseline gap-2">
 						<span className="text-xl font-bold text-slate-900">
-							{product.currency} {product.price}
+							{formatPrice(product.displayPrice || product.price, userCurrency)}
 						</span>
-						{product.comparePrice && product.comparePrice > product.price && (
+						{product.displayComparePrice && product.displayComparePrice > (product.displayPrice || product.price) && (
 							<span className="text-sm text-slate-400 line-through">
-								{product.currency} {product.comparePrice}
+								{formatPrice(product.displayComparePrice, userCurrency)}
 							</span>
 						)}
 					</div>

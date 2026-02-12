@@ -24,7 +24,7 @@ export async function POST(request) {
 		}
 
 		const body = await request.json();
-		const { productId, customerDetails } = body;
+		const { productId, customerDetails, currency } = body;
 		
 		if (!productId) {
 			return NextResponse.json(
@@ -74,7 +74,7 @@ export async function POST(request) {
 		// Create Razorpay order
 		const razorpayOrder = await razorpay.orders.create({
 			amount: amountInPaise,
-			currency: product.currency === "INR" ? "INR" : "USD",
+			currency: currency || product.currency, // Use user's currency if provided, otherwise use product currency
 			receipt: `receipt_${Date.now()}`,
 			notes: {
 				productId: product._id.toString(),
@@ -90,12 +90,12 @@ export async function POST(request) {
 				title: product.title,
 				price: product.price,
 				comparePrice: product.comparePrice,
-				currency: product.currency,
+				currency: currency || product.currency,
 				category: product.category,
 				thumbnail: product.thumbnail,
 			},
 			amount: product.price,
-			currency: product.currency,
+			currency: currency || product.currency,
 			discountApplied,
 			finalAmount,
 			razorpay: {

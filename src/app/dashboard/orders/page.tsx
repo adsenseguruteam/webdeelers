@@ -33,6 +33,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import Link from "next/link";
 import AdminSidebar from "@/components/admin-sidebar";
+import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Order {
 	_id: string;
@@ -70,6 +71,7 @@ export default function MyOrdersPage() {
 	const [selectedStatus, setSelectedStatus] = useState<string>("all");
 	const [viewingOrder, setViewingOrder] = useState<Order | null>(null);
 	const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+	const [userCurrency, setUserCurrency] = useState<string>("USD");
 
 	const fetchOrders = async () => {
 		try {
@@ -87,6 +89,18 @@ export default function MyOrdersPage() {
 	};
 
 	useEffect(() => {
+		// Fetch user's currency
+		const fetchUserCurrency = async () => {
+			try {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			} catch (error) {
+				console.error("Error fetching user currency:", error);
+				setUserCurrency("USD"); // Default to USD on error
+			}
+		};
+		
+		fetchUserCurrency();
 		fetchOrders();
 	}, [selectedStatus]);
 
@@ -149,10 +163,9 @@ export default function MyOrdersPage() {
 	};
 
 	const formatCurrency = (amount: number, currency: string) => {
-		return new Intl.NumberFormat("en-IN", {
-			style: "currency",
-			currency: currency || "INR",
-		}).format(amount);
+		// Convert the amount from the product's currency to the user's currency
+		const convertedAmount = convertPrice(amount, currency, userCurrency);
+		return formatPrice(convertedAmount, userCurrency);
 	};
 
 	const isDownloadAvailable = (order: Order) => {

@@ -32,6 +32,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { userContext } from "@/context/userContext";
+import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Product {
 	_id: string;
@@ -79,8 +80,24 @@ export default function ProductDetailPage() {
 	const [orderData, setOrderData] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState(0);
 	const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "failed">("idle");
+	const [userCurrency, setUserCurrency] = useState<string>("USD"); // Default to USD
+	const [displayPrice, setDisplayPrice] = useState<number>(0);
+	const [displayComparePrice, setDisplayComparePrice] = useState<number | undefined>(undefined);
 
 	useEffect(() => {
+		// Fetch user's currency
+		const fetchUserCurrency = async () => {
+			try {
+				const currency = await getUserCurrency();
+				setUserCurrency(currency);
+			} catch (error) {
+				console.error("Error fetching user currency:", error);
+				// Default to USD on error
+				setUserCurrency("USD");
+			}
+		};
+
+		fetchUserCurrency();
 		fetchProduct();
 	}, [slug]);
 
@@ -104,6 +121,26 @@ export default function ProductDetailPage() {
 			setLoading(false);
 		}
 	};
+	
+	// Update display prices when product or user currency changes
+	useEffect(() => {
+		if (product) {
+			// Calculate display prices based on user's currency
+			const originalPrice = product.price;
+			const originalComparePrice = product.comparePrice;
+			
+			// Convert prices to user's currency
+			const convertedPrice = convertPrice(originalPrice, product.currency, userCurrency);
+			setDisplayPrice(convertedPrice);
+			
+			if (originalComparePrice && originalComparePrice > 0) {
+				const convertedComparePrice = convertPrice(originalComparePrice, product.currency, userCurrency);
+				setDisplayComparePrice(convertedComparePrice);
+			} else {
+				setDisplayComparePrice(undefined);
+			}
+		}
+	}, [product, userCurrency]);
 
 	const handleBuy = async () => {
 		if (!user) {
@@ -124,6 +161,7 @@ export default function ProductDetailPage() {
 					email: user.email,
 					phone: user.phone || "",
 				},
+				currency: userCurrency, // Send user's currency
 			});
 
 			if (response.data.success) {
@@ -346,15 +384,15 @@ export default function ProductDetailPage() {
 						{/* Price */}
 						<div className="flex items-baseline gap-4 p-6 bg-gradient-to-r from-orange-50 to-rose-50 rounded-2xl border border-orange-100">
 							<span className="text-4xl font-bold text-slate-900">
-								{product.currency} {product.price}
+								{userCurrency} {displayPrice.toFixed(2)}
 							</span>
-							{product.comparePrice && product.comparePrice > product.price && (
+							{displayComparePrice && displayComparePrice > displayPrice && (
 								<>
 									<span className="text-xl text-slate-400 line-through">
-										{product.currency} {product.comparePrice}
+										{userCurrency} {displayComparePrice.toFixed(2)}
 									</span>
 									<Badge className="bg-rose-500 text-white">
-										Save {product.currency} {(product.comparePrice - product.price).toFixed(2)}
+										Save {userCurrency} {(displayComparePrice - displayPrice).toFixed(2)}
 									</Badge>
 								</>
 							)}
