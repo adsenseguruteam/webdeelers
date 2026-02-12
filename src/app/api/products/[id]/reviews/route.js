@@ -65,7 +65,7 @@ export async function POST(request, { params }) {
 				},
 			},
 			{ new: true, runValidators: true }
-		).populate("reviews.user", "name email");
+		);
 
 		if (!updatedProduct) {
 			return NextResponse.json(

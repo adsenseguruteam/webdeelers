@@ -361,7 +361,7 @@ export default function ProductDetailPage() {
 		);
 	}
 
-    console.log(product)
+    // console.log(product)
 
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -726,7 +726,7 @@ export default function ProductDetailPage() {
 						</div>
 					)}
 				</div>
-			</div>
+			</div> 
 
 
 			{/* Payment Processing Dialog */}

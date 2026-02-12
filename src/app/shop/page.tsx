@@ -67,21 +67,9 @@ const categories = [
 	{ value: "all", label: "All Categories", icon: Package },
 	{ value: "script", label: "Code Scripts", icon: Code },
 	{ value: "tool", label: "Tools & Software", icon: Wrench },
-	{ value: "course", label: "Courses", icon: BookOpen },
-	{ value: "service", label: "Services", icon: Headphones },
-	{ value: "template", label: "Templates", icon: FileText },
-	{ value: "ebook", label: "E-Books", icon: Book },
-	{ value: "wordpress", label: "WordPress", icon: Package },
-	{ value: "react", label: "React", icon: Package },
-	{ value: "nextjs", label: "Next.js", icon: Package },
-	{ value: "nodejs", label: "Node.js", icon: Package },
-	{ value: "python", label: "Python", icon: Package },
-	{ value: "php", label: "PHP", icon: Package },
 	{ value: "automation", label: "Automation", icon: Package },
 	{ value: "seo", label: "SEO", icon: Package },
-	{ value: "marketing", label: "Marketing", icon: Package },
 	{ value: "adsense", label: "AdSense", icon: Package },
-	{ value: "monetization", label: "Monetization", icon: Package },
 	{ value: "other", label: "Other", icon: Package },
 ];
 
@@ -236,7 +224,7 @@ export default function ShopPage() {
 							</span>
 						</h1>
 						<p className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-							Discover premium code scripts, tools, courses, and services to accelerate your online success
+							Discover premium code scripts, tools, and services to accelerate your online success
 						</p>
 						
 						{/* Search Bar */}
@@ -249,32 +237,6 @@ export default function ShopPage() {
 								className="pl-12 pr-4 py-6 text-lg bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-slate-400 rounded-xl focus:bg-white/20"
 							/>
 						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* Categories */}
-			<section className="py-8 border-b border-slate-200 bg-white/50 backdrop-blur-sm">
-				<div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-					<div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-						{categories.map((cat) => {
-							const Icon = cat.icon;
-							const isActive = selectedCategory === cat.value;
-							return (
-								<button
-									key={cat.value}
-									onClick={() => setSelectedCategory(cat.value)}
-									className={`flex items-center gap-2 px-5 py-3 rounded-xl whitespace-nowrap transition-all duration-300 ${
-										isActive
-											? "bg-gradient-to-r from-orange-500 to-rose-500 text-white shadow-lg shadow-orange-500/25"
-											: "bg-white border border-slate-200 text-slate-600 hover:border-orange-300 hover:shadow-md"
-									}`}
-								>
-									<Icon size={18} />
-									<span className="font-medium">{cat.label}</span>
-								</button>
-							);
-						})}
 					</div>
 				</div>
 			</section>

@@ -8,7 +8,7 @@ import { getDataFromToken } from "@/lib/auth";
 // GET /api/products/[id] - Get single product
 export async function GET(request, { params }) {
 	try {
-		const { id } = params;
+		const { id } = await params;
 		
 		await connectDB();
 		
