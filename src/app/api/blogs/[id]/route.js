@@ -11,7 +11,6 @@ export async function GET(request) {
 		await connectDB();
 
 		const id = extractParamFromRequest(request);
-		console.log(id)
 		let blog;
 
 		if (mongoose.Types.ObjectId.isValid(id)) {

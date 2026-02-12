@@ -17,6 +17,8 @@ import {
 	Plus,
 	TrendingUp,
 	User,
+	ShoppingBag,
+	ShoppingBasket,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
@@ -29,6 +31,8 @@ interface AdminSidebarProps {
 export const adminMenuItems = [
 	{ icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
 	{ icon: FileText, label: "Listings", href: "/admin/listings" },
+	{ icon: ShoppingBag, label: "Products", href: "/admin/products" },
+	{ icon: ShoppingBasket, label: "Orders", href: "/admin/orders" },
 	{ icon: Users, label: "Users", href: "/admin/users" },
 	{ icon: Mail, label: "Emails", href: "/admin/emails" },
 	{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },
