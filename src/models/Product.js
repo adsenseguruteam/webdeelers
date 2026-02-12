@@ -76,6 +76,23 @@ const productSchema = new mongoose.Schema(
 			size: String,
 			type: String,
 		}],
+		downloadOptions: {
+			type: {
+				type: String,
+				enum: ["upload", "link"],
+				default: "upload",
+			},
+			file: new mongoose.Schema({
+				name: { type: String, default: "" },
+				url: { type: String, default: "" },
+				size: { type: String, default: "" },
+				type: { type: String, default: "" },
+			}, { _id: false }),
+			link: {
+				type: String,
+				default: ""
+			},
+		},
 		demoUrl: {
 			type: String,
 		},

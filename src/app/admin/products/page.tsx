@@ -62,6 +62,16 @@ interface Product {
 	isFeatured: boolean;
 	isBestseller: boolean;
 	createdAt: string;
+	downloadOptions?: {
+		type: "upload" | "link";
+		file?: {
+			name: string;
+			url: string;
+			size: string;
+			type: string;
+		};
+		link?: string;
+	};
 }
 
 const categories = [
@@ -116,6 +126,20 @@ export default function AdminProductsPage() {
 		features: [] as string[],
 		demoUrl: "",
 		videoUrl: "",
+		downloadOptions: {
+			type: "upload" as "upload" | "link",
+			file: {
+				name: "",
+				url: "",
+				size: "",
+				type: "",
+			},
+			link: "",
+		} as {
+			type: "upload" | "link";
+			file: { name: string; url: string; size: string; type: string };
+			link: string;
+		}
 	});
 
 	const fetchProducts = async () => {
@@ -205,6 +229,20 @@ export default function AdminProductsPage() {
 			features: [],
 			demoUrl: "",
 			videoUrl: "",
+			downloadOptions: {
+				type: product.downloadOptions?.type || "upload",
+				file: product.downloadOptions?.file || {
+					name: "",
+					url: "",
+					size: "",
+					type: "",
+				},
+				link: product.downloadOptions?.link || "",
+			} as {
+				type: "upload" | "link";
+				file: { name: string; url: string; size: string; type: string };
+				link: string;
+			}
 		});
 		setIsEditDialogOpen(true);
 	};
@@ -227,7 +265,50 @@ export default function AdminProductsPage() {
 			features: [],
 			demoUrl: "",
 			videoUrl: "",
+			downloadOptions: {
+				type: "upload",
+				file: {
+					name: "",
+					url: "",
+					size: "",
+					type: "",
+				},
+				link: "",
+			} as {
+				type: "upload" | "link";
+				file: { name: string; url: string; size: string; type: string };
+				link: string;
+			}
 		});
+	};
+
+	const handleDownloadFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file || !editingProduct) return;
+
+		try {
+			const formData = new FormData();
+			formData.append("file", file);
+			formData.append("productId", editingProduct._id);
+
+			const response = await axios.post("/api/products/upload-download", formData, {
+				headers: { "Content-Type": "multipart/form-data" },
+			});
+
+			if (response.data.success) {
+				setFormData(prev => ({
+					...prev,
+					downloadOptions: {
+						...prev.downloadOptions,
+						type: "upload",
+						file: response.data.file
+					}
+				}));
+				toast.success("Download file uploaded successfully");
+			}
+		} catch (error) {
+			toast.error("Failed to upload download file");
+		}
 	};
 
 	const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -540,6 +621,119 @@ export default function AdminProductsPage() {
 					/>
 				</div>
 				
+				{/* Download Options Section */}
+				<div className="col-span-2 border-t pt-4 mt-4">
+					<h3 className="text-lg font-semibold mb-4 text-slate-900">Download Options</h3>
+													
+					<div className="space-y-4">
+						{/* Download Type Selection */}
+						<div>
+							<Label className="mb-2 block">Download Type</Label>
+							<div className="flex gap-4">
+								<label className="flex items-center gap-2 cursor-pointer">
+									<input
+										type="radio"
+										checked={formData.downloadOptions.type === "upload"}
+										onChange={() => setFormData({
+											...formData,
+											downloadOptions: {
+												...formData.downloadOptions,
+												type: "upload",
+												link: ""
+											}
+										})}
+										className="w-4 h-4 text-orange-600"
+									/>
+									<span className="text-sm">Upload File</span>
+								</label>
+								<label className="flex items-center gap-2 cursor-pointer">
+									<input
+										type="radio"
+										checked={formData.downloadOptions.type === "link"}
+										onChange={() => setFormData({
+											...formData,
+											downloadOptions: {
+												...formData.downloadOptions,
+												type: "link",
+												file: { name: "", url: "", size: "", type: "" }
+											}
+										})}
+										className="w-4 h-4 text-orange-600"
+									/>
+									<span className="text-sm">External Link</span>
+								</label>
+							</div>
+						</div>
+				
+						{/* Upload File Option */}
+						{formData.downloadOptions.type === "upload" && (
+							<div className="border rounded-lg p-4 bg-slate-50">
+								<Label className="mb-2 block">Upload Download File</Label>
+								{formData.downloadOptions.file?.url ? (
+									<div className="flex items-center justify-between p-3 bg-white rounded border">
+										<div>
+											<p className="font-medium text-slate-900">{formData.downloadOptions.file.name}</p>
+											<p className="text-sm text-slate-500">{formData.downloadOptions.file.size}</p>
+										</div>
+										<Button
+											variant="destructive"
+											size="sm"
+											onClick={() => setFormData({
+												...formData,
+												downloadOptions: {
+													...formData.downloadOptions,
+													file: { name: "", url: "", size: "", type: "" }
+												}
+											})}
+										>
+											<X size={16} />
+										</Button>
+									</div>
+								) : (
+									<div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 hover:bg-slate-100 transition-colors cursor-pointer relative">
+										<Input
+											type="file"
+											accept="*/*"
+											className="absolute inset-0 h-full opacity-0 cursor-pointer"
+											onChange={handleDownloadFileUpload}
+											disabled={!editingProduct}
+										/>
+										<div className="flex flex-col items-center text-slate-500">
+											<div className="p-3 bg-slate-100 rounded-full mb-2">
+												<Upload size={20} />
+											</div>
+											<span className="text-sm font-medium">Click to upload file</span>
+											<span className="text-xs text-slate-400">Any file type allowed</span>
+										</div>
+									</div>
+								)}
+								{!editingProduct && (
+									<p className="text-sm text-amber-600 mt-2">Save product first to enable file upload</p>
+								)}
+							</div>
+						)}
+				
+						{/* External Link Option */}
+						{formData.downloadOptions.type === "link" && (
+							<div className="border rounded-lg p-4 bg-slate-50">
+								<Label className="mb-2 block">External Download Link</Label>
+								<Input
+									value={formData.downloadOptions.link}
+									onChange={(e) => setFormData({
+										...formData,
+										downloadOptions: {
+											...formData.downloadOptions,
+											link: e.target.value
+										}
+									})}
+									placeholder="https://example.com/download/file.zip"
+								/>
+								<p className="text-xs text-slate-500 mt-1">Provide a direct download link to your file</p>
+							</div>
+						)}
+					</div>
+				</div>
+				
 				<div className="col-span-2 flex gap-4">
 					<label className="flex items-center gap-2 cursor-pointer">
 						<input
@@ -692,7 +886,7 @@ export default function AdminProductsPage() {
 				) : (
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 						{filteredProducts.map((product) => (
-							<Card key={product._id} className="bg-white border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden">
+							<Card key={product._id} className="bg-white border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 p-0 group overflow-hidden">
 								<div className="relative h-40 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
 									{product.thumbnail ? (
 										<img

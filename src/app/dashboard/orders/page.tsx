@@ -38,6 +38,7 @@ interface Order {
 	_id: string;
 	orderId: string;
 	product: {
+		_id: string;
 		title: string;
 		thumbnail?: string;
 		slug: string;
@@ -165,11 +166,30 @@ export default function MyOrdersPage() {
 
     const handleDownload = async (order: Order) => {
 		try {
-			const response = await axios.get(`/api/orders/download/${order._id}`);
-			const downloadUrl = response.data.downloadUrl;
-			window.open(downloadUrl, "_blank");
-		} catch (error) {
-			toast.error("Failed to initiate download");
+			// Get the product ID from the order
+			const productId = order.product._id || (order as any).product;
+			
+			// Get download URL from the new API
+			const response = await axios.get(`/api/products/${productId}/download`);
+			
+			if (response.data.success) {
+				const { downloadUrl, type } = response.data;
+				
+				if (type === "upload") {
+					// For uploaded files, open in new tab
+					window.open(downloadUrl, "_blank");
+				} else if (type === "link") {
+					// For external links, open in new tab
+					window.open(downloadUrl, "_blank");
+				}
+				
+				toast.success("Download started!");
+			} else {
+				toast.error(response.data.message || "Download not available");
+			}
+		} catch (error: any) {
+			console.error("Download error:", error);
+			toast.error(error.response?.data?.message || "Failed to initiate download");
 		}
     };
 	return (
