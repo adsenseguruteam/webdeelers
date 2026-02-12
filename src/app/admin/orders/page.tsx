@@ -410,7 +410,7 @@ export default function AdminOrdersPage() {
 												<td className="px-6 py-4 text-sm text-slate-600">
 													{formatDate(order.createdAt)}
 												</td>
-												<td className="px-6 py-4">
+												<td className="px-6 py-4 flex items-center gap-2">
 													<Button
 														size="sm"
 														variant="ghost"
@@ -418,8 +418,20 @@ export default function AdminOrdersPage() {
 															setViewingOrder(order);
 															setIsViewDialogOpen(true);
 														}}
+														title="View Order"
 													>
 														<Eye size={16} className="text-slate-500" />
+													</Button>
+													<Button
+														size="sm"
+														variant="ghost"
+														onClick={() => {
+															setDeletingOrder(order);
+															setIsDeleteDialogOpen(true);
+														}}
+														title="Delete Order"
+													>
+														<Trash2 size={16} className="text-red-500" />
 													</Button>
 												</td>
 											</tr>
@@ -544,6 +556,41 @@ export default function AdminOrdersPage() {
 								</div>
 							</div>
 						)}
+					</DialogContent>
+				</Dialog>
+
+				{/* Delete Order Confirmation Dialog */}
+				<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>Confirm Delete</DialogTitle>
+							<DialogDescription>
+								Are you sure you want to delete order <strong>{deletingOrder?.orderId}</strong>? This action cannot be undone.
+							</DialogDescription>
+						</DialogHeader>
+						<div className="flex justify-end gap-3 pt-4">
+							<Button 
+								variant="outline" 
+								onClick={() => setIsDeleteDialogOpen(false)}
+								disabled={deleteLoading}
+							>
+								Cancel
+							</Button>
+							<Button 
+								variant="destructive" 
+								onClick={handleDeleteOrder}
+								disabled={deleteLoading}
+							>
+								{deleteLoading ? (
+									<>
+										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+										Deleting...
+									</>
+								) : (
+									"Delete"
+								)}
+							</Button>
+						</div>
 					</DialogContent>
 				</Dialog>
 			</main>

@@ -32,6 +32,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import Link from "next/link";
+import AdminSidebar from "@/components/admin-sidebar";
 
 interface Order {
 	_id: string;
@@ -162,9 +163,19 @@ export default function MyOrdersPage() {
 		);
 	};
 
+    const handleDownload = async (order: Order) => {
+		try {
+			const response = await axios.get(`/api/orders/download/${order._id}`);
+			const downloadUrl = response.data.downloadUrl;
+			window.open(downloadUrl, "_blank");
+		} catch (error) {
+			toast.error("Failed to initiate download");
+		}
+    };
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8">
-			<div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8">
+            <AdminSidebar role="user" />
+			<div className="max-w-6xl md:ml-64 mx-auto px-4 md:px-6 lg:px-8">
 				{/* Header */}
 				<div className="mb-8">
 					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -260,9 +271,7 @@ export default function MyOrdersPage() {
 													{isDownloadAvailable(order) ? (
 														<Button
 															className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-															onClick={() => {
-																toast.success("Download started!");
-															}}
+															onClick={() => handleDownload(order)}
 														>
 															<Download size={16} className="mr-2" />
 															Download

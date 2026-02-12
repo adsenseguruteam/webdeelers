@@ -81,8 +81,6 @@ export async function POST(request) {
 				userId: userId,
 			},
 		});
-
-        console.log("Razorpay Order Created:", razorpayOrder);
 		
 		// Create order in database
 		const order = await Order.create({
