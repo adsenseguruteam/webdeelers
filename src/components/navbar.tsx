@@ -14,6 +14,7 @@ import {
 	LayoutDashboard,
 	Shield,
 	Book,
+	TrendingUp,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
@@ -182,6 +183,13 @@ export default function Navbar() {
 										className='flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all duration-200'>
 										<User size={18} />
 										<span>Profile</span>
+									</Link>
+									<Link
+										href={`/dashboard/upgrade`}
+										onClick={() => setIsOpen(false)}
+										className='flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-all duration-200'>
+										<TrendingUp size={18} />
+										<span>Upgrade</span>
 									</Link>
 									{user.role === "admin" && (
 										<Link

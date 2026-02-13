@@ -21,10 +21,6 @@ import {
 	Package,
 	Code,
 	Wrench,
-	BookOpen,
-	Headphones,
-	FileText,
-	Book,
 	Sparkles,
 	TrendingUp,
 	Zap,
@@ -88,7 +84,6 @@ export default function ShopPage() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [sortBy, setSortBy] = useState("newest");
-	const [showFilters, setShowFilters] = useState(false);
 	const [userCurrency, setUserCurrency] = useState("USD");
 
 	const fetchProducts = async () => {

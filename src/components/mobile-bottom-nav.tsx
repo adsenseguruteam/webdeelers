@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Plus, User, LayoutDashboard, BookOpen, TrendingUp, FileText, Users, Mail, CreditCard, CheckCircle } from "lucide-react";
+import { Home, Search, Plus, User, LayoutDashboard, BookOpen, TrendingUp, FileText, Users, Mail, CreditCard, CheckCircle, ShoppingBag } from "lucide-react";
 import { userContext } from "@/context/userContext";
 
 // Icon mapping for dynamic usage
@@ -53,15 +53,16 @@ export default function MobileBottomNav() {
 		{ icon: FileText, label: "Listings", href: "/admin/listings" },
 		{ icon: Users, label: "Users", href: "/admin/users" },
 		{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },
+		{ icon: ShoppingBag, label: "Orders", href: "/admin/orders" },
 		{ icon: User, label: "Account", href: "/dashboard/profile" },
 	];
 
 	// User dashboard navigation items
 	const userNavItems = [
 		{ icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-		{ icon: Plus, label: "Create", href: "/dashboard/create-listing" },
+		{ icon: Plus, label: "Listings", href: "/dashboard/listings" },
 		{ icon: BookOpen, label: "Blogs", href: "/dashboard/blogs" },
-		{ icon: TrendingUp, label: "Upgrade", href: "/dashboard/upgrade" },
+		{ icon: ShoppingBag, label: "Orders", href: "/dashboard/orders" },
 		{ icon: User, label: "Profile", href: "/dashboard/profile" },
 	];
 

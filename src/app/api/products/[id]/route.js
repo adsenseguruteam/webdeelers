@@ -14,7 +14,7 @@ export async function GET(request, { params }) {
 		
 		const product = await Product.findById(id)
 			.populate("seller", "name email")
-            .populate({path:"reviews.user", select: "name avatar email" })
+            .populate("reviews.user", "name avatar email")
 			.lean();
 		
 		if (!product) {

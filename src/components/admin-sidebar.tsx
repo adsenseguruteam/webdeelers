@@ -46,7 +46,7 @@ export const adminMenuItems = [
 
 export const userMenuItems = [
 	{ icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-	{ icon: Plus, label: "Create Listing", href: "/dashboard/create-listing" },
+	{ icon: Plus, label: "Listings", href: "/dashboard/listings" },
 	{ icon: ShoppingBag, label: "Orders", href: "/dashboard/orders" },
 	{ icon: BookOpen, label: "My Blogs", href: "/dashboard/blogs" },
 	{ icon: TrendingUp, label: "Upgrade Plan", href: "/dashboard/upgrade" },

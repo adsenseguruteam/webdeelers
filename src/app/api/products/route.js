@@ -50,6 +50,7 @@ export async function GET(request) {
 				.skip(skip)
 				.limit(limit)
 				.populate("seller", "name email")
+				.populate("reviews.user", "name avatar email")
 				.lean(),
 			Product.countDocuments(query),
 		]);

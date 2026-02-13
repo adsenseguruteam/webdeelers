@@ -86,9 +86,16 @@ export async function POST(request, { params }) {
 			},
 		});
 
+		// Fetch the updated product with populated user data
+		const productWithReviews = await Product.findById(id)
+			.populate("seller", "name email")
+			.populate("reviews.user", "name avatar email")
+			.lean();
+
 		return NextResponse.json({
 			success: true,
 			message: "Review added successfully",
+			product: productWithReviews
 		});
 	} catch (error) {
 		console.error("Error adding review:", error);
