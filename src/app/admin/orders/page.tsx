@@ -33,11 +33,12 @@ import {
 	Users,
 	Calendar,
 	Trash2,
+	Edit3,
+	RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import AdminSidebar from "@/components/admin-sidebar";
-import Link from "next/link";
 import { getUserCurrency, convertPrice, formatPrice } from "@/lib/currencyUtils";
 
 interface Order {
@@ -64,6 +65,8 @@ interface Order {
 	paymentStatus: "pending" | "completed" | "failed" | "refunded" | "cancelled";
 	status: "pending" | "processing" | "completed" | "cancelled" | "refunded";
 	deliveryStatus: "pending" | "delivered" | "failed";
+	transactionId?: string;
+	paymentMethod?: "upi" | "binance" | "card";
 	createdAt: string;
 	paidAt?: string;
 	deliveredAt?: string;
@@ -99,6 +102,10 @@ export default function AdminOrdersPage() {
 	const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
 	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const [deleteLoading, setDeleteLoading] = useState(false);
+	const [updatingOrder, setUpdatingOrder] = useState<Order | null>(null);
+	const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+	const [newStatus, setNewStatus] = useState<string>("");
+	const [updateLoading, setUpdateLoading] = useState(false);
 	const [userCurrency, setUserCurrency] = useState<string>("USD");
 
 	const fetchOrders = async () => {
@@ -245,6 +252,31 @@ export default function AdminOrdersPage() {
 			toast.error("Failed to delete order");
 		} finally {
 			setDeleteLoading(false);
+		}
+	};
+
+	const handleUpdateOrderStatus = async () => {
+		if (!updatingOrder || !newStatus) return;
+		
+		try {
+			setUpdateLoading(true);
+			const response = await axios.patch(`/api/admin/orders/${updatingOrder._id}/status`, {
+				status: newStatus
+			});
+			
+			if (response.data.success) {
+				toast.success("Order status updated successfully");
+				setIsUpdateDialogOpen(false);
+				setUpdatingOrder(null);
+				setNewStatus("");
+				fetchOrders();
+			} else {
+				toast.error(response.data.message || "Failed to update order status");
+			}
+		} catch (error: any) {
+			toast.error(error.response?.data?.message || "Failed to update order status");
+		} finally {
+			setUpdateLoading(false);
 		}
 	};
 
@@ -457,6 +489,18 @@ export default function AdminOrdersPage() {
 														size="sm"
 														variant="ghost"
 														onClick={() => {
+															setUpdatingOrder(order);
+															setNewStatus(order.status);
+															setIsUpdateDialogOpen(true);
+														}}
+														title="Update Status"
+													>
+														<Edit3 size={16} className="text-blue-500" />
+													</Button>
+													<Button
+														size="sm"
+														variant="ghost"
+														onClick={() => {
 															setDeletingOrder(order);
 															setIsDeleteDialogOpen(true);
 														}}
@@ -553,12 +597,12 @@ export default function AdminOrdersPage() {
 											{getPaymentStatusBadge(viewingOrder.paymentStatus)}
 										</div>
 										<div className="flex justify-between">
-											<span className="text-slate-500">Razorpay Order ID</span>
-											<span className="font-mono text-slate-900">{viewingOrder.razorpay?.orderId || "N/A"}</span>
+											<span className="text-slate-500">Transaction ID</span>
+											<span className="font-mono text-slate-900">{viewingOrder.transactionId || "N/A"}</span>
 										</div>
 										<div className="flex justify-between">
-											<span className="text-slate-500">Payment ID</span>
-											<span className="font-mono text-slate-900">{viewingOrder.razorpay?.paymentId || "N/A"}</span>
+											<span className="text-slate-500">Payment Method</span>
+											<span className="font-mono text-slate-900 capitalize">{viewingOrder.paymentMethod || "N/A"}</span>
 										</div>
 										{viewingOrder.paidAt && (
 											<div className="flex justify-between">
@@ -621,6 +665,73 @@ export default function AdminOrdersPage() {
 									"Delete"
 								)}
 							</Button>
+						</div>
+					</DialogContent>
+				</Dialog>
+	
+				{/* Update Order Status Dialog */}
+				<Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>Update Order Status</DialogTitle>
+							<DialogDescription>
+								Update the status for order <strong>{updatingOrder?.orderId}</strong>
+							</DialogDescription>
+						</DialogHeader>
+						<div className="space-y-4 py-4">
+							<div>
+								<label className="block text-sm font-medium text-slate-700 mb-2">
+									Current Status
+								</label>
+								<div className="p-3 bg-slate-50 rounded-lg">
+									{updatingOrder && getOrderStatusBadge(updatingOrder.status)}
+								</div>
+							</div>
+							
+							<div>
+								<label className="block text-sm font-medium text-slate-700 mb-2">
+									New Status
+								</label>
+								<Select value={newStatus} onValueChange={setNewStatus}>
+									<SelectTrigger>
+										<SelectValue placeholder="Select new status" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="pending">Pending</SelectItem>
+										<SelectItem value="processing">Processing</SelectItem>
+										<SelectItem value="completed">Completed</SelectItem>
+										<SelectItem value="cancelled">Cancelled</SelectItem>
+										<SelectItem value="refunded">Refunded</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+							
+							<div className="flex justify-end gap-3 pt-4">
+								<Button 
+									variant="outline" 
+									onClick={() => setIsUpdateDialogOpen(false)}
+									disabled={updateLoading}
+								>
+									Cancel
+								</Button>
+								<Button 
+									className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600"
+									onClick={handleUpdateOrderStatus}
+									disabled={updateLoading || !newStatus || newStatus === updatingOrder?.status}
+								>
+									{updateLoading ? (
+										<>
+											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											Updating...
+										</>
+									) : (
+										<>
+											<RefreshCw className="mr-2 h-4 w-4" />
+											Update Status
+										</>
+									)}
+								</Button>
+							</div>
 						</div>
 					</DialogContent>
 				</Dialog>

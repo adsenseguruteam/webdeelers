@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import { getDataFromToken } from "@/lib/auth";
 
 // GET /api/orders - Get user's orders
@@ -54,6 +55,89 @@ export async function GET(request) {
 		console.error("Error fetching orders:", error);
 		return NextResponse.json(
 			{ success: false, message: "Failed to fetch orders" },
+			{ status: 500 }
+		);
+	}
+}
+
+// POST /api/orders - Create a new order
+export async function POST(request) {
+	try {
+		const userId = getDataFromToken(request);
+		
+		if (!userId) {
+			return NextResponse.json(
+				{ success: false, message: "Unauthorized" },
+				{ status: 401 }
+			);
+		}
+
+		await connectDB();
+		
+		// Parse request body
+		const { productId, productSnapshot, amount, finalAmount, currency, paymentMethod, paymentStatus, status, deliveryStatus } = await request.json();
+
+		// Validate required fields
+		if (!productId || !finalAmount || !currency) {
+			return NextResponse.json(
+				{ success: false, message: "Missing required fields" },
+				{ status: 400 }
+			);
+		}
+		
+		// If amount is not provided, use finalAmount
+		const orderAmount = amount || finalAmount;
+
+		// Verify product exists
+		const product = await Product.findById(productId);
+		if (!product) {
+			return NextResponse.json(
+				{ success: false, message: "Product not found" },
+				{ status: 404 }
+			);
+		}
+
+		// Generate order ID
+		const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+		// Create order
+		const newOrder = new Order({
+			orderId,
+			user: userId,
+			product: productId,
+			productSnapshot: productSnapshot || {
+				title: product.title,
+				price: product.price,
+				comparePrice: product.comparePrice,
+				thumbnail: product.thumbnail,
+				category: product.category,
+			},
+			amount: orderAmount,
+			finalAmount,
+			currency,
+			paymentMethod,
+			paymentStatus: paymentStatus || "pending",
+			status: status || "pending",
+			deliveryStatus: deliveryStatus || "pending",
+			createdAt: new Date(),
+		});
+
+		await newOrder.save();
+
+		return NextResponse.json({
+			success: true,
+			message: "Order created successfully",
+			order: {
+				_id: newOrder._id,
+				orderId: newOrder.orderId,
+				status: newOrder.status,
+				paymentStatus: newOrder.paymentStatus,
+			}
+		});
+	} catch (error) {
+		console.error("Error creating order:", error);
+		return NextResponse.json(
+			{ success: false, message: "Failed to create order" },
 			{ status: 500 }
 		);
 	}

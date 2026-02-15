@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema(
 			required: true,
 		},
 		
-		// Razorpay Payment Details
+		// Payment Details
 		razorpay: {
 			orderId: {
 				type: String,
@@ -64,6 +64,16 @@ const orderSchema = new mongoose.Schema(
 			signature: {
 				type: String,
 			},
+		},
+		
+		// Transaction ID for manual payment verification
+		transactionId: {
+			type: String,
+		},
+		
+		paymentMethod: {
+			type: String,
+			enum: ["upi", "binance", "card"],
 		},
 		
 		// Payment Status

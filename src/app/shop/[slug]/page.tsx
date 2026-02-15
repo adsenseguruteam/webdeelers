@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
 import {
 	Dialog,
 	DialogContent,
@@ -19,15 +19,16 @@ import {
 	Package,
 	CheckCircle,
 	ArrowLeft,
-	Heart,
 	Shield,
 	Zap,
 	Download,
 	ExternalLink,
 	Loader2,
-	AlertCircle,
 	XCircle,
 	Clock,
+	Banknote,
+	CreditCard,
+	Lock,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -59,6 +60,7 @@ interface Product {
 	tags: string[];
 	demoUrl?: string;
 	videoUrl?: string;
+	downloadUrl?: string; // Added for downloadable products
 	isFeatured: boolean;
 	isBestseller: boolean;
 	faqs?: { question: string; answer: string }[];
@@ -87,7 +89,6 @@ export default function ProductDetailPage() {
 	const [loading, setLoading] = useState(true);
 	const [isBuying, setIsBuying] = useState(false);
 	const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-	const [orderData, setOrderData] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState(0);
 	const [paymentStatus, setPaymentStatus] = useState<"idle" | "processing" | "success" | "failed">("idle");
 	const [userCurrency, setUserCurrency] = useState<string>("USD"); // Default to USD
@@ -99,6 +100,51 @@ export default function ProductDetailPage() {
 		rating: 0,
 		comment: "",
 	});
+
+	// Add new state variables
+	const [showPaymentMethodDialog, setShowPaymentMethodDialog] = useState(false);
+	const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"upi" | "binance" | "card" | "">("");
+	const [transactionId, setTransactionId] = useState("");
+	const [isVerifying, setIsVerifying] = useState(false);
+	const [showTransactionDialog, setShowTransactionDialog] = useState(false);
+	const [paymentDetails, setPaymentDetails] = useState({
+		upiId: "adsenseservices90@axl",
+		binanceWallet: "TEiKjQHn5sRpW69prMSsV2s38PQtndofhb",
+		upiQrUrl: "/upiscanner.jpeg",
+		binanceQrUrl: "/usdtscanner.jpeg"
+	});
+
+	// Mock function for now - will be properly defined later
+	const submitTransactionId = async () => {
+		if (!transactionId.trim()) {
+			toast.error("Please enter transaction ID");
+			return;
+		}
+
+		try {
+			setIsVerifying(true);
+			
+			// Update order with transaction ID for manual verification
+			const response = await axios.patch(`/api/orders/payment-details`, {
+				transactionId,
+				paymentMethod: selectedPaymentMethod,
+			});
+
+			if (response.data.success) {
+				toast.success("Payment details submitted successfully! Our team will verify and approve your order shortly.");
+				setShowTransactionDialog(false);
+				setTransactionId("");
+				setShowPaymentDialog(true);
+				setPaymentStatus("success");
+			} else {
+				toast.error(response.data.message || "Failed to submit payment details");
+			}
+		} catch (error: any) {
+			toast.error(error.response?.data?.message || "Failed to submit payment details");
+		} finally {
+			setIsVerifying(false);
+		}
+	};
 
 	useEffect(() => {
 		// Fetch user's currency
@@ -176,103 +222,66 @@ export default function ProductDetailPage() {
 
 		if (!product) return;
 
+		// Show payment method selection dialog
+		setShowPaymentMethodDialog(true);
+	};
+
+	const handlePaymentMethodSelect = async (method: "upi" | "binance" | "card") => {
+		setSelectedPaymentMethod(method);
+
 		try {
 			setIsBuying(true);
 			
-			// Create Razorpay order
-			const response = await axios.post("/api/payments/razorpay/create-order", {
+			// Check if product exists
+			if (!product) {
+				toast.error("Product not found");
+				return;
+			}
+			
+			// Check if user exists
+			if (!user) {
+				toast.error("Please login to purchase");
+				return;
+			}
+			
+			// Create order with pending status
+			const response = await axios.post("/api/orders", {
 				productId: product._id,
-				customerDetails: {
-					name: user.name,
-					email: user.email,
-					phone: user.phone || "",
+				productSnapshot: {
+					title: product.title,
+					price: product.price,
+					comparePrice: product.comparePrice,
+					thumbnail: product.thumbnail,
+					category: product.category,
 				},
-				currency: userCurrency, // Send user's currency
+				amount: product.price,
+				finalAmount: displayPrice,
+				currency: userCurrency,
+				paymentMethod: method,
+				paymentStatus: "pending",
+				status: "pending",
+				deliveryStatus: "pending",
 			});
 
 			if (response.data.success) {
-				setOrderData(response.data);
-				setShowPaymentDialog(true);
-				
-				// Load Razorpay script and open checkout
-				loadRazorpayScript(() => {
-					openRazorpayCheckout(response.data);
-				});
+				// For UPI or Binance, show transaction ID input
+				if (method === "upi" || method === "binance") {
+					setShowPaymentMethodDialog(false);
+					setShowTransactionDialog(true);
+				} else {
+					// For other payment methods
+					setShowPaymentMethodDialog(false);
+					setShowPaymentDialog(true);
+					setPaymentStatus("success");
+					toast.success("Order placed successfully! Our team will verify and activate your download shortly.");
+				}
+			} else {
+				toast.error(response.data.message || "Failed to place order");
 			}
 		} catch (error: any) {
-			toast.error(error.response?.data?.message || "Failed to initiate purchase");
+			toast.error(error.response?.data?.message || "Failed to place order");
 		} finally {
 			setIsBuying(false);
-		}
-	};
-
-	const loadRazorpayScript = (callback: () => void) => {
-		const script = document.createElement("script");
-		script.src = "https://checkout.razorpay.com/v1/checkout.js";
-		script.onload = callback;
-		script.onerror = () => {
-			toast.error("Failed to load payment gateway");
-		};
-		document.body.appendChild(script);
-	};
-
-	const openRazorpayCheckout = (data: any) => {
-		const { razorpay, order } = data;
-		
-		const options = {
-			key: razorpay.keyId,
-			amount: razorpay.amount,
-			currency: razorpay.currency,
-			name: "Deelzo",
-			description: order.title || "Product Purchase",
-			order_id: razorpay.orderId,
-			handler: async function (response: any) {
-				await verifyPayment(response, order.id);
-			},
-			prefill: {
-				name: user?.name || "",
-				email: user?.email || "",
-				contact: user?.phone || "",
-			},
-			theme: {
-				color: "#f97316",
-			},
-			modal: {
-				ondismiss: function() {
-					setPaymentStatus("idle");
-				},
-			},
-		};
-
-		const rzp = new (window as any).Razorpay(options);
-		rzp.open();
-		setPaymentStatus("processing");
-	};
-
-	const verifyPayment = async (razorpayResponse: any, orderId: string) => {
-		try {
-			setPaymentStatus("processing");
-			
-			const response = await axios.post("/api/payments/razorpay/verify", {
-				razorpay_order_id: razorpayResponse.razorpay_order_id,
-				razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-				razorpay_signature: razorpayResponse.razorpay_signature,
-				orderId: orderId,
-			});
-
-			if (response.data.success) {
-				setPaymentStatus("success");
-				toast.success("Payment successful! Your order has been placed.");
-				setShowPaymentDialog(false);
-				// Redirect to orders page
-				window.location.href = "/dashboard/orders";
-			} else {
-				setPaymentStatus("failed");
-				toast.error("Payment verification failed");
-			}
-		} catch (error: any) {
-			setPaymentStatus("failed");
-			toast.error(error.response?.data?.message || "Payment verification failed");
 		}
 	};
 
@@ -734,50 +743,246 @@ export default function ProductDetailPage() {
 				<DialogContent className="max-w-md">
 					<DialogHeader>
 						<DialogTitle>
-							{paymentStatus === "success" ? "Payment Successful!" : 
-							 paymentStatus === "failed" ? "Payment Failed" : 
-							 "Processing Payment..."}
+							{paymentStatus === "success" ? "Order Placed Successfully!" : 
+							 paymentStatus === "failed" ? "Order Failed" : 
+							 "Processing Order..."}
 						</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-6">
 						{paymentStatus === "processing" && (
 							<div className="text-center py-8">
 								<Loader2 className="animate-spin mx-auto mb-4 text-orange-500" size={48} />
-								<p className="text-slate-600">Please complete the payment in the Razorpay window...</p>
+								<p className="text-slate-600">Creating your order...</p>
 							</div>
 						)}
-						
+													
 						{paymentStatus === "success" && (
 							<div className="text-center py-8">
 								<div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
 									<CheckCircle size={32} className="text-emerald-600" />
 								</div>
-								<h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Successful!</h3>
-								<p className="text-slate-600">Your order has been placed successfully.</p>
+								<h3 className="text-lg font-semibold text-slate-900 mb-2">Order Placed Successfully!</h3>
+								<p className="text-slate-600 mb-4">Your order has been placed successfully and is pending verification.</p>
+								<p className="text-slate-500 text-sm mb-6">Our team will verify your payment and activate your download shortly.</p>
 							</div>
 						)}
-						
+													
 						{paymentStatus === "failed" && (
 							<div className="text-center py-8">
 								<div className="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center mx-auto mb-4">
 									<XCircle size={32} className="text-rose-600" />
 								</div>
-								<h3 className="text-lg font-semibold text-slate-900 mb-2">Payment Failed</h3>
+								<h3 className="text-lg font-semibold text-slate-900 mb-2">Order Failed</h3>
 								<p className="text-slate-600">Something went wrong. Please try again.</p>
 							</div>
 						)}
-						
+													
 						{paymentStatus !== "processing" && (
-							<Button
-								onClick={() => setShowPaymentDialog(false)}
-								className="w-full bg-gradient-to-r from-orange-500 to-rose-500"
-							>
-								Close
-							</Button>
+							<div className="flex flex-col gap-3">
+								<Button
+									onClick={() => {
+										setShowPaymentDialog(false);
+										window.location.href = "/dashboard/orders";
+									}}
+									className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
+								>
+									View My Orders
+								</Button>
+								<Button
+									onClick={() => setShowPaymentDialog(false)}
+									variant="outline"
+									className="w-full"
+								>
+									Continue Shopping
+								</Button>
+							</div>
 						)}
+					</div>
+				</DialogContent>
+			</Dialog>
+
+			{/* Payment Method Selection Dialog */}
+			<Dialog open={showPaymentMethodDialog} onOpenChange={setShowPaymentMethodDialog}>
+				<DialogContent className="max-w-md">
+					<DialogHeader>
+						<DialogTitle>Select Payment Method</DialogTitle>
+						<p className="text-sm text-slate-600">
+							Complete your purchase of <span className="font-semibold">{product?.title}</span> for {userCurrency} {displayPrice.toFixed(2)}
+						</p>
+					</DialogHeader>
+					<div className="space-y-4 py-4">
+						<div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+							<div className="flex items-start gap-3">
+								<div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+									<Banknote size={16} className="text-white" />
+								</div>
+								<div>
+									<h4 className="font-semibold text-slate-900">UPI Payment</h4>
+									<p className="text-sm text-slate-600">Pay instantly using any UPI app</p>
+									<p className="text-xs text-slate-500 mt-1">You'll get QR code and UPI ID to scan</p>
+								</div>
+							</div>
+							<Button
+								onClick={() => handlePaymentMethodSelect("upi")}
+								className="w-full mt-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white"
+							>
+								Proceed with UPI
+							</Button>
+						</div>
+						
+						<div className="p-4 bg-yellow-50 rounded-xl border border-yellow-100">
+							<div className="flex items-start gap-3">
+								<div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+									<CreditCard size={16} className="text-white" />
+								</div>
+								<div>
+									<h4 className="font-semibold text-slate-900">Binance Payment</h4>
+									<p className="text-sm text-slate-600">Pay with USDT via Binance</p>
+									<p className="text-xs text-slate-500 mt-1">You'll get wallet address and QR code</p>
+								</div>
+							</div>
+							<Button
+								onClick={() => handlePaymentMethodSelect("binance")}
+								className="w-full mt-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white"
+							>
+								Proceed with Binance
+							</Button>
+						</div>
+						
+						<div className="p-4 bg-slate-50 rounded-xl border border-slate-200 opacity-50">
+							<div className="flex items-start gap-3">
+								<div className="w-8 h-8 rounded-full bg-slate-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+									<Lock size={16} className="text-white" />
+								</div>
+								<div>
+									<h4 className="font-semibold text-slate-900">Card Payment</h4>
+									<p className="text-sm text-slate-600">Pay with credit/debit card</p>
+									<p className="text-xs text-slate-500 mt-1">Coming soon - Secure card processing</p>
+								</div>
+							</div>
+							<Button
+								onClick={() => handlePaymentMethodSelect("card")}
+								variant="outline"
+								className="w-full mt-3 cursor-not-allowed"
+								disabled
+							>
+								Coming Soon
+							</Button>
+						</div>
+					</div>
+				</DialogContent>
+			</Dialog>
+
+			{/* Transaction ID Input Dialog */}
+			<Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
+				<DialogContent className="max-w-md">
+					<DialogHeader>
+						<DialogTitle>Complete Your Payment</DialogTitle>
+					</DialogHeader>
+					<div className="space-y-6 py-4">
+						{/* Payment Instructions */}
+						<div className="bg-slate-50 rounded-xl p-4">
+							<h3 className="font-semibold text-slate-900 mb-3">Payment Instructions</h3>
+							
+							{selectedPaymentMethod === "upi" && (
+								<div className="space-y-3">
+									<div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+										<div>
+											<p className="text-sm text-slate-500">UPI ID</p>
+											<p className="font-mono font-medium text-slate-900">{paymentDetails.upiId}</p>
+										</div>
+										<Button 
+											variant="outline" 
+											size="sm"
+											onClick={() => navigator.clipboard.writeText(paymentDetails.upiId)}
+										>
+											Copy
+										</Button>
+									</div>
+									
+									<div className="text-center">
+										<p className="text-sm text-slate-600 mb-2">Scan QR Code to Pay</p>
+										<img 
+											src={paymentDetails.upiQrUrl} 
+											alt="UPI QR Code" 
+											className="w-48 h-48 mx-auto rounded-lg border border-slate-200"
+										/>
+										<p className="text-xs text-slate-500 mt-2">Amount: {userCurrency} {displayPrice.toFixed(2)}</p>
+									</div>
+								</div>
+							)}
+							
+							{selectedPaymentMethod === "binance" && (
+								<div className="space-y-3">
+									<div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+										<div>
+											<p className="text-sm text-slate-500">Binance Wallet Address</p>
+											<p className="font-mono text-xs text-slate-900 break-all">{paymentDetails.binanceWallet}</p>
+										</div>
+										<Button 
+											variant="outline" 
+											size="sm"
+											onClick={() => navigator.clipboard.writeText(paymentDetails.binanceWallet)}
+										>
+											Copy
+										</Button>
+									</div>
+									
+									<div className="text-center">
+										<p className="text-sm text-slate-600 mb-2">Scan QR Code to Pay</p>
+										<img 
+											src={paymentDetails.binanceQrUrl} 
+											alt="Binance QR Code" 
+											className="w-48 h-48 mx-auto rounded-lg border border-slate-200"
+										/>
+										<p className="text-xs text-slate-500 mt-2">Amount: {userCurrency} {displayPrice.toFixed(2)} USDT</p>
+									</div>
+								</div>
+							)}
+						</div>
+						
+						{/* Transaction ID Input */}
+						<div>
+							<label className="block text-sm font-medium text-slate-700 mb-2">
+								Transaction ID/Reference
+							</label>
+							<Input
+								value={transactionId}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTransactionId(e.target.value)}
+								placeholder="Enter transaction ID or reference number"
+								className="w-full"
+							/>
+							<p className="text-xs text-slate-500 mt-1">Enter the transaction ID from your payment app</p>
+						</div>
+						<div className="flex justify-end gap-3 pt-4">
+							<Button 
+								variant="outline" 
+								onClick={() => {
+									setShowTransactionDialog(false);
+									setTransactionId("");
+								}}
+							>
+								Cancel
+							</Button>
+							<Button
+								onClick={submitTransactionId}
+								disabled={isVerifying || !transactionId.trim()}
+								className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white"
+							>
+								{isVerifying ? (
+									<>
+										<Loader2 className="animate-spin mr-2" size={16} />
+										Submitting...
+									</>
+								) : (
+									"Submit Transaction"
+								)}
+							</Button>
+						</div>
 					</div>
 				</DialogContent>
 			</Dialog>
 		</div>
 	);
+
 }

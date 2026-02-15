@@ -171,9 +171,9 @@ export default function MyOrdersPage() {
 	const isDownloadAvailable = (order: Order) => {
 		return (
 			order.paymentStatus === "completed" &&
-			order.deliveryStatus === "delivered" &&
-			order.downloadExpiry &&
-			new Date(order.downloadExpiry) > new Date()
+			order.deliveryStatus === "delivered"
+			// order.downloadExpiry &&
+			// new Date(order.downloadExpiry) > new Date()
 		);
 	};
 
@@ -208,7 +208,7 @@ export default function MyOrdersPage() {
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8">
             <AdminSidebar role="user" />
-			<div className="max-w-6xl md:ml-64 mx-auto px-4 md:px-6 lg:px-8">
+			<div className=" md:ml-64 mx-auto px-4 md:px-6 lg:px-8">
 				{/* Header */}
 				<div className="mb-8">
 					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
