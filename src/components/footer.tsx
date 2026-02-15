@@ -5,29 +5,25 @@ import Link from "next/link";
 import { EMAIL } from "@/lib/constant";
 import {
 	ShoppingBag,
-	Mail,
 	Shield,
 	HelpCircle,
 	ArrowRight,
 	Sparkles,
-	TrendingUp,
 	Users,
 	Globe,
 } from "lucide-react";
 
 export default function Footer() {
 	const quickLinks = [
-		{ name: "Marketplace", href: "/marketplace" },
+		{ name: "Shop", href: "/shop" },
 		{ name: "How It Works", href: "/guide" },
 		{ name: "About Us", href: "/about" },
-		{ name: "Pricing", href: "/plans" },
 	];
 
 	const legalLinks = [
 		{ name: "Privacy Policy", href: "/privacy" },
 		{ name: "Terms of Service", href: "/terms" },
-		{ name: "Cookie Policy", href: "#" },
-		{ name: "GDPR", href: "#" },
+		{ name: "Refund Policy", href: "/refund-policy" },
 	];
 
 	const supportLinks = [
@@ -72,10 +68,7 @@ export default function Footer() {
 					{/* Brand Column */}
 					<div className='col-span-2 md:col-span-4 lg:col-span-2'>
 						<div className='flex items-center gap-3 mb-6'>
-							<div className='w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
-								<TrendingUp size={20} className='text-white' />
-							</div>
-							<span className='text-2xl font-bold text-white'>Deelzo</span>
+							<Image src='/slogo.png' alt='Deelzo Logo' width={152} height={32} />
 						</div>
 						<p className='text-slate-400 text-sm leading-relaxed mb-6 max-w-sm'>
 							The premier marketplace for buying and selling digital assets. 

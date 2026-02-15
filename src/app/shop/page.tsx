@@ -236,26 +236,6 @@ export default function ShopPage() {
 				</div>
 			</section>
 
-			{/* Featured Products */}
-			{featuredProducts.length > 0 && selectedCategory === "all" && !searchQuery && (
-				<section className="py-12">
-					<div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-						<div className="flex items-center gap-3 mb-8">
-							<div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-								<Star size={20} className="text-white fill-white" />
-							</div>
-							<h2 className="text-2xl font-bold text-slate-900">Featured Products</h2>
-						</div>
-						
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-							{featuredProducts.map((product) => (
-								<ProductCard key={product._id} product={product} featured userCurrency={userCurrency} />
-							))}
-						</div>
-					</div>
-				</section>
-			)}
-
 			{/* Main Content */}
 			<section className="py-12">
 				<div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
@@ -365,14 +345,14 @@ export default function ShopPage() {
 	);
 }
 
-function ProductCard({ product, featured = false, userCurrency }: { product: ProductWithDisplayPrices; featured?: boolean; userCurrency: string }) {
+function ProductCard({ product, userCurrency }: { product: ProductWithDisplayPrices; userCurrency: string }) {
 	const discount = product.displayComparePrice && product.displayComparePrice > (product.displayPrice || product.price)
 		? Math.round(((product.displayComparePrice - (product.displayPrice || product.price)) / product.displayComparePrice) * 100)
 		: 0;
 
 	return (
 		<Link href={`/shop/${product.slug}`}>
-			<Card className={`group bg-white border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${featured ? 'ring-2 ring-orange-500/20' : ''}`}>
+			<Card className={`group bg-white border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${product.isFeatured ? 'ring-2 ring-emerald-500/20' : ''}`}>
 				{/* Image */}
 				<div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
 					{product.thumbnail ? (
@@ -387,17 +367,33 @@ function ProductCard({ product, featured = false, userCurrency }: { product: Pro
 						</div>
 					)}
 					
+					{/* Featured corner ribbon */}
+					{product.isFeatured && (
+						<div className="absolute top-0 left-0 overflow-hidden">
+							<div className="absolute top-2 -left-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold px-6 py-1 rotate-45 transform origin-center shadow-lg">
+								<Star size={10} className="inline mr-1" />
+								FEATURED
+							</div>
+						</div>
+					)}
+					
 					{/* Badges */}
 					<div className="absolute top-3 left-3 flex flex-col gap-2">
 						{discount > 0 && (
-							<Badge className="bg-rose-500 text-white border-0">
+							<Badge className="bg-gradient-to-r from-rose-500 to-red-500 text-white border-0 shadow-lg shadow-rose-500/30">
 								-{discount}%
 							</Badge>
 						)}
 						{product.isBestseller && (
-							<Badge className="bg-amber-500 text-white border-0">
+							<Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 shadow-lg shadow-amber-500/30">
 								<TrendingUp size={12} className="mr-1" />
 								Bestseller
+							</Badge>
+						)}
+						{product.isFeatured && (
+							<Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white border-0 shadow-lg shadow-emerald-500/30">
+								<Star size={12} className="mr-1" />
+								Featured
 							</Badge>
 						)}
 					</div>

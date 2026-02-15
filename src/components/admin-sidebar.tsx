@@ -75,7 +75,7 @@ export default function AdminSidebar({ role = "admin" }: AdminSidebarProps) {
 				<div className='mb-8'>
 					<Link href='/' className='block mb-10'>
 						<Image
-							src='/newlogo.png'
+							src='/plogo.png'
 							alt='Deelzo'
 							width={120}
 							height={120}

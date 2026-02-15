@@ -193,43 +193,43 @@ export default function About() {
 
 				{/* About the Owner */}
 				<Card className='bg-white border p-0 border-slate-200 shadow-xl overflow-hidden'>
-					<div className='bg-linear-to-r from-sky-500 via-blue-500 to-cyan-500 p-6 md:p-8'>
+					<div className='bg-linear-to-r from-indigo-600 via-purple-600 to-blue-600 p-6 md:p-8'>
 						<div className='flex flex-col md:flex-row gap-6 md:gap-8 items-center'>
 							<div className='w-32 h-32 md:w-40 md:h-40 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-xl'>
-								AG
+								DR
 							</div>
 							<div className='flex-1 text-center md:text-left'>
 								<h2 className='text-2xl md:text-3xl font-bold text-white mb-3'>
-									About the Owner
+									About the Founder
 								</h2>
 								<p className='text-white/90 leading-relaxed text-base md:text-lg mb-4'>
-									Hi, I'm AdSense Guru aka (Amit Singh), the
-									founder and CEO of Deelzo. With over 4 years
-									of experience in digital marketing and
-									website development, I created this platform
-									to help entrepreneurs and investors find
-									quality digital assets.
+									Hi, I'm <b>Dheeru Rajpoot</b>, the
+									founder and creator of Deelzo. With extensive
+									experience in web development and digital solutions,
+									I built this platform to connect buyers
+									and sellers of premium digital assets in a
+									secure and trustworthy environment.
 								</p>
 								<div className='flex flex-col sm:flex-row gap-3 justify-center md:justify-start'>
 									<Link
-										href='https://www.facebook.com/adsenseguruteam'
+										href='https://www.linkedin.com/in/dheerurajpoot/'
 										target='_blank'
 										rel='noopener noreferrer'
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Facebook size={18} />
-										Follow on Facebook
+										Connect on LinkedIn
 									</Link>
 									<a
 										href={`mailto:${EMAIL}`}
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Mail size={18} />
-										Email
+										Contact
 									</a>
 									<a
-										href={`https://wa.me/${PHONE}`}
+										href={`tel:${PHONE}`}
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Phone size={18} />
-										WhatsApp
+										Call
 									</a>
 								</div>
 							</div>
@@ -238,47 +238,45 @@ export default function About() {
 
 					<CardContent className='p-6 md:p-8'>
 						<h3 className='text-xl md:text-2xl font-bold text-slate-900 mb-6'>
-							Connect With Me
+							Get in Touch
 						</h3>
 						<div className='space-y-4'>
-							{/* Website Screenshots */}
+							{/* Professional Images */}
 							<div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
 								<div className='rounded-xl overflow-hidden border border-slate-200 shadow-lg group hover:shadow-xl transition-shadow'>
 									<Image
-										src='/page.jpg'
-										alt='Facebook Page Overview'
+										src='/ipad-logo.png'
+										alt='Deelzo Platform Overview'
 										width={500}
 										height={300}
 										className='w-full h-auto group-hover:scale-105 transition-transform duration-300'
 									/>
 									<p className='text-center text-sm text-slate-600 p-3 bg-slate-50 font-medium'>
-										Facebook Page Overview
+										Platform Overview
 									</p>
 								</div>
 								<div className='rounded-xl overflow-hidden border border-slate-200 shadow-lg group hover:shadow-xl transition-shadow'>
 									<Image
-										src='/group.jpg'
-										alt='Facebook Group Overview'
+										src='/isimage.png'
+										alt='Deelzo Brand Identity'
 										width={500}
 										height={300}
 										className='w-full h-auto group-hover:scale-105 transition-transform duration-300'
 									/>
 									<p className='text-center text-sm text-slate-600 p-3 bg-slate-50 font-medium'>
-										Facebook Group Overview
+										Brand Identity
 									</p>
 								</div>
 							</div>
 
-							{/* Social Links */}
+							{/* Contact Options */}
 							<div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
 								<Link
-									href='https://chat.whatsapp.com/BDahUf9nbFk7tY3ry27bIZ'
-									target='_blank'
-									rel='noopener noreferrer'
+									href='/contact'
 									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 rounded-xl border border-emerald-200 text-emerald-700 transition-all duration-200 hover:shadow-lg group'>
 									<MessageCircle size={20} />
 									<span className='font-semibold'>
-										WhatsApp Group
+										Send Message
 									</span>
 									<ArrowRight
 										size={16}
@@ -287,13 +285,11 @@ export default function About() {
 								</Link>
 
 								<Link
-									href='https://www.facebook.com/groups/adsenseguruteam'
-									target='_blank'
-									rel='noopener noreferrer'
+									href='/contact'
 									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-blue-50 to-sky-50 hover:from-blue-100 hover:to-sky-100 rounded-xl border border-blue-200 text-blue-700 transition-all duration-200 hover:shadow-lg group'>
-									<Facebook size={20} />
+									<Shield size={20} />
 									<span className='font-semibold'>
-										Facebook Group
+										Support
 									</span>
 									<ArrowRight
 										size={16}
@@ -302,11 +298,11 @@ export default function About() {
 								</Link>
 
 								<Link
-									href='/marketplace'
+									href='/shop'
 									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-cyan-50 to-teal-50 hover:from-cyan-100 hover:to-teal-100 rounded-xl border border-cyan-200 text-cyan-700 transition-all duration-200 hover:shadow-lg group'>
 									<ExternalLink size={20} />
 									<span className='font-semibold'>
-										Marketplace
+										Shop
 									</span>
 									<ArrowRight
 										size={16}

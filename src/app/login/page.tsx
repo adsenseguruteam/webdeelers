@@ -86,7 +86,7 @@ export default function Login() {
 				{/* Logo */}
 				<div className='mb-6'>
 					<div className='flex items-center gap-2'>
-						<Image src="/newlogo.png" alt="Deelzo Logo" width={132} height={32} />
+						<Image src="/plogo.png" alt="Deelzo Logo" width={132} height={32} />
 					</div>
 				</div>
 

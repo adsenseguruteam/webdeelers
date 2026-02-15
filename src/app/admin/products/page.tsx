@@ -67,6 +67,8 @@ interface Product {
 	};
 	isFeatured: boolean;
 	isBestseller: boolean;
+	demoUrl?: string;
+	videoUrl?: string;
 	createdAt: string;
 	downloadOptions?: {
 		type: "upload" | "link";
@@ -246,8 +248,8 @@ export default function AdminProductsPage() {
 			images: product.images || [],
 			thumbnail: product.thumbnail || "",
 			features: [],
-			demoUrl: "",
-			videoUrl: "",
+			demoUrl: product.demoUrl || "",
+			videoUrl: product.videoUrl || "",
 			downloadOptions: {
 				type: product.downloadOptions?.type || "upload",
 				file: product.downloadOptions?.file || {
