@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
 				<div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
 					{/* Left: Images */}
 					<div className="space-y-4">
-						<div className="relative aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg">
+						<div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg">
 							{product.thumbnail || product.images[selectedImage] ? (
 								<img
 									src={product.thumbnail || product.images[selectedImage]}
@@ -388,7 +388,7 @@ export default function ProductDetailPage() {
 							<Button
 								onClick={handleBuy}
 								disabled={isBuying || product.status !== "active"}
-								className="flex-1 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white py-6 text-lg font-semibold shadow-lg shadow-orange-500/25 rounded-xl"
+								className="flex-1 bg-gradient-to-r cursor-pointer from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white py-6 text-lg font-semibold shadow-lg shadow-orange-500/25 rounded-xl"
 							>
 								{isBuying ? (
 									<Loader2 className="animate-spin mr-2" size={20} />
@@ -400,7 +400,7 @@ export default function ProductDetailPage() {
 							
 							{product.demoUrl && (
 								<Link href={product.demoUrl} target="_blank">
-									<Button variant="outline" className="py-6 px-6 rounded-xl border-2">
+									<Button variant="outline" className="py-5 cursor-pointer px-6 rounded-xl border-2">
 										Demo Link<ExternalLink size={20} />
 									</Button>
 								</Link>

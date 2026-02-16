@@ -352,7 +352,7 @@ function ProductCard({ product, userCurrency }: { product: ProductWithDisplayPri
 
 	return (
 		<Link href={`/shop/${product.slug}`}>
-			<Card className={`group bg-white border-slate-200 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${product.isFeatured ? 'ring-2 ring-emerald-500/20' : ''}`}>
+			<Card className={`group bg-white border-slate-200 overflow-hidden p-0 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer ${product.isFeatured ? 'ring-2 ring-emerald-500/20' : ''}`}>
 				{/* Image */}
 				<div className="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
 					{product.thumbnail ? (
