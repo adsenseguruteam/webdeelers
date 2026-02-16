@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AdminSidebar from "@/components/admin-sidebar";
+import Link from "next/link";
 
 const categories = [
 	{ id: "website", label: "Website" },
@@ -499,14 +500,19 @@ export default function CreateListing() {
 			<AdminSidebar role="user" />
 			<div className='md:ml-64 mx-auto'>
 				{/* Header */}
-				<div className='mb-6'>
-					<div className='text-center mb-6'>
+				<div className='flex items-center justify-between mb-6'>
+					<div>
 						<h1 className='text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-2'>
 							Create New Listing
 						</h1>
 						<p className='text-slate-600 text-sm md:text-base'>
 							Fill in the details below to list your digital asset
 						</p>
+					</div>
+					<div>
+						<Link href='/dashboard/listings'>
+							<Button variant='outline'><ArrowLeft className='mr-2' />Back to Dashboard</Button>
+						</Link>
 					</div>
 				</div>
 

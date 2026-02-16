@@ -3,6 +3,8 @@ import connectDB from "@/lib/mongodb";
 import Listing from "@/models/Listing";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import { getDataFromToken } from "@/lib/auth";
+
 
 function extractParamFromRequest(request) {
 	const url = new URL(request.url, process.env.NEXT_PUBLIC_APP_URL);
@@ -61,7 +63,9 @@ export async function GET(request) {
 
 export async function PUT(request) {
 	try {
-		const { userId, ...updateData } = await request.json();
+		const {  ...updateData } = await request.json();
+
+		const userId = await getDataFromToken(request);
 
 		const slug = extractParamFromRequest(request);
 

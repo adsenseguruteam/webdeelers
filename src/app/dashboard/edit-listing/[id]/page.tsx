@@ -33,6 +33,7 @@ import {
 	Link as LinkIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const categories = [
 	{ id: "website", label: "Website" },
@@ -572,7 +573,7 @@ export default function EditListing() {
 				toast.success(
 					response.data.message || "Listing updated successfully!"
 				);
-				router.push("/dashboard");
+				router.push("/dashboard/listings");
 			} else {
 				throw new Error(
 					response.data.message || "Failed to update listing"
@@ -607,14 +608,21 @@ export default function EditListing() {
 		<div className='min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100 p-4 md:p-6 lg:p-8 pb-24 md:pb-8'>
 			<div className='max-w-6xl mx-auto'>
 				{/* Header */}
-				<div className='mb-6'>
-					<div className='text-center mb-6'>
+				<div className='flex items-center justify-between mb-6'>
+					<div>
 						<h1 className='text-3xl md:text-4xl font-bold bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 bg-clip-text text-transparent mb-2'>
 							Edit Listing
 						</h1>
 						<p className='text-slate-600 text-sm md:text-base'>
 							Update your listing details below
 						</p>
+					</div>
+					<div className='flex items-center justify-between'>
+						<Link href='/dashboard/listings'>
+							<Button variant='outline'>
+								<ArrowLeft className='mr-2' />Back to Listings
+							</Button>
+						</Link>
 					</div>
 				</div>
 
