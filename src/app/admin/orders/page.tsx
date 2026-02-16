@@ -62,7 +62,7 @@ interface Order {
 	};
 	finalAmount: number;
 	currency: string;
-	paymentStatus: "pending" | "completed" | "failed" | "refunded" | "cancelled";
+	paymentStatus: "pending" | "completed" | "failed" | "refunded" | "cancelled" | "processing";
 	status: "pending" | "processing" | "completed" | "cancelled" | "refunded";
 	deliveryStatus: "pending" | "delivered" | "failed";
 	transactionId?: string;
@@ -194,10 +194,10 @@ export default function AdminOrdersPage() {
 						<XCircle size={12} /> Failed
 					</span>
 				);
-			case "refunded":
+			case "processing":
 				return (
 					<span className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-						<IndianRupee size={12} /> Refunded
+						<IndianRupee size={12} /> Processing
 					</span>
 				);
 			default:

@@ -206,7 +206,6 @@ export default function MyOrdersPage() {
 		}
     };
 
-	console.log(orders);
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8">
             <AdminSidebar role="user" />
