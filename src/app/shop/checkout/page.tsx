@@ -52,8 +52,8 @@ interface CouponData {
   maximumDiscount: number | null;
 }
 
-export default async function CheckoutPage() {
-  const searchParams = await useSearchParams();
+export default function CheckoutPage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = userContext();
   
@@ -81,13 +81,24 @@ export default async function CheckoutPage() {
   const productId =  searchParams.get("product");
 
   useEffect(() => {
-   
+    // Wait for user context to be fully loaded
+    if (user === undefined) {
+      // Still loading user context
+      return;
+    }
+      
+    if (!user) {
+      toast.error("Please login to checkout");
+      router.push("/login");
+      return;
+    }
+      
     if (!productId) {
       toast.error("No product selected");
       router.push("/shop");
       return;
     }
-
+  
     fetchUserCurrency();
     fetchProduct();
   }, [productId, user, router]);
