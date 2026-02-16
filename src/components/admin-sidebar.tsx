@@ -19,6 +19,7 @@ import {
 	User,
 	ShoppingBag,
 	ShoppingBasket,
+	Tag,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
 import Image from "next/image";
@@ -33,6 +34,7 @@ export const adminMenuItems = [
 	{ icon: FileText, label: "Listings", href: "/admin/listings" },
 	{ icon: ShoppingBag, label: "Products", href: "/admin/products" },
 	{ icon: ShoppingBasket, label: "Orders", href: "/admin/orders" },
+	{ icon: Tag, label: "Coupons", href: "/admin/coupons" },
 	{ icon: Users, label: "Users", href: "/admin/users" },
 	{ icon: Mail, label: "Emails", href: "/admin/emails" },
 	{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },

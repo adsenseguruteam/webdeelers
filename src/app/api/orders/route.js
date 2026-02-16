@@ -75,7 +75,7 @@ export async function POST(request) {
 		await connectDB();
 		
 		// Parse request body
-		const { productId, productSnapshot, amount, finalAmount, currency, paymentMethod, paymentStatus, status, deliveryStatus } = await request.json();
+		const { productId, productSnapshot, amount, finalAmount, currency, paymentMethod, couponCode, paymentStatus, status, deliveryStatus } = await request.json();
 
 		// Validate required fields
 		if (!productId || !finalAmount || !currency) {
@@ -116,11 +116,14 @@ export async function POST(request) {
 			finalAmount,
 			currency,
 			paymentMethod,
-			paymentStatus: paymentStatus || "pending",
-			status: status || "pending",
-			deliveryStatus: deliveryStatus || "pending",
+			paymentStatus: paymentStatus || "processing",
+			status: status || "processing",
+			deliveryStatus: deliveryStatus,
+			couponCode: couponCode || null,
 			createdAt: new Date(),
 		});
+
+		await Product.findByIdAndUpdate(productId, { $inc: { salesCount: 1 } });
 
 		await newOrder.save();
 

@@ -79,22 +79,25 @@ const orderSchema = new mongoose.Schema(
 		// Payment Status
 		paymentStatus: {
 			type: String,
-			enum: ["pending", "completed", "failed", "refunded", "cancelled"],
-			default: "pending",
+			enum: ["pending", "completed", "failed", "refunded", "cancelled", "processing"],
+			default: "processing",
 		},
 		
 		// Order Status
 		status: {
 			type: String,
-			enum: ["pending", "processing", "completed", "cancelled", "refunded"],
-			default: "pending",
+			enum: ["pending", "processing", "completed", "cancelled", "refunded", "failed"],
+			default: "processing",
 		},
 		
 		// Delivery/Download Status
 		deliveryStatus: {
 			type: String,
-			enum: ["pending", "delivered", "failed"],
+			enum: ["pending", "delivered", "failed", "processing"],
 			default: "pending",
+		},
+		couponCode: {
+			type: String,
 		},
 		
 		// Download URL for digital products (encrypted or signed)
@@ -111,23 +114,6 @@ const orderSchema = new mongoose.Schema(
 		downloadCount: {
 			type: Number,
 			default: 0,
-		},
-		
-		// Customer Details
-		customerDetails: {
-			name: String,
-			email: String,
-			phone: String,
-		},
-		
-		// Billing Address
-		billingAddress: {
-			line1: String,
-			line2: String,
-			city: String,
-			state: String,
-			country: String,
-			zipCode: String,
 		},
 		
 		// Notes
