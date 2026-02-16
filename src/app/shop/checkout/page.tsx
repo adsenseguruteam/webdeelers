@@ -52,8 +52,8 @@ interface CouponData {
   maximumDiscount: number | null;
 }
 
-export default function CheckoutPage() {
-  const searchParams = useSearchParams();
+export default async function CheckoutPage() {
+  const searchParams = await useSearchParams();
   const router = useRouter();
   const { user } = userContext();
   
@@ -78,7 +78,7 @@ export default function CheckoutPage() {
   });
 
   // Get product ID from URL params
-  const productId = searchParams.get("product");
+  const productId =  searchParams.get("product");
 
   useEffect(() => {
    
