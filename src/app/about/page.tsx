@@ -203,16 +203,16 @@ export default function About() {
 									About the Founder
 								</h2>
 								<p className='text-white/90 leading-relaxed text-base md:text-lg mb-4'>
-									Hi, I'm <b>Amit Kumar</b>, the founder and
-									creator of Deelzo. With extensive experience
-									in web development and digital solutions, I
-									built this platform to connect buyers and
-									sellers of premium digital assets in a
-									secure and trustworthy environment.
+									Hi, I'm <b>Dheeru Rajpoot</b>, the founder
+									and creator of Deelzo. With extensive
+									experience in web development and digital
+									solutions, I built this platform to connect
+									buyers and sellers of premium digital assets
+									in a secure and trustworthy environment.
 								</p>
 								<div className='flex flex-col sm:flex-row gap-3 justify-center md:justify-start'>
 									<Link
-										href='https://www.linkedin.com/'
+										href='https://www.linkedin.com/in/dheerurajpoot'
 										target='_blank'
 										rel='noopener noreferrer'
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
