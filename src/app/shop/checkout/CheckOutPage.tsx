@@ -230,7 +230,9 @@ export default function CheckoutComponent() {
 		}
 	};
 
-	const finalAmount = couponData ? couponData.finalAmount : product?.price;
+	const finalAmount = couponData
+		? couponData.finalAmount
+		: product?.price || 0;
 	const discountAmount = couponData ? couponData.discountAmount : 0;
 
 	if (loading) {
@@ -304,8 +306,8 @@ export default function CheckoutComponent() {
 					{/* Left Column - Order Summary */}
 					<div className='lg:col-span-2 space-y-6'>
 						{/* Product Card */}
-						<Card className='overflow-hidden border-slate-200 shadow-sm '>
-							<CardHeader className='bg-gradient-to-r from-orange-50 to-rose-50 border-b border-slate-200'>
+						<Card className='overflow-hidden border-slate-200 shadow-xs p-0'>
+							<CardHeader className='bg-gradient-to-r from-orange-50 to-rose-50 border-b-[1px] py-3 border-slate-200'>
 								<CardTitle className='flex items-center gap-2 text-slate-900'>
 									<ShoppingCart
 										size={20}
@@ -361,7 +363,7 @@ export default function CheckoutComponent() {
 						</Card>
 
 						{/* Coupon Section */}
-						<Card className='border-slate-200 shadow-sm'>
+						<Card className='border-slate-200 shadow-xs'>
 							<CardHeader className='pb-4'>
 								<CardTitle className='flex items-center gap-2 text-slate-900'>
 									<Tag
@@ -459,10 +461,14 @@ export default function CheckoutComponent() {
 					{/* Right Column - Payment Summary */}
 					<div className='space-y-6'>
 						{/* Order Total */}
-						<Card className='border-slate-200 shadow-sm sticky top-8'>
-							<CardHeader className='bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200'>
-								<CardTitle className='text-slate-900'>
-									Order Total
+						<Card className='border-slate-200 shadow-xs sticky top-8 p-0'>
+							<CardHeader className='bg-gradient-to-r from-slate-50 rounded-t-xl py-3 to-slate-100 border-b-[1px] border-slate-200'>
+								<CardTitle className='text-slate-900 flex items-center'>
+									<CreditCard
+										size={20}
+										className='text-slate-900'
+									/>
+									<span className='ml-2'>Order Total</span>
 								</CardTitle>
 							</CardHeader>
 							<CardContent className='p-6 space-y-6'>
@@ -503,7 +509,10 @@ export default function CheckoutComponent() {
 													</div>
 													<div>
 														<h4 className='font-semibold text-slate-900'>
-															UPI Payment
+															UPI Payment{" "}
+															<Badge className='bg-blue-200 text-blue-800 border-0 ml-2'>
+																India Only
+															</Badge>
 														</h4>
 														<p className='text-sm text-slate-600'>
 															Instant payment via
@@ -588,29 +597,58 @@ export default function CheckoutComponent() {
 								<div className='space-y-3'>
 									<div className='flex justify-between text-slate-600'>
 										<span>Subtotal</span>
-										<span>
-											{product?.currency}{" "}
-											{product?.price.toFixed(2)}
-										</span>
+										{selectedPaymentMethod === "upi" ? (
+											<span>
+												₹
+												{(product?.price * 90)?.toFixed(
+													2,
+												) || 0}
+											</span>
+										) : (
+											<span>
+												{product?.currency}{" "}
+												{product?.price?.toFixed(2) ||
+													0}
+											</span>
+										)}
 									</div>
 
 									{discountAmount > 0 && (
 										<div className='flex justify-between text-emerald-600'>
 											<span>Discount</span>
-											<span>
-												- {product?.currency}{" "}
-												{discountAmount.toFixed(2)}
-											</span>
+											{selectedPaymentMethod === "upi" ? (
+												<span>
+													₹
+													{(
+														discountAmount * 90
+													)?.toFixed(2) || 0}
+												</span>
+											) : (
+												<span>
+													- {product?.currency}{" "}
+													{discountAmount.toFixed(2)}
+												</span>
+											)}
 										</div>
 									)}
 
 									<div className='border-t border-slate-200 pt-3'>
 										<div className='flex justify-between text-lg font-bold text-slate-900'>
 											<span>Total</span>
-											<span>
-												{product?.currency}{" "}
-												{finalAmount?.toFixed(2) || 0}
-											</span>
+											{selectedPaymentMethod === "upi" ? (
+												<span>
+													₹
+													{(
+														finalAmount * 90
+													)?.toFixed(2) || 0}
+												</span>
+											) : (
+												<span>
+													{product?.currency}{" "}
+													{finalAmount?.toFixed(2) ||
+														0}
+												</span>
+											)}
 										</div>
 									</div>
 								</div>
@@ -680,8 +718,7 @@ export default function CheckoutComponent() {
 					<DialogHeader>
 						<DialogTitle>Complete Your Payment</DialogTitle>
 						<p className='text-sm text-slate-600'>
-							Pay {product?.currency}{" "}
-							{finalAmount?.toFixed(2) || 0} using{" "}
+							Pay using{" "}
 							{selectedPaymentMethod === "upi"
 								? "UPI"
 								: "Binance"}
@@ -729,9 +766,11 @@ export default function CheckoutComponent() {
 												className='w-40 h-40 rounded-lg'
 											/>
 										</div>
-										<p className='text-xs text-slate-500 mt-2'>
-											Amount: {product?.currency}{" "}
-											{finalAmount?.toFixed(2) || 0}
+										<p className='text-lg font-bold text-slate-500 mt-2'>
+											Amount: ₹{" "}
+											{(finalAmount * 90)?.toFixed(2) ||
+												0}{" "}
+											INR
 										</p>
 									</div>
 								</div>
@@ -774,7 +813,7 @@ export default function CheckoutComponent() {
 												className='w-40 h-40 rounded-lg'
 											/>
 										</div>
-										<p className='text-xs text-slate-500 mt-2'>
+										<p className='text-lg font-bold text-slate-500 mt-2'>
 											Amount: {product?.currency}{" "}
 											{finalAmount?.toFixed(2) || 0}
 										</p>
