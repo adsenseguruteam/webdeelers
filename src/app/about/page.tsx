@@ -203,16 +203,16 @@ export default function About() {
 									About the Founder
 								</h2>
 								<p className='text-white/90 leading-relaxed text-base md:text-lg mb-4'>
-									Hi, I'm <b>Dheeru Rajpoot</b>, the
-									founder and creator of Deelzo. With extensive
-									experience in web development and digital solutions,
-									I built this platform to connect buyers
-									and sellers of premium digital assets in a
+									Hi, I'm <b>Amit Kumar</b>, the founder and
+									creator of Deelzo. With extensive experience
+									in web development and digital solutions, I
+									built this platform to connect buyers and
+									sellers of premium digital assets in a
 									secure and trustworthy environment.
 								</p>
 								<div className='flex flex-col sm:flex-row gap-3 justify-center md:justify-start'>
 									<Link
-										href='https://www.linkedin.com/in/dheerurajpoot/'
+										href='https://www.linkedin.com/'
 										target='_blank'
 										rel='noopener noreferrer'
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
@@ -226,7 +226,7 @@ export default function About() {
 										Contact
 									</a>
 									<a
-										href={`tel:${PHONE}`}
+										href={`https://wa.me/${PHONE}`}
 										className='inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition-colors'>
 										<Phone size={18} />
 										Call
@@ -301,9 +301,7 @@ export default function About() {
 									href='/shop'
 									className='flex items-center justify-center gap-2 p-4 bg-linear-to-r from-cyan-50 to-teal-50 hover:from-cyan-100 hover:to-teal-100 rounded-xl border border-cyan-200 text-cyan-700 transition-all duration-200 hover:shadow-lg group'>
 									<ExternalLink size={20} />
-									<span className='font-semibold'>
-										Shop
-									</span>
+									<span className='font-semibold'>Shop</span>
 									<ArrowRight
 										size={16}
 										className='group-hover:translate-x-1 transition-transform'

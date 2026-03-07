@@ -32,9 +32,8 @@ export default function Navbar() {
 
 	const navLinks = [
 		{ href: "/shop", label: "Shop", icon: ShoppingBag },
-		{ href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
 		{ href: "/blogs", label: "Blogs", icon: Book },
-		{ href: "/offers", label: "Offers", icon: ShoppingBag },
+		{ href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
 		{ href: "/guide", label: "Guide", icon: BookOpen },
 	];
 
