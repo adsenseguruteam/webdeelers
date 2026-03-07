@@ -62,37 +62,44 @@ const productSchema = new mongoose.Schema(
 		},
 		currency: {
 			type: String,
-			default: "INR",
-			enum: ["USD", "EUR", "GBP", "INR"],
+			default: "USD",
+			enum: ["USD", "EUR", "INR", "USDT"],
 		},
-		images: [{
-			type: String,
-		}],
+		images: [
+			{
+				type: String,
+			},
+		],
 		thumbnail: {
 			type: String,
 		},
-		files: [{
-			name: String,
-			url: String,
-			size: String,
-			type: String,
-		}],
+		files: [
+			{
+				name: String,
+				url: String,
+				size: String,
+				type: String,
+			},
+		],
 		downloadOptions: {
 			type: {
 				type: String,
 				enum: ["upload", "link"],
 				default: "upload",
 			},
-			file: new mongoose.Schema({
-				name: { type: String, default: "" },
-				url: { type: String, default: "" },
-				size: { type: String, default: "" },
-				type: { type: String, default: "" },
-				imageKitFileId: { type: String, default: "" }, // Store ImageKit file ID
-			}, { _id: false }),
+			file: new mongoose.Schema(
+				{
+					name: { type: String, default: "" },
+					url: { type: String, default: "" },
+					size: { type: String, default: "" },
+					type: { type: String, default: "" },
+					imageKitFileId: { type: String, default: "" }, // Store ImageKit file ID
+				},
+				{ _id: false },
+			),
 			link: {
 				type: String,
-				default: ""
+				default: "",
 			},
 		},
 		demoUrl: {
@@ -101,17 +108,23 @@ const productSchema = new mongoose.Schema(
 		videoUrl: {
 			type: String,
 		},
-		features: [{
-			type: String,
-			maxlength: [200, "Feature cannot exceed 200 characters"],
-		}],
-		requirements: [{
-			type: String,
-		}],
-		tags: [{
-			type: String,
-			trim: true,
-		}],
+		features: [
+			{
+				type: String,
+				maxlength: [200, "Feature cannot exceed 200 characters"],
+			},
+		],
+		requirements: [
+			{
+				type: String,
+			},
+		],
+		tags: [
+			{
+				type: String,
+				trim: true,
+			},
+		],
 		status: {
 			type: String,
 			enum: ["draft", "active", "archived"],
@@ -138,22 +151,26 @@ const productSchema = new mongoose.Schema(
 				default: 0,
 			},
 		},
-		reviews: [{
-			user: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "User",
+		reviews: [
+			{
+				user: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "User",
+				},
+				rating: Number,
+				comment: String,
+				createdAt: {
+					type: Date,
+					default: Date.now,
+				},
 			},
-			rating: Number,
-			comment: String,
-			createdAt: {
-				type: Date,
-				default: Date.now,
+		],
+		faqs: [
+			{
+				question: String,
+				answer: String,
 			},
-		}],
-		faqs: [{
-			question: String,
-			answer: String,
-		}],
+		],
 		seller: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "User",
@@ -186,15 +203,13 @@ const productSchema = new mongoose.Schema(
 	},
 	{
 		timestamps: true,
-	}
+	},
 );
 
 // Generate slug before saving
 productSchema.pre("save", function (next) {
 	if (!this.slug) {
-		this.slug = this.title
-			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, "-")
+		this.slug = this.title.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 	}
 	next();
 });
@@ -208,7 +223,11 @@ productSchema.virtual("discountedPrice").get(function () {
 			(!this.discount.endDate || this.discount.endDate >= now)
 		) {
 			if (this.discount.type === "percentage") {
-				return Math.round(this.price * (1 - this.discount.value / 100) * 100) / 100;
+				return (
+					Math.round(
+						this.price * (1 - this.discount.value / 100) * 100,
+					) / 100
+				);
 			} else {
 				return Math.max(0, this.price - this.discount.value);
 			}
@@ -224,6 +243,7 @@ productSchema.index({
 	tags: "text",
 });
 
-const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
+const Product =
+	mongoose.models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

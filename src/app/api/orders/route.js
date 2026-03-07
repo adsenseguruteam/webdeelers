@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import { getDataFromToken } from "@/lib/auth";
+import { sendEmail } from "@/lib/emails";
+import { EMAIL } from "@/lib/constant"
 
 // GET /api/orders - Get user's orders
 export async function GET(request) {
@@ -124,6 +126,14 @@ export async function POST(request) {
 		});
 
 		await Product.findByIdAndUpdate(productId, { $inc: { salesCount: 1 } });
+
+		// send confirmation email to admin and customer 
+		
+		await sendEmail({
+			to: EMAIL,
+			subject: `New Order: ${product.title}`,
+			html: "<p>There is a new order for your product.</p><p>Order ID: " + orderId + "</p><p>Product: " + product.title + "</p><p>Amount: " + finalAmount + " " + currency + "</p>",
+		})
 
 		await newOrder.save();
 

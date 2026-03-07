@@ -4,6 +4,8 @@ import User from "@/models/User";
 import Plan from "@/models/Plan";
 import { getDataFromToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { sendEmail } from "@/lib/emails";
+import { EMAIL } from "@/lib/constant"
 
 export async function GET(request) {
 	try {
@@ -197,6 +199,15 @@ export async function POST(request) {
 			author: userId,
 			status: "pending", // User posts need approval? "review all blogs"
 		});
+
+		// New blog Notification to admin
+		await sendEmail({
+			to: EMAIL,
+			subject: `New Blog for Review`,
+			html: "<p>There is a new blog post for review.</p><p>Blog ID: " + newBlog._id + "</p><p>Blog Title: " + newBlog.title + "</p><p>Author: " + user.name + "</p>",
+			})
+
+		
 
 		// Update user stats
 		user.lastPostDate = now;
