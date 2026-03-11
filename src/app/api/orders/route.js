@@ -100,7 +100,7 @@ export async function POST(request) {
 		}
 
 		// Generate order ID
-		const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+		const orderId = `ORD-${Date.now()}`;
 
 		// Create order
 		const newOrder = new Order({

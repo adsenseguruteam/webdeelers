@@ -19,8 +19,6 @@ import {
 	Tag,
 	Percent,
 	CreditCard,
-	Banknote,
-	Lock,
 	CheckCircle,
 	Loader2,
 	Shield,
@@ -63,16 +61,14 @@ export default function CheckoutComponent() {
 	const [couponData, setCouponData] = useState<CouponData | null>(null);
 	const [isVerifyingCoupon, setIsVerifyingCoupon] = useState(false);
 	const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-		"upi" | "binance" | "card" | ""
+		"payu" | "binance" | ""
 	>("");
 	const [transactionId, setTransactionId] = useState("");
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [showTransactionDialog, setShowTransactionDialog] = useState(false);
 
 	const [paymentDetails] = useState({
-		upiId: "adsenseservices90@axl",
 		binanceWallet: "TEiKjQHn5sRpW69prMSsV2s38PQtndofhb",
-		upiQrUrl: "/upiscanner.jpeg",
 		binanceQrUrl: "/usdtscanner.jpeg",
 	});
 
@@ -162,11 +158,88 @@ export default function CheckoutComponent() {
 		}
 
 		// Show payment details based on selected method
-		if (
-			selectedPaymentMethod === "upi" ||
-			selectedPaymentMethod === "binance"
-		) {
+		if (selectedPaymentMethod === "binance") {
 			setShowTransactionDialog(true);
+		} else if (selectedPaymentMethod === "payu") {
+			initiatePayU();
+		}
+	};
+
+	const initiatePayU = async () => {
+		try {
+			setIsProcessing(true);
+			
+			const orderAmount = couponData ? couponData.finalAmount * 92 : (product?.price || 0) * 92;
+			
+			// We need some user details for PayU. In a real app we'd get this from user profile context.
+			// Using placeholders for demonstrating flow if missing from context
+			const userFirstName = user?.name || "Customer";
+			const userEmail = user?.email || "customer@example.com";
+			const userPhone = user?.phone || "9999999999";
+			
+			const payload = {
+				amount: orderAmount.toFixed(2),
+				productinfo: product?.title || "Product Purchase",
+				firstname: userFirstName,
+				email: userEmail,
+				phone: userPhone,
+				userId: user?._id,
+				productId: product?._id,
+				couponCode: couponData?.code || null,
+				finalAmount: orderAmount,
+			};
+
+			const response = await axios.post("/api/payu/initiate", payload);
+
+			if (response.data.success) {
+				const { hash, txnid, key } = response.data;
+				
+				// Create form dynamically to submit to PayU
+				const form = document.createElement("form");
+				form.action = "https://secure.payu.in/_payment"; 
+				form.method = "POST";
+				
+				const createInput = (name: string, value: string) => {
+					const input = document.createElement("input");
+					input.type = "hidden";
+					input.name = name;
+					input.value = value;
+					return input;
+				};
+
+				form.appendChild(createInput("key", key));
+				form.appendChild(createInput("txnid", txnid));
+				form.appendChild(createInput("amount", payload.amount));
+				form.appendChild(createInput("productinfo", payload.productinfo));
+				form.appendChild(createInput("firstname", payload.firstname));
+				form.appendChild(createInput("email", payload.email));
+				form.appendChild(createInput("phone", payload.phone));
+				
+				// SURL and FURL endpoints (replace with correct domain if deployed)
+				const baseUrl = window.location.origin;
+				form.appendChild(createInput("surl", `${baseUrl}/api/payu/callback`));
+				form.appendChild(createInput("furl", `${baseUrl}/api/payu/callback`));
+				form.appendChild(createInput("hash", hash));
+				
+				// Add custom fields
+				form.appendChild(createInput("udf1", payload.userId || ""));
+				form.appendChild(createInput("udf2", payload.productId || ""));
+				form.appendChild(createInput("udf3", JSON.stringify({
+					couponCode: payload.couponCode,
+					finalAmount: payload.finalAmount,
+					currency: "INR"
+				})));
+
+				document.body.appendChild(form);
+				form.submit();
+			} else {
+				toast.error(response.data.message || "Failed to initiate payment");
+				setIsProcessing(false);
+			}
+		} catch (error: any) {
+			console.error("PayU initiation error:", error);
+			toast.error(error.response?.data?.message || "Failed to connect to payment gateway");
+			setIsProcessing(false);
 		}
 	};
 
@@ -203,6 +276,7 @@ export default function CheckoutComponent() {
 				finalAmount: orderAmount,
 				currency: product?.currency || "USD",
 				paymentMethod: selectedPaymentMethod,
+				status: "processing",
 				couponCode: couponData?.code || null,
 				discountAmount: couponData?.discountAmount || 0,
 				transactionId: transactionId,
@@ -480,43 +554,42 @@ export default function CheckoutComponent() {
 									<div className='space-y-3'>
 										<div
 											className={`p-4 rounded-xl border-2 cursor-pointer transition-all ${
-												selectedPaymentMethod === "upi"
-													? "border-blue-500 bg-blue-50"
+												selectedPaymentMethod === "payu"
+													? "border-emerald-500 bg-emerald-50"
 													: "border-slate-200 hover:border-slate-300"
 											}`}
 											onClick={() =>
-												setSelectedPaymentMethod("upi")
+												setSelectedPaymentMethod("payu")
 											}>
 											<div className='flex items-center gap-3'>
 												<div
 													className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
 														selectedPaymentMethod ===
-														"upi"
-															? "border-blue-500 bg-blue-500"
+														"payu"
+															? "border-emerald-500 bg-emerald-500"
 															: "border-slate-300"
 													}`}>
 													{selectedPaymentMethod ===
-														"upi" && (
+														"payu" && (
 														<div className='w-2 h-2 rounded-full bg-white'></div>
 													)}
 												</div>
 												<div className='flex items-center gap-3'>
-													<div className='w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center'>
-														<Banknote
+													<div className='w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center'>
+														<CreditCard
 															size={16}
 															className='text-white'
 														/>
 													</div>
 													<div>
 														<h4 className='font-semibold text-slate-900'>
-															UPI Payment{" "}
-															<Badge className='bg-blue-200 text-blue-800 border-0 ml-2'>
-																India Only
+															PayU Gateway{" "}
+															<Badge className='bg-emerald-200 text-emerald-800 border-0 ml-2'>
+																Cards, UPI, NetBanking
 															</Badge>
 														</h4>
 														<p className='text-sm text-slate-600'>
-															Instant payment via
-															UPI apps
+															Secure payments via PayU
 														</p>
 													</div>
 												</div>
@@ -567,29 +640,6 @@ export default function CheckoutComponent() {
 												</div>
 											</div>
 										</div>
-
-										<div className='p-4 rounded-xl border-2 border-slate-200 opacity-50'>
-											<div className='flex items-center gap-3'>
-												<div className='w-5 h-5 rounded-full border-2 border-slate-300'></div>
-												<div className='flex items-center gap-3'>
-													<div className='w-8 h-8 rounded-full bg-slate-400 flex items-center justify-center'>
-														<Lock
-															size={16}
-															className='text-white'
-														/>
-													</div>
-													<div>
-														<h4 className='font-semibold text-slate-900'>
-															Card Payment
-														</h4>
-														<p className='text-sm text-slate-600'>
-															Credit/Debit cards
-															(Coming soon)
-														</p>
-													</div>
-												</div>
-											</div>
-										</div>
 									</div>
 								</div>
 
@@ -597,17 +647,17 @@ export default function CheckoutComponent() {
 								<div className='space-y-3'>
 									<div className='flex justify-between text-slate-600'>
 										<span>Subtotal</span>
-										{selectedPaymentMethod === "upi" ? (
+										{selectedPaymentMethod === "payu" ? (
 											<span>
 												₹
-												{(product?.price * 90)?.toFixed(
+												{((product?.price || 0) * 92).toFixed(
 													2,
-												) || 0}
+												)}
 											</span>
 										) : (
 											<span>
 												{product?.currency}{" "}
-												{product?.price?.toFixed(2) ||
+												{(product?.price || 0).toFixed(2) ||
 													0}
 											</span>
 										)}
@@ -616,11 +666,11 @@ export default function CheckoutComponent() {
 									{discountAmount > 0 && (
 										<div className='flex justify-between text-emerald-600'>
 											<span>Discount</span>
-											{selectedPaymentMethod === "upi" ? (
+											{selectedPaymentMethod === "payu" ? (
 												<span>
 													₹
 													{(
-														discountAmount * 90
+														discountAmount * 92
 													)?.toFixed(2) || 0}
 												</span>
 											) : (
@@ -635,11 +685,11 @@ export default function CheckoutComponent() {
 									<div className='border-t border-slate-200 pt-3'>
 										<div className='flex justify-between text-lg font-bold text-slate-900'>
 											<span>Total</span>
-											{selectedPaymentMethod === "upi" ? (
+											{selectedPaymentMethod === "payu" ? (
 												<span>
 													₹
 													{(
-														finalAmount * 90
+														finalAmount * 92
 													)?.toFixed(2) || 0}
 												</span>
 											) : (
@@ -671,7 +721,7 @@ export default function CheckoutComponent() {
 										/>
 									)}
 									{selectedPaymentMethod
-										? `Proceed with ${selectedPaymentMethod === "upi" ? "UPI" : "Binance"}`
+										? `Proceed with ${selectedPaymentMethod === "payu" ? "PayU" : "Binance"}`
 										: "Select Payment Method"}
 								</Button>
 
@@ -719,8 +769,8 @@ export default function CheckoutComponent() {
 						<DialogTitle>Complete Your Payment</DialogTitle>
 						<p className='text-sm text-slate-600'>
 							Pay using{" "}
-							{selectedPaymentMethod === "upi"
-								? "UPI"
+							{selectedPaymentMethod === "payu"
+								? "PayU"
 								: "Binance"}
 						</p>
 					</DialogHeader>
@@ -730,51 +780,6 @@ export default function CheckoutComponent() {
 							<h3 className='font-semibold text-slate-900 mb-3'>
 								Payment Instructions
 							</h3>
-
-							{selectedPaymentMethod === "upi" && (
-								<div className='space-y-4'>
-									<div className='flex items-center justify-between p-3 bg-white rounded-lg border border-blue-200'>
-										<div>
-											<p className='text-sm text-slate-500'>
-												UPI ID
-											</p>
-											<p className='font-mono font-medium text-slate-900'>
-												{paymentDetails.upiId}
-											</p>
-										</div>
-										<Button
-											variant='outline'
-											size='sm'
-											onClick={() =>
-												navigator.clipboard.writeText(
-													paymentDetails.upiId,
-												)
-											}
-											className='border-blue-300 text-blue-700 hover:bg-blue-50'>
-											Copy
-										</Button>
-									</div>
-
-									<div className='text-center'>
-										<p className='text-sm text-slate-600 mb-3'>
-											Scan QR Code to Pay
-										</p>
-										<div className='bg-white p-4 rounded-lg inline-block border border-slate-200'>
-											<img
-												src={paymentDetails.upiQrUrl}
-												alt='UPI QR Code'
-												className='w-40 h-40 rounded-lg'
-											/>
-										</div>
-										<p className='text-lg font-bold text-slate-500 mt-2'>
-											Amount: ₹{" "}
-											{(finalAmount * 90)?.toFixed(2) ||
-												0}{" "}
-											INR
-										</p>
-									</div>
-								</div>
-							)}
 
 							{selectedPaymentMethod === "binance" && (
 								<div className='space-y-4'>

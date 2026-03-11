@@ -53,19 +53,6 @@ const orderSchema = new mongoose.Schema(
 			required: true,
 		},
 		
-		// Payment Details
-		razorpay: {
-			orderId: {
-				type: String,
-			},
-			paymentId: {
-				type: String,
-			},
-			signature: {
-				type: String,
-			},
-		},
-		
 		// Transaction ID for manual payment verification
 		transactionId: {
 			type: String,
@@ -73,7 +60,7 @@ const orderSchema = new mongoose.Schema(
 		
 		paymentMethod: {
 			type: String,
-			enum: ["upi", "binance", "card"],
+			enum: ["upi", "binance", "payu"],
 		},
 		
 		// Payment Status
@@ -87,7 +74,6 @@ const orderSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			enum: ["pending", "processing", "completed", "cancelled", "refunded", "failed"],
-			default: "processing",
 		},
 		
 		// Delivery/Download Status
