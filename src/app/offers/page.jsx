@@ -1,1178 +1,503 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import {
-	CheckCircle2,
-	Zap,
-	Shield,
-	TrendingUp,
-	Star,
-	ArrowRight,
-	Code,
-	Globe,
-	FileText,
-	Rocket,
-	Target,
-	Award,
-	Clock,
-	Users,
-	DollarSign,
-	Sparkles,
-	BadgeCheck,
-	Crown,
-	Loader2,
-	MessageCircle,
-	LinkIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Star, Download, ChevronDown, Zap, Users } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import axios from "axios";
-
-const scripts = [
-	{
-		id: 1,
-		name: "ToolsHub AdSense Approval Script",
-		price: "$15",
-		originalPrice: "$40",
-		description:
-			"ToolsHub is a bundle of 50 tools that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get your AdSense approved in minutes.",
-		features: [
-			"50+ Tools",
-			"All Tools are 100% Legal",
-			"All Tools are 100% Working",
-			"All Tools are 100% Safe",
-			"All Tools are 100% Secure",
-			"All Tools are 100% Reliable",
-		],
-		successRate: "100%",
-		deliveryTime: "5 Minute",
-		popular: true,
-		icon: Rocket,
-		color: "from-blue-500 to-cyan-500",
-		liveDemo: "https://toolshub123.vercel.app/",
-	},
-	{
-		id: 2,
-		name: "Image Converter AdSense Approval Script",
-		price: "$15",
-		originalPrice: "$20",
-		description:
-			"Image Converter is a tool that helps you convert images to different formats quickly and easily. It's a simple tool that you can use to convert images to different formats in minutes.",
-		features: [
-			"Convert Images to Different Formats",
-			"Convert Images to Different Sizes",
-			"Convert Images to Different Quality",
-			"Convert Images to Different Format",
-			"Convert Images to Different Size",
-			"Convert Images to Different Quality",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: Award,
-		color: "from-purple-500 to-pink-500",
-		liveDemo: "https://image-converter-toolz.vercel.app/",
-	},
-	{
-		id: 3,
-		name: "WordPress Theme & Plugin detector",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"WordPress Theme & Plugin detector is a tool that helps you detect WordPress themes and plugins quickly and easily. It's a simple tool that you can use to detect WordPress themes and plugins in minutes.",
-		features: [
-			"Detect WordPress Themes",
-			"Detect WordPress Plugins",
-			"100% Legal",
-			"100% Working",
-			"100% Safe",
-			"100% Secure",
-			"100% Reliable",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: Target,
-		color: "from-green-500 to-emerald-500",
-		liveDemo: "https://wp-theme-detector.vercel.app/",
-	},
-	{
-		id: 4,
-		name: "PDF to Word Converter",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"PDF to Word Converter is a tool that helps you convert PDF to Word quickly and easily. It's a simple tool that you can use to convert PDF to Word in minutes.",
-		features: [
-			"Convert PDF to Word",
-			"Convert PDF to Word",
-			"100% Working",
-		],
-		popular: false,
-		icon: Zap,
-		color: "from-orange-500 to-red-500",
-		liveDemo: "https://pdf2wordconverter.vercel.app/",
-	},
-	{
-		id: 5,
-		name: "Image & PDF Compressor",
-		price: "$15",
-		originalPrice: "$20",
-		description:
-			"Image & PDF Compressor is a tool that helps you compress images and PDF files quickly and easily. It's a simple tool that you can use to compress images and PDF files in minutes.",
-		features: [
-			"Compress Images",
-			"Compress PDF",
-			"Compress Images and PDF",
-			"Working Good",
-			"100% SEO done",
-		],
-		popular: true,
-		icon: Crown,
-		color: "from-yellow-500 to-orange-500",
-		liveDemo: "https://compressall.vercel.app/",
-	},
-	{
-		id: 6,
-		name: "PDF to Word Converter",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"PDF to Word Converter is a tool that helps you convert PDF to Word quickly and easily. It's a simple tool that you can use to convert PDF to Word in minutes.",
-		features: [
-			"Convert PDF to Word",
-			"Convert PDF to PDF",
-			"Convert PDF to PDF",
-			"Convert PDF to PDF",
-			"Convert PDF to PDF",
-			"Convert PDF to PDF",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: FileText,
-		color: "from-indigo-500 to-blue-500",
-		liveDemo: "https://pdf2wordconverter.vercel.app/",
-	},
-	{
-		id: 7,
-		name: "Age & EMI Calculator",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Age & EMI Calculator is a tool that helps you calculate your age and EMI quickly and easily. It's a simple tool that you can use to calculate your age and EMI in minutes.",
-		features: [
-			"Calculate Age",
-			"Calculate EMI",
-			"Calculate Age and EMI",
-			"Working Good",
-			"100% SEO done",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: Shield,
-		color: "from-teal-500 to-cyan-500",
-		liveDemo: "https://age-and-loan-calculator.vercel.app/",
-	},
-	{
-		id: 8,
-		name: "QR Code Generator",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"QR Code Generator is a tool that helps you generate QR codes quickly and easily. It's a simple tool that you can use to generate QR codes in minutes.",
-		features: [
-			"Generate QR Codes",
-			"10+ QR Codes ways",
-			"100% Working",
-			"100% SEO done",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: TrendingUp,
-		color: "from-violet-500 to-purple-500",
-		liveDemo: "https://qr-code-generator-tool.vercel.app/",
-	},
-	{
-		id: 9,
-		name: "Image Resizer",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Image Resizer is a tool that helps you resize images quickly and easily. It's a simple tool that you can use to resize images in minutes.",
-		features: [
-			"Resize Images",
-			"Resize Images",
-			"100% Working",
-			"100% SEO done",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: Globe,
-		color: "from-pink-500 to-rose-500",
-		liveDemo: "https://image-resize-tool.vercel.app/",
-	},
-	{
-		id: 10,
-		name: "DOB & Age Calculator",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"DOB & Age Calculator is a tool that helps you calculate your age and DOB quickly and easily. It's a simple tool that you can use to calculate your age and DOB in minutes.",
-		features: [
-			"Calculate Age",
-			"Calculate DOB",
-			"Calculate Age and DOB",
-			"Working Good",
-			"100% SEO done",
-		],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: Code,
-		color: "from-amber-500 to-yellow-500",
-		liveDemo: "https://dob-calculator-eight.vercel.app/",
-	},
-	{
-		id: 11,
-		name: "Online Quiz Script",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Quiz Maker is a tool that helps you make quizzes quickly and easily. It's a simple tool that you can use to make quizzes in minutes.",
-		features: ["Make Quizzes", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: false,
-		icon: CheckCircle2,
-		color: "from-lime-500 to-green-500",
-		liveDemo: "https://quiz-master-blush.vercel.app/",
-	},
-	{
-		id: 12,
-		name: "Tool Hub: 15+ Professional Online Tools",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Tool Hub is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
-		features: ["15+ Tools", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: true,
-		icon: Sparkles,
-		color: "from-rose-500 to-pink-500",
-		liveDemo: "https://tool-zone-omega.vercel.app/",
-	},
-	{
-		id: 13,
-		name: "Calc Hub: 8+ Calculator Tools",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Calc Hub is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
-		features: ["8+ Tools", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: true,
-		icon: Sparkles,
-		color: "from-rose-500 to-pink-500",
-		liveDemo: "https://calculatortoolz.vercel.app/",
-	},
-	{
-		id: 14,
-		name: "Downloader Pro",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Facebook, Instagram and Youtube Videos downloader tool that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
-		features: ["Video Downloader", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: true,
-		icon: Sparkles,
-		color: "from-rose-500 to-pink-500",
-		liveDemo: "https://downloader-pro.vercel.app/",
-	},
-	{
-		id: 15,
-		name: "Quizwinz Quick Script",
-		price: "$15",
-		originalPrice: "$29",
-		description:
-			"Quizwinz Quick Script is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
-		features: ["Online Quiz Script", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: true,
-		icon: Sparkles,
-		color: "from-rose-500 to-pink-500",
-		liveDemo: "https://quizwinz.vercel.app/",
-	},
-	{
-		id: 16,
-		name: "All Scripts Bundle",
-		price: "$99",
-		originalPrice: "$225",
-		description:
-			"All Scripts Bundle is a bundle of all scripts that helps you get AdSense approved quickly and easily. It's a simple tool that you can use to get AdSense approved in minutes.",
-		features: ["All Scripts Included", "100% Working", "100% SEO done"],
-		successRate: "100%",
-		deliveryTime: "1 Minute",
-		popular: true,
-		icon: Sparkles,
-		color: "from-rose-500 to-pink-500",
-		liveDemo: "https://all-scripts-bundle.vercel.app/",
-	},
-];
-
-const paymentOptions = {
-	upi: {
-		label: "UPI",
-		id: "adsenseservices90@axl",
-		qr: "/upiscanner.jpeg",
-		note: "Scan using any UPI app (PhonePe, GPay, Paytm, etc.) and enter the transaction ID.",
-		currency: "INR",
-	},
-	binance: {
-		label: "Binance Pay",
-		id: "556105059",
-		qr: "/usdtscanner.jpeg",
-		note: "Send USDT (TRC20) via Binance Pay. Copy the transaction hash.",
-		currency: "USDT",
-	},
-};
-
-const whatsappNumber = "447846137395";
-
-const testimonials = [
-	{
-		name: "Sarah Khan",
-		role: "Blogger",
-		content:
-			"Got approved in just 3 days! The script worked perfectly and saved me weeks of work.",
-		rating: 5,
-	},
-	{
-		name: "Aniket Sharma",
-		role: "Affiliate Marketer",
-		content:
-			"Best investment I've made. The premium package is worth every penny. Highly recommended!",
-		rating: 5,
-	},
-	{
-		name: "Ansh Singh",
-		role: "Content Creator",
-		content:
-			"I was struggling for months. This script got me approved on my first try. Amazing!",
-		rating: 5,
-	},
-];
 
 const features = [
-	{
-		icon: Zap,
-		title: "Instant Setup",
-		description:
-			"Get started in minutes, not days. No technical knowledge required.",
-	},
-	{
-		icon: Shield,
-		title: "100% Legal",
-		description:
-			"All scripts comply with Google AdSense policies and guidelines.",
-	},
-	{
-		icon: TrendingUp,
-		title: "High Success Rate",
-		description:
-			"98%+ approval rate with our proven scripts and templates.",
-	},
-	{
-		icon: Clock,
-		title: "Fast Delivery",
-		description: "Instant download after purchase. No waiting, no delays.",
-	},
-	{
-		icon: Users,
-		title: "24/7 Support",
-		description:
-			"Get help whenever you need it from our expert support team.",
-	},
-	{
-		icon: DollarSign,
-		title: "Money-Back Guarantee",
-		description:
-			"Not satisfied? Get a full refund within 30 days, no questions asked.",
-	},
+	"Read Anywhere Offline",
+	"1000+ Hindi Books",
+	"1000+ Hindi Audio Books",
+	"Premium Quality",
+	"Mobile Friendly",
+	"Lifetime Access",
+	"24/7 Premium Support",
+	"One time Payment",
+	"All Best Selling Books",
+	"High Quality Audio and E-Book Format"
 ];
 
-const containerVariants = {
-	hidden: { opacity: 0 },
-	visible: {
-		opacity: 1,
-		transition: {
-			delayChildren: 0.2,
-			staggerChildren: 0.1,
-		},
-	},
-};
+const topics = [
+	"Business and Motivation",
+	"Sales and Marketing",
+	"Biographies of Billionaires",
+	"Self Development and Growth",
+	"Success and Passive Income",
+	"Investing (Stock Market/Real Estate)",
+	"Business Ideas and Startup",
+	"History and Spiritual Books",
+	"Philosophy and Psychology",
+	"Popular Novels",
+	"Best Selling Books"
+];
 
-const itemVariants = {
-	hidden: { y: 20, opacity: 0 },
-	visible: {
-		y: 0,
-		opacity: 1,
-	},
-};
+const lifeLessons = [
+	"कम समय में ज्यादा ज्ञान (Learn more in less time)",
+	"समय का सही उपयोग (Proper use of time)",
+	"दिमाग की एकाग्रता (Mental focus)",
+	"तनाव कम करना (Reduce stress)",
+	"सकारात्मक सोच (Positive thinking)",
+	"पैसों की समझ (Financial literacy)",
+	"सफलता के रहस्य (Secrets of success)"
+];
 
-export default function OffersPage() {
-	const [selectedCategory, setSelectedCategory] = useState("All");
-	const [checkoutOpen, setCheckoutOpen] = useState(false);
-	const [selectedScript, setSelectedScript] = useState(null);
-	const [paymentMethod, setPaymentMethod] = useState("upi");
-	const [formData, setFormData] = useState({ email: "", transactionId: "" });
-	const [isLoading, setIsLoading] = useState(false);
-	const [successDialogOpen, setSuccessDialogOpen] = useState(false);
-	const [successDetails, setSuccessDetails] = useState(null);
+const faqs = [
+	{ question: "क्या मुझे Life Time Access मिलेगा?", answer: "जी हाँ, एक बार पेमेंट करने के बाद आपको लाइफटाइम एक्सेस मिलेगा।" },
+	{ question: "Payment करने के बाद Books कैसे मिलेगी?", answer: "पेमेंट कंफर्म होते ही आपको तुरंत डाउनलोड लिंक मिल जाएगा, जिसे आप अपने मोबाइल या कंप्यूटर में सेव कर सकते हैं।" },
+	{ question: "क्या बुक्स हिंदी में हैं?", answer: "जी हाँ, इस कॉम्बो में सभी ई-बुक्स और ऑडियो बुक्स हिंदी भाषा में उपलब्ध हैं।" },
+	{ question: "मेरे पैसे कट गए लेकिन डाउनलोड लिंक नहीं मिला?", answer: "कभी-कभी तकनीकी कारणों से 5-10 मिनट लग सकते हैं। आप हमें हमारे सपोर्ट पर मेल कर सकते हैं।" },
+	{ question: "क्या मैं इसे मोबाइल में पढ़/सुन सकता हूँ?", answer: "बिल्कुल! सभी बुक्स मोबाइल-फ्रेंडली फॉर्मेट (PDF/MP3) में हैं।" }
+];
 
-	const buildWhatsappLink = (scriptTitle = "AdSense script") =>
-		`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-			`Hi team, I just purchased the ${scriptTitle} and submitted my payment. Please help me activate it. My email is ${formData.email} and my transaction ID is ${formData.transactionId}.`
-		)}`;
+export default function BookOfferPage() {
+	const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 15, seconds: 0 });
+	const [openFaq, setOpenFaq] = useState(0);
 
-	const filteredScripts =
-		selectedCategory === "All"
-			? scripts
-			: selectedCategory === "Popular"
-			? scripts.filter((s) => s.popular)
-			: scripts.filter((s) => parseFloat(s.price.replace("$", "")) < 50);
+	useEffect(() => {
+		const timer = setInterval(() => {
+			setTimeLeft(prev => {
+				if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+				if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+				if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+				return { hours: 0, minutes: 15, seconds: 0 };
+			});
+		}, 1000);
+		return () => clearInterval(timer);
+	}, []);
 
-	const handleOpenCheckout = (script) => {
-		setSelectedScript(script);
-		setCheckoutOpen(true);
-		setPaymentMethod("upi");
-		setFormData({ email: "", transactionId: "" });
-	};
-
-	const apiKey = "46122254";
-	const formId = "47128296-eb12-4bcf-ac0c-715230af3f49";
-
-	const handleSubmitCheckout = async (event) => {
-		event.preventDefault();
-		setIsLoading(true);
-		try {
-			const data = {
-				fields: [
-					{ name: "full_name", value: selectedScript?.name },
-					{ name: "email", value: formData.email },
-					{ name: "transaction_id", value: formData.transactionId },
-				],
-			};
-
-			const response = await axios.post(
-				`https://api.hsforms.com/submissions/v3/integration/submit/${apiKey}/${formId}`,
-				data,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
-			if (response.status === 200) {
-				setSuccessDetails({
-					email: formData.email,
-					scriptName: selectedScript?.name,
-					paymentMethod,
-				});
-				setCheckoutOpen(false);
-				setSuccessDialogOpen(true);
-				setFormData({ email: "", transactionId: "" });
-			}
-		} catch (error) {
-			console.log(error);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const padZero = (num) => num.toString().padStart(2, '0');
 
 	return (
-		<div className='min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
+		<div className="min-h-screen bg-slate-50 font-sans selection:bg-rose-500 selection:text-white pb-20 md:pb-0">
+			{/* Top Warning Bar */}
+			<div className="bg-yellow-400 text-black text-center py-2 px-4 text-[11px] md:text-sm font-bold shadow-md relative z-10 hidden sm:block">
+				रातों-रात कोई भी सफल नहीं होता, अगर आपको सफल होना है तो आपको आज से ही शुरुआत करनी होगी!
+			</div>
+
 			{/* Hero Section */}
-			<section className='relative pt-20 pb-16 px-4 overflow-hidden'>
-				<div className='absolute inset-0 opacity-10'></div>
-				<div className='container mx-auto relative z-10'>
-					<motion.div
-						className='text-center max-w-4xl mx-auto'
-						initial='hidden'
-						animate='visible'
-						variants={containerVariants}>
-						<motion.div
-							className='inline-flex items-center gap-2 bg-purple-500/20 border border-purple-500/30 rounded-full px-4 py-2 mb-6'
-							variants={itemVariants}>
-							<BadgeCheck className='h-4 w-4 text-purple-400' />
-							<span className='text-sm text-purple-300'>
-								Trusted by 10,000+ Users Worldwide
-							</span>
-						</motion.div>
-						<motion.h1
-							className='text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent'
-							variants={itemVariants}>
-							Get AdSense Approved
-							<br />
-							<span className='bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent'>
-								In Days, Not Months
-							</span>
-						</motion.h1>
-						<motion.p
-							className='text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed'
-							variants={itemVariants}>
-							Premium AdSense Approval Scripts & Tools That
-							Actually Work.
-							<br />
-							<span className='text-purple-400 font-semibold'>
-								98%+ Success Rate • Instant Download •
-								Money-Back Guarantee
-							</span>
-						</motion.p>
-						<motion.div
-							className='flex flex-col sm:flex-row gap-4 justify-center items-center'
-							variants={itemVariants}>
-							<Button
-								asChild
-								size='lg'
-								className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-8 py-6 rounded-full shadow-lg shadow-purple-500/50'>
-								<Link href='#scripts'>
-									View All Scripts
-									<ArrowRight className='ml-2 h-5 w-5' />
-								</Link>
-							</Button>
-							<Button
-								asChild
-								size='lg'
-								variant='outline'
-								className='border-purple-500/50 hover:bg-purple-500/10 hover:text-white text-lg px-8 py-6 rounded-full'>
-								<Link href='#testimonials'>
-									See Success Stories
-								</Link>
-							</Button>
-						</motion.div>
-						<motion.div
-							className='mt-12 flex flex-wrap justify-center gap-8 text-center'
-							variants={itemVariants}>
-							<div>
-								<div className='text-3xl font-bold text-purple-400'>
-									10,000+
-								</div>
-								<div className='text-gray-400'>
-									Happy Customers
-								</div>
+			<section className="bg-black text-white py-12 px-4 relative overflow-hidden">
+				<div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
+				<div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+				
+				<div className="max-w-6xl mx-auto relative z-10 flex flex-col items-center">
+					<motion.h1 
+						initial={{ y: -20, opacity: 0 }}
+						animate={{ y: 0, opacity: 1 }}
+						className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-center mb-4 leading-tight">
+						<span className="text-yellow-400 drop-shadow-lg">1000+ E-Books</span> and Audio Books<br/>
+						<span className="text-emerald-400 drop-shadow-lg text-2xl md:text-3xl mt-2 inline-block">जो आपकी जिंदगी बदल देंगी</span>
+					</motion.h1>
+
+					<div className="grid lg:grid-cols-2 gap-10 mt-8 w-full items-center">
+						<motion.div 
+							initial={{ x: -20, opacity: 0 }}
+							animate={{ x: 0, opacity: 1 }}
+							transition={{ delay: 0.2 }}
+							className="relative rounded-2xl overflow-hidden border-4 border-white/10 shadow-2xl shadow-rose-500/20 group">
+							<div className="absolute -top-1 -left-1 bg-red-600 text-white font-bold px-4 py-1 rounded-br-2xl z-20 shadow-lg">
+								Top Rated 🔥
 							</div>
-							<div>
-								<div className='text-3xl font-bold text-pink-400'>
-									98%
-								</div>
-								<div className='text-gray-400'>
-									Success Rate
-								</div>
-							</div>
-							<div>
-								<div className='text-3xl font-bold text-cyan-400'>
-									24/7
-								</div>
-								<div className='text-gray-400'>
-									Support Available
+							<div className="aspect-[4/3] bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center p-8 relative">
+								<div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+								<div className="text-center z-10">
+									<h3 className="text-4xl md:text-5xl font-black text-white drop-shadow-2xl mb-4 text-shadow-lg leading-tight">अमीरों की सीक्रेट बुक्स 📚</h3>
+									<p className="text-lg text-yellow-400 font-bold border-2 border-yellow-400 inline-block px-6 py-2 rounded-full bg-black/50 backdrop-blur-sm">हिंदी ऑडियो और ई-बुक्स</p>
 								</div>
 							</div>
 						</motion.div>
-					</motion.div>
+
+						<motion.div 
+							initial={{ x: 20, opacity: 0 }}
+							animate={{ x: 0, opacity: 1 }}
+							transition={{ delay: 0.4 }}
+							className="flex flex-col justify-center">
+							
+							<div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 shadow-xl mb-8">
+								<h3 className="text-yellow-400 font-bold text-xl mb-4 border-b border-white/10 pb-3 flex items-center gap-2">
+									<CheckCircle2 className="w-5 h-5 text-yellow-400" />
+									इस पैकेज में आपको क्या मिलेगा:
+								</h3>
+								<div className="grid md:grid-cols-2 gap-3">
+									{features.map((feature, idx) => (
+										<div key={idx} className="flex items-center gap-2 group">
+											<div className="bg-emerald-500/20 p-0.5 rounded-full">
+												<CheckCircle2 className="w-4 h-4 text-emerald-400" />
+											</div>
+											<span className="text-gray-200 text-sm font-medium">{feature}</span>
+										</div>
+									))}
+								</div>
+							</div>
+
+							<div className="text-center flex flex-col items-center">
+								<p className="text-emerald-400 font-bold mb-2 animate-pulse bg-emerald-900/40 px-4 py-1 rounded-full border border-emerald-500/20">सीमित समय के लिए स्पेशल ऑफर!</p>
+								<motion.button 
+									whileHover={{ scale: 1.05 }}
+									whileTap={{ scale: 0.95 }}
+									className="bg-gradient-to-b from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white text-2xl font-black py-4 px-12 rounded-full shadow-[0_0_40px_rgba(225,29,72,0.5)] border-2 border-rose-300 transition-all w-full md:max-w-sm flex flex-col items-center group relative overflow-hidden">
+									<span className="relative z-10">JUST ₹99/- ONLY</span>
+									<span className="text-[10px] font-medium opacity-80 mt-1 uppercase tracking-widest relative z-10">Instant Download Access</span>
+									<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+								</motion.button>
+								<p className="mt-4 text-gray-400 font-medium flex items-center justify-center gap-2">
+									Original Price: <span className="line-through text-red-500/80 font-bold text-lg">₹9,999</span>
+								</p>
+							</div>
+
+						</motion.div>
+					</div>
 				</div>
 			</section>
 
-			{/* Scripts Section */}
-			<section id='scripts' className='py-16 px-4'>
-				<div className='container mx-auto'>
-					<motion.div
-						className='text-center mb-12'
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true }}
-						variants={containerVariants}>
-						<motion.h2
-							className='text-4xl md:text-5xl font-bold mb-4 text-white'
-							variants={itemVariants}>
-							Choose Your Perfect Script
-						</motion.h2>
-						<motion.p
-							className='text-xl text-gray-300 max-w-2xl mx-auto mb-8'
-							variants={itemVariants}>
-							From quick solutions to complete packages - we have
-							everything you need
-						</motion.p>
-						<motion.div
-							className='flex flex-wrap justify-center gap-4'
-							variants={itemVariants}>
-							{["All", "Popular", "Budget"].map((cat) => (
-								<Button
-									key={cat}
-									variant={
-										selectedCategory === cat
-											? "default"
-											: "outline"
-									}
-									onClick={() => setSelectedCategory(cat)}
-									className={
-										selectedCategory === cat
-											? "bg-gradient-to-r from-purple-600 to-pink-600 text-white border-none"
-											: "border-purple-500/50 text-purple-300 hover:bg-purple-500/10"
-									}>
-									{cat}
-								</Button>
+			{/* Book Categories Showcase */}
+			<section className="py-16 md:py-24 px-4 bg-white relative overflow-hidden">
+				<div className="max-w-6xl mx-auto">
+					<div className="text-center mb-16">
+						<h2 className="text-3xl md:text-5xl font-black text-rose-600 mb-4 drop-shadow-sm">
+							1000+ किताबें <span className="text-slate-800">कौन सी श्रेणी की होंगी?</span>
+						</h2>
+						<div className="w-24 h-1.5 bg-yellow-400 mx-auto rounded-full"></div>
+					</div>
+
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-20">
+						<Image src="/offers/img1.jpg" alt="Offer" width={500} height={500} />
+						<Image src="/offers/img3.jpg" alt="Offer" width={500} height={500} />
+						<Image src="/offers/img4.jpg" alt="Offer" width={500} height={500} />
+						<Image src="/offers/img5.jpg" alt="Offer" width={500} height={500} />
+					</div>
+
+					{/* Topics List with Yellow Accent */}
+					<div className="bg-[#111] border-2 border-yellow-500/20 rounded-[2rem] p-8 md:p-14 shadow-2xl relative overflow-hidden group">
+						<div className="absolute top-0 right-0 w-[400px] h-[400px] bg-yellow-400/5 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-yellow-400/10 transition-colors duration-1000"></div>
+						
+						<h3 className="text-2xl md:text-3xl font-black text-yellow-400 mb-10 text-center border-b border-yellow-500/20 pb-4 mx-auto uppercase tracking-wide">
+							What you'll get in this combo
+						</h3>
+						
+						<div className="grid md:grid-cols-2 gap-y-5 gap-x-12 max-w-4xl mx-auto">
+							{topics.map((topic, idx) => (
+								<motion.div 
+									initial={{ opacity: 0, x: -20 }}
+									whileInView={{ opacity: 1, x: 0 }}
+									viewport={{ once: true }}
+									transition={{ delay: idx * 0.05 }}
+									key={idx} className="flex items-center gap-4 bg-white/5 rounded-xl p-3 hover:bg-white/10 transition-all border border-white/5">
+									<div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg p-1.5 shadow-md">
+										<CheckCircle2 className="w-4 h-4 text-white" />
+									</div>
+									<span className="text-slate-300 font-semibold">{topic}</span>
+								</motion.div>
 							))}
-						</motion.div>
-					</motion.div>
-
-					<motion.div
-						className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true }}
-						variants={containerVariants}>
-						{filteredScripts.map((script) => (
-							<motion.div
-								key={script.id}
-								variants={itemVariants}
-								whileHover={{ y: -5 }}
-								transition={{ duration: 0.2 }}>
-								<Card className='bg-gradient-to-br border-purple-500/20 hover:border-purple-500/50 transition-all h-full flex flex-col relative overflow-hidden'>
-									{script.popular && (
-										<div className='absolute top-4 right-4 z-10'>
-											<Badge className='bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-none'>
-												<Star className='h-3 w-3 mr-1' />
-												Popular
-											</Badge>
-										</div>
-									)}
-									<div
-										className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${script.color}`}></div>
-									<CardHeader>
-										<div
-											className={`w-14 h-14 rounded-xl bg-gradient-to-br ${script.color} flex items-center justify-center mb-4`}>
-											<script.icon className='h-7 w-7 text-white' />
-										</div>
-										<CardTitle className='text-white text-xl mb-2'>
-											{script.name}
-										</CardTitle>
-										<CardDescription className='text-gray-400'>
-											{script.description}
-										</CardDescription>
-									</CardHeader>
-									<CardContent className='flex-grow'>
-										<div className='mb-4'>
-											<div className='flex items-baseline gap-2 mb-2'>
-												<span className='text-3xl font-bold text-white'>
-													{script.price}
-												</span>
-												<span className='text-lg text-gray-500 line-through'>
-													{script.originalPrice}
-												</span>
-											</div>
-											<div className='flex items-center gap-4 text-sm text-gray-400'>
-												<span className='flex items-center gap-1'>
-													<CheckCircle2 className='h-4 w-4 text-green-400' />
-													{script.successRate} Success
-												</span>
-												<span className='flex items-center gap-1'>
-													<Clock className='h-4 w-4 text-blue-400' />
-													{script.deliveryTime}
-												</span>
-											</div>
-										</div>
-										<ul className='space-y-2 mb-4'>
-											{script.features.map(
-												(feature, idx) => (
-													<li
-														key={idx}
-														className='flex items-start gap-2 text-sm text-gray-300'>
-														<CheckCircle2 className='h-4 w-4 text-green-400 mt-0.5 flex-shrink-0' />
-														<span>{feature}</span>
-													</li>
-												)
-											)}
-										</ul>
-									</CardContent>
-									<CardFooter className='flex justify-center gap-2'>
-										<Link
-											href={script?.liveDemo || ""}
-											target='_blank'>
-											<Button className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'>
-												Live Demo
-												<LinkIcon className='ml-2 h-4 w-4' />
-											</Button>
-										</Link>
-										<Button
-											className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
-											onClick={() =>
-												handleOpenCheckout(script)
-											}>
-											Get Instant Access
-											<ArrowRight className='ml-2 h-4 w-4' />
-										</Button>
-									</CardFooter>
-								</Card>
-							</motion.div>
-						))}
-					</motion.div>
-				</div>
-			</section>
-
-			{/* Features Section */}
-			<section className='py-16 px-4 bg-black/20'>
-				<div className='container mx-auto'>
-					<motion.div
-						className='text-center mb-12'
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true }}
-						variants={containerVariants}>
-						<motion.h2
-							className='text-4xl md:text-5xl font-bold mb-4 text-white'
-							variants={itemVariants}>
-							Why Choose Our Scripts?
-						</motion.h2>
-						<motion.p
-							className='text-xl text-gray-300 max-w-2xl mx-auto'
-							variants={itemVariants}>
-							Everything you need to get AdSense approved quickly
-							and easily
-						</motion.p>
-					</motion.div>
-					<div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
-						{features.map((feature, index) => (
-							<motion.div
-								key={index}
-								initial='hidden'
-								whileInView='visible'
-								viewport={{ once: true }}
-								variants={itemVariants}
-								transition={{ delay: index * 0.1 }}>
-								<Card className='bg-white/5 backdrop-blur-sm border-purple-500/20 hover:border-purple-500/50 transition-all'>
-									<CardHeader>
-										<div className='w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4'>
-											<feature.icon className='h-6 w-6 text-white' />
-										</div>
-										<CardTitle className='text-white'>
-											{feature.title}
-										</CardTitle>
-									</CardHeader>
-									<CardContent>
-										<CardDescription className='text-gray-400'>
-											{feature.description}
-										</CardDescription>
-									</CardContent>
-								</Card>
-							</motion.div>
-						))}
+						</div>
+						
+						<div className="mt-14 text-center relative z-10 bg-white/5 rounded-2xl p-6 border border-white/10 max-w-2xl mx-auto">
+							<p className="text-emerald-400 font-bold mb-6 text-lg">जी हाँ! यह सभी ई-बुक्स और ऑडियो बुक्स आपको मिलेंगी, वह भी सिर्फ एक बार पेमेंट करके।</p>
+							<motion.button 
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								className="bg-gradient-to-r from-rose-600 to-red-700 text-white font-black py-4 px-12 rounded-full shadow-[0_10px_30px_rgba(225,29,72,0.4)] hover:shadow-[0_15px_40px_rgba(225,29,72,0.6)] border border-rose-400/50 text-xl md:text-2xl transition-all">
+								BUY NOW @ JUST ₹99/- 🔥
+							</motion.button>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			{/* Testimonials Section */}
-			<section id='testimonials' className='py-16 px-4 bg-black/20'>
-				<div className='container mx-auto'>
-					<motion.div
-						className='text-center mb-12'
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true }}
-						variants={containerVariants}>
-						<motion.h2
-							className='text-4xl md:text-5xl font-bold mb-4 text-white'
-							variants={itemVariants}>
-							Success Stories
-						</motion.h2>
-						<motion.p
-							className='text-xl text-gray-300 max-w-2xl mx-auto'
-							variants={itemVariants}>
-							Join thousands of satisfied customers who got
-							AdSense approved
-						</motion.p>
+			{/* Stats Edge */}
+			<section className="py-12 bg-white border-t border-slate-100 relative">
+				<div className="max-w-5xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-100">
+					<motion.div initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}>
+						<div className="text-5xl font-black text-rose-600 mb-2 drop-shadow-sm">28,889</div>
+						<div className="text-slate-400 font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2"><Users className="w-4 h-4"/> Happy Readers</div>
 					</motion.div>
-					<div className='grid md:grid-cols-3 gap-6'>
-						{testimonials.map((testimonial, index) => (
-							<motion.div
-								key={index}
-								initial='hidden'
-								whileInView='visible'
-								viewport={{ once: true }}
-								variants={itemVariants}
-								transition={{ delay: index * 0.1 }}>
-								<Card className='bg-white/5 backdrop-blur-sm border-purple-500/20'>
-									<CardHeader>
-										<div className='flex items-center gap-1 mb-2'>
-											{[...Array(testimonial.rating)].map(
-												(_, i) => (
-													<Star
-														key={i}
-														className='h-5 w-5 fill-yellow-400 text-yellow-400'
-													/>
-												)
-											)}
-										</div>
-										<CardDescription className='text-gray-300 text-base'>
-											"{testimonial.content}"
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<div className='font-semibold text-white'>
-											{testimonial.name}
-										</div>
-										<div className='text-sm text-gray-400'>
-											{testimonial.role}
-										</div>
-									</CardContent>
-								</Card>
-							</motion.div>
-						))}
+					<motion.div initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="pt-8 md:pt-0">
+						<div className="text-5xl font-black text-yellow-500 mb-2 flex justify-center items-center gap-2 drop-shadow-sm">
+							4.9 <Star className="w-8 h-8 fill-yellow-500 text-yellow-500"/>
+						</div>
+						<div className="text-slate-400 font-bold uppercase tracking-widest text-xs">Customer Rating</div>
+					</motion.div>
+					<motion.div initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="pt-8 md:pt-0">
+						<div className="text-5xl font-black text-emerald-500 mb-2 drop-shadow-sm">1,000+</div>
+						<div className="text-slate-400 font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2"><Download className="w-4 h-4"/> eBooks Included</div>
+					</motion.div>
+				</div>
+			</section>
+
+			{/* Importance of Books */}
+			<section className="py-24 bg-gradient-to-b from-[#7A0016] to-[#4A000A] text-white relative">
+				<div className="absolute inset-x-0 top-0 h-10 bg-white" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 20%, 0 100%)' }}></div>
+				<div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?q=80&w=2000&auto=format&fit=crop')] opacity-[0.05] bg-cover bg-center mix-blend-overlay"></div>
+				
+				<div className="max-w-4xl mx-auto px-4 text-center relative z-10 pt-10">
+					<h2 className="text-3xl md:text-5xl font-black mb-8 text-yellow-400 drop-shadow-md tracking-tight">जीवन में किताब का महत्व</h2>
+					<p className="text-lg md:text-2xl font-medium mb-12 text-rose-100 leading-relaxed max-w-3xl mx-auto">
+						"जीवन में आप जो भी बनना चाहते हैं या करना चाहते हैं, वो सब कुछ 1 किताब में पहले से लिखा हुआ है, आपको बस वो किताब ढूंढने और पढ़ने की देरी है।"
+						<br/><br/>
+						<span className="text-white font-bold bg-white/10 px-6 py-3 rounded-xl inline-block shadow-lg border border-white/5 backdrop-blur-md">आप जब भी 1 किताब पढ़ते हैं तो आपकी जिंदगी में कुछ ना कुछ बदलाव जरूर आता है।</span>
+					</p>
+
+					<div className="bg-white/5 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 border border-white/10 shadow-2xl mt-16 max-w-3xl mx-auto relative">
+						<div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-[#7A0016] font-black px-8 py-3 rounded-full shadow-xl whitespace-nowrap text-lg md:text-xl border-4 border-[#7A0016]">
+							किताबें आपको क्या सिखाती हैं?
+						</div>
+						
+						<div className="grid sm:grid-cols-2 gap-y-4 gap-x-8 text-left mt-8">
+							{lifeLessons.map((lesson, idx) => (
+								<motion.div 
+									initial={{ opacity: 0, y: 10 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{ delay: idx * 0.1 }}
+									key={idx} className="flex items-center gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
+									<Star className="w-5 h-5 text-yellow-400 fill-yellow-400 flex-shrink-0" />
+									<span className="text-[15px] md:text-base font-medium text-rose-50">{lesson}</span>
+								</motion.div>
+							))}
+						</div>
+					</div>
+
+					<div className="mt-16 bg-black/30 rounded-3xl p-8 border border-white/10 inline-block">
+						<p className="text-yellow-400 font-bold text-lg md:text-xl mb-6">इन सभी किताबों को पढ़ने के लिए आपको हजारों रुपये खर्च करने पड़ सकते हैं!</p>
+						<motion.button 
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							className="bg-white text-[#7A0016] hover:bg-yellow-400 font-black py-4 px-10 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] text-xl md:text-2xl transition-all border-4 border-white/20">
+							GRAB ALL FOR JUST ₹99/- 🔥
+						</motion.button>
+						<p className="mt-6 font-medium text-rose-300 text-sm">ऑफर कुछ ही समय के लिए उपलब्ध है। अभी डाउनलोड करें!</p>
 					</div>
 				</div>
 			</section>
 
-			{/* CTA Section */}
-			<section className='py-20 px-4'>
-				<div className='container mx-auto'>
-					<motion.div
-						className='max-w-4xl mx-auto text-center bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-3xl p-12 border border-purple-500/30'
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true }}
-						variants={containerVariants}>
-						<motion.h2
-							className='text-4xl md:text-5xl font-bold mb-6 text-white'
-							variants={itemVariants}>
-							Ready to Get AdSense Approved?
-						</motion.h2>
-						<motion.p
-							className='text-xl text-gray-300 mb-8 max-w-2xl mx-auto'
-							variants={itemVariants}>
-							Stop waiting months for approval. Get instant access
-							to proven scripts that work. Join 10,000+ successful
-							users today!
-						</motion.p>
-						<motion.div
-							className='flex flex-col sm:flex-row gap-4 justify-center'
-							variants={itemVariants}>
-							<Button
-								asChild
-								size='lg'
-								className='bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg px-10 py-6 rounded-full shadow-lg shadow-purple-500/50'>
-								<Link href='#scripts'>
-									Browse All Scripts
-									<ArrowRight className='ml-2 h-5 w-5' />
-								</Link>
-							</Button>
-							<Button
-								asChild
-								size='lg'
-								variant='outline'
-								className='border-purple-500/50 text-purple-300 hover:bg-purple-500/10 text-lg px-10 py-6 rounded-full'>
-								<Link href='/contact'>Contact Support</Link>
-							</Button>
-						</motion.div>
-						<motion.div
-							className='mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-400'
-							variants={itemVariants}>
-							<div className='flex items-center gap-2'>
-								<CheckCircle2 className='h-4 w-4 text-green-400' />
-								Instant Download
-							</div>
-							<div className='flex items-center gap-2'>
-								<CheckCircle2 className='h-4 w-4 text-green-400' />
-								30-Day Money-Back Guarantee
-							</div>
-							<div className='flex items-center gap-2'>
-								<CheckCircle2 className='h-4 w-4 text-green-400' />
-								Lifetime Updates
-							</div>
-						</motion.div>
-					</motion.div>
-				</div>
-			</section>
+			{/* Testimonials */}
+			<section className="py-24 px-4 bg-slate-50 relative overflow-hidden">
+				<div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
+				<div className="max-w-5xl mx-auto relative z-10">
+					<div className="text-center mb-16">
+						<h2 className="text-3xl md:text-5xl font-black bg-gradient-to-r from-[#7A0016] to-rose-600 bg-clip-text text-transparent inline-block pb-2 drop-shadow-sm">
+							eBooks खरीद कर लोगों ने क्या कहा?
+						</h2>
+						<div className="w-24 h-1.5 bg-rose-500 mx-auto rounded-full mt-4"></div>
+					</div>
 
-			<Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
-				<DialogContent className='bg-slate-900 text-white border border-purple-500/30 max-w-4xl'>
-					{selectedScript && (
-						<>
-							<DialogHeader>
-								<DialogTitle className='text-2xl text-white'>
-									Checkout • {selectedScript.name}
-								</DialogTitle>
-								<DialogDescription className='text-gray-300'>
-									Complete your payment via UPI or Binance
-									Pay, then share your email and transaction
-									ID for instant activation.
-								</DialogDescription>
-							</DialogHeader>
-							<div className='grid md:grid-cols-2 gap-8 mt-6'>
-								<div className='space-y-5'>
-									<div className='rounded-2xl bg-white/5 p-5 border border-purple-500/20'>
-										<p className='text-sm uppercase tracking-widest text-purple-300'>
-											Package Summary
-										</p>
-										<div className='mt-3 text-3xl font-bold text-white'>
-											{selectedScript.price}
-											<span className='text-base text-gray-400 font-medium ml-2 line-through'>
-												{selectedScript.originalPrice}
-											</span>
-										</div>
-										<p className='text-sm text-gray-400 mt-2'>
-											Includes lifetime updates + 24/7
-											support
-										</p>
+					<div className="grid md:grid-cols-2 gap-8 mb-20">
+						{/* Facebook Commment Style */}
+						<div className="space-y-6">
+							<div className="bg-white p-6 rounded-2xl shadow-[0_5px_30px_rgba(0,0,0,0.05)] border border-slate-100 relative">
+								<div className="absolute top-4 right-4 text-blue-600 font-bold text-lg bg-blue-50 w-8 h-8 flex items-center justify-center rounded-full">f</div>
+								<div className="flex items-start gap-4 mb-4">
+									<div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden ring-2 ring-blue-100">
+										<img src="https://i.pravatar.cc/100?img=11" alt="avatar" />
 									</div>
-
-									<div className='flex gap-3'>
-										{Object.entries(paymentOptions).map(
-											([key, option]) => (
-												<button
-													key={key}
-													type='button'
-													onClick={() =>
-														setPaymentMethod(key)
-													}
-													className={`flex-1 rounded-2xl border px-4 py-3 text-left transition ${
-														paymentMethod === key
-															? "border-purple-500 bg-purple-500/10 text-white"
-															: "border-white/10 text-gray-300 hover:border-purple-400/60"
-													}`}>
-													<div className='text-sm text-gray-400'>
-														Pay with
-													</div>
-													<div className='text-lg font-semibold'>
-														{option.label}
-													</div>
-												</button>
-											)
-										)}
-									</div>
-
-									<div className='rounded-2xl bg-white/5 p-4 border border-white/10 text-center'>
-										<p className='text-sm text-gray-400'>
-											{
-												paymentOptions[paymentMethod]
-													.label
-											}{" "}
-											ID
-										</p>
-										<p className='text-lg font-semibold text-white mt-1'>
-											{paymentOptions[paymentMethod].id}
-										</p>
-										<div className='mt-4 flex flex-col items-center gap-3'>
-											<Image
-												src={
-													paymentOptions[
-														paymentMethod
-													].qr
-												}
-												alt={`${paymentOptions[paymentMethod].label} QR`}
-												width={220}
-												height={220}
-												className='rounded-xl border border-purple-500/30 w-full max-w-[220px] object-cover'
-											/>
-											<p className='text-xs text-gray-400'>
-												{
-													paymentOptions[
-														paymentMethod
-													].note
-												}
-											</p>
-										</div>
+									<div>
+										<h4 className="font-bold text-slate-800 flex items-center gap-1">Manish Kumar <CheckCircle2 className="w-3 h-3 text-blue-500 fill-blue-500" /></h4>
+										<p className="text-xs text-slate-500 font-medium">2 days ago</p>
 									</div>
 								</div>
-
-								<form
-									onSubmit={handleSubmitCheckout}
-									className='space-y-5'>
-									<div>
-										<Label
-											htmlFor='email'
-											className='text-gray-300'>
-											Email address
-										</Label>
-										<Input
-											id='email'
-											type='email'
-											required
-											placeholder='you@example.com'
-											value={formData.email}
-											onChange={(e) =>
-												setFormData((prev) => ({
-													...prev,
-													email: e.target.value,
-												}))
-											}
-											className='mt-2 bg-white/5 border-white/10 text-white placeholder:text-gray-500'
-										/>
-									</div>
-
-									<div>
-										<Label
-											htmlFor='transaction'
-											className='text-gray-300'>
-											Transaction / UTR / Txn Hash
-										</Label>
-										<Input
-											id='transaction'
-											required
-											placeholder='Enter the payment reference'
-											value={formData.transactionId}
-											onChange={(e) =>
-												setFormData((prev) => ({
-													...prev,
-													transactionId:
-														e.target.value,
-												}))
-											}
-											className='mt-2 bg-white/5 border-white/10 text-white placeholder:text-gray-500'
-										/>
-									</div>
-
-									<div className='rounded-2xl bg-black/30 border border-white/5 p-4 text-sm text-gray-400 space-y-2'>
-										<p>
-											⚡ Send the exact amount mentioned
-											above. Orders are verified within
-											10-30 minutes.
-										</p>
-										<p>
-											📧 After submission our team will
-											send the download link and setup
-											guide directly to your mail inbox.
-										</p>
-									</div>
-
-									<Button
-										disabled={
-											!formData.email ||
-											!formData.transactionId ||
-											isLoading
-										}
-										type='submit'
-										className='w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-lg flex items-center justify-center gap-2'>
-										{isLoading ? (
-											<>
-												<Loader2 className='h-4 w-4 animate-spin' />
-												Processing
-											</>
-										) : (
-											<>
-												Order Now
-												<ArrowRight className='h-4 w-4' />
-											</>
-										)}
-									</Button>
-
-									<p className='text-xs text-gray-500 text-center'>
-										Need help?{" "}
-										<Link
-											href={buildWhatsappLink(
-												selectedScript?.name
-											)}
-											className='text-purple-300 underline-offset-2 hover:underline'>
-											Chat with support
-										</Link>
-									</p>
-								</form>
+								<p className="text-slate-700 font-medium leading-relaxed">"This collection is unbelievable! I paid 99 Rs thinking it might be a scam, but I received the Google Drive link instantly. The audiobooks are very clear and helpful."</p>
+								<div className="flex gap-4 mt-4 pt-4 border-t border-slate-100 text-slate-500 text-sm font-semibold">
+									<span className="text-blue-600 cursor-pointer hover:underline flex items-center gap-1">Like (142)</span>
+									<span className="cursor-pointer hover:underline">Reply</span>
+								</div>
 							</div>
-						</>
-					)}
-				</DialogContent>
-			</Dialog>
 
-			<Dialog
-				open={successDialogOpen}
-				onOpenChange={setSuccessDialogOpen}>
-				{successDetails && (
-					<DialogContent className='bg-slate-900 text-white border border-emerald-500/30 max-w-xl text-center space-y-6'>
-						<DialogHeader>
-							<DialogTitle className='text-3xl font-bold text-white'>
-								Payment Received 🎉
-							</DialogTitle>
-							<DialogDescription className='text-gray-300 text-base'>
-								Thanks, {successDetails.email}! We are verifying
-								your{" "}
-								{successDetails.paymentMethod.toUpperCase()}{" "}
-								transaction for{" "}
-								<span className='font-semibold text-white'>
-									{successDetails.scriptName}
-								</span>
-								. Expect your access email within 10-30 minutes.
-							</DialogDescription>
-						</DialogHeader>
-
-						<div className='rounded-2xl bg-white/5 border border-white/10 p-5 text-left space-y-3'>
-							<p className='text-sm text-gray-300'>
-								✅ Order received • Our team is matching your
-								transaction ID.
-							</p>
-							<p className='text-sm text-gray-300'>
-								📩 We will send the download link and onboarding
-								guide to{" "}
-								<span className='text-white font-medium'>
-									{successDetails.email}
-								</span>
-							</p>
-							<p className='text-sm text-gray-300'>
-								💬 Need instant help? Ping us on WhatsApp and
-								share your transaction screenshot.
-							</p>
+							<div className="bg-white p-6 rounded-2xl shadow-[0_5px_30px_rgba(0,0,0,0.05)] border border-slate-100 relative ml-0 md:ml-8">
+								<div className="absolute top-4 right-4 text-pink-600 font-bold text-lg bg-pink-50 w-8 h-8 flex items-center justify-center rounded-full">ig</div>
+								<div className="flex items-start gap-4 mb-4">
+									<div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden ring-2 ring-pink-100">
+										<img src="https://i.pravatar.cc/100?img=32" alt="avatar" />
+									</div>
+									<div>
+										<h4 className="font-bold text-slate-800 flex items-center gap-1">Riya Sharma</h4>
+										<p className="text-xs text-slate-500 font-medium">1 week ago</p>
+									</div>
+								</div>
+								<p className="text-slate-700 font-medium leading-relaxed">"As a student, buying physical books is expensive. This 99Rs deal is literally a lifesaver. Reading 'Rich Dad Poor Dad' in Hindi right now. Highly recommended!! ❤️😍"</p>
+							</div>
 						</div>
 
-						<div className='flex flex-col sm:flex-row gap-3'>
-							<Button
-								asChild
-								className='flex-1 bg-green-500 hover:bg-green-600 text-white'>
-								<a
-									href={buildWhatsappLink(
-										successDetails.scriptName
+						<div className="space-y-6">
+							<div className="bg-white p-6 rounded-2xl shadow-[0_5px_30px_rgba(0,0,0,0.05)] border border-slate-100 relative">
+								<div className="absolute top-4 right-4 text-blue-600 font-bold text-lg bg-blue-50 w-8 h-8 flex items-center justify-center rounded-full">f</div>
+								<div className="flex items-start gap-4 mb-4">
+									<div className="w-12 h-12 bg-slate-200 rounded-full flex-shrink-0 overflow-hidden ring-2 ring-blue-100">
+										<img src="https://i.pravatar.cc/100?img=68" alt="avatar" />
+									</div>
+									<div>
+										<h4 className="font-bold text-slate-800 flex items-center gap-1">Sanjay Singh <CheckCircle2 className="w-3 h-3 text-blue-500 fill-blue-500" /></h4>
+										<p className="text-xs text-slate-500 font-medium">Yesterday</p>
+									</div>
+								</div>
+								<p className="text-slate-700 font-medium leading-relaxed">"Quality is 10/10. All folders are well organized by topic. Started listening to the business audiobooks during my commute to work. Best 99 rupees spent."</p>
+								<div className="flex gap-4 mt-4 pt-4 border-t border-slate-100 text-slate-500 text-sm font-semibold">
+									<span className="text-blue-600 cursor-pointer hover:underline flex items-center gap-1">Like (89)</span>
+									<span className="cursor-pointer hover:underline">Reply</span>
+								</div>
+							</div>
+							
+							<div className="bg-white p-8 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border-2 border-yellow-400/20 flex flex-col items-center justify-center text-center mt-8 h-[220px]">
+								<div className="flex gap-1 mb-4 bg-slate-50 px-4 py-2 rounded-full">
+									{[...Array(5)].map((_, i) => <Star key={i} className="w-8 h-8 fill-yellow-400 text-yellow-400" />)}
+								</div>
+								<h3 className="text-3xl font-black text-slate-800 mb-2 drop-shadow-sm">4.9 Out Of 5 Rating</h3>
+								<p className="text-slate-500 font-medium mb-4">Based on 28,000+ Reviews</p>
+								<div className="bg-emerald-50 text-emerald-700 font-bold px-4 py-1.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-1 border border-emerald-200">
+									<CheckCircle2 className="w-3 h-3" /> 100% Verified Buyers
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* Countdown CTA box */}
+					<div className="flex flex-col items-center bg-white p-8 md:p-12 rounded-[2rem] shadow-[0_20px_60px_rgba(225,29,72,0.15)] border border-rose-100 max-w-3xl mx-auto relative overflow-hidden">
+						<div className="absolute top-0 inset-x-0 h-3 bg-gradient-to-r from-yellow-400 via-rose-500 to-rose-700"></div>
+						
+						<h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-8 border-b-2 border-slate-100 pb-4 inline-block px-8">ऑफर समाप्त होने में समय:</h3>
+						
+						<div className="flex gap-3 md:gap-6 mb-10 w-full justify-center">
+							<div className="flex flex-col items-center w-20 md:w-24">
+								<div className="w-full aspect-square bg-slate-900 rounded-2xl flex items-center justify-center text-3xl md:text-5xl font-black text-white shadow-inner shadow-black/50 border-b-4 border-slate-700">
+									{padZero(timeLeft.hours)}
+								</div>
+								<span className="text-sm font-bold text-slate-500 mt-3 uppercase tracking-wider">Hours</span>
+							</div>
+							<div className="text-4xl md:text-6xl font-black text-slate-300 mt-2">:</div>
+							<div className="flex flex-col items-center w-20 md:w-24">
+								<div className="w-full aspect-square bg-slate-900 rounded-2xl flex items-center justify-center text-3xl md:text-5xl font-black text-white shadow-inner shadow-black/50 border-b-4 border-slate-700">
+									{padZero(timeLeft.minutes)}
+								</div>
+								<span className="text-sm font-bold text-slate-500 mt-3 uppercase tracking-wider">Minutes</span>
+							</div>
+							<div className="text-4xl md:text-6xl font-black text-slate-300 mt-2">:</div>
+							<div className="flex flex-col items-center w-20 md:w-24">
+								<div className="w-full aspect-square bg-rose-600 rounded-2xl flex items-center justify-center text-3xl md:text-5xl font-black text-white shadow-inner shadow-rose-900/50 border-b-4 border-rose-800 relative overflow-hidden">
+									{padZero(timeLeft.seconds)}
+								</div>
+								<span className="text-sm font-bold text-slate-500 mt-3 uppercase tracking-wider">Seconds</span>
+							</div>
+						</div>
+						
+						<motion.button 
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							className="bg-gradient-to-r from-red-600 to-rose-700 text-white font-black py-4 md:py-5 px-12 rounded-full shadow-[0_15px_40px_rgba(225,29,72,0.4)] hover:shadow-[0_20px_50px_rgba(225,29,72,0.5)] border border-rose-400 text-xl md:text-2xl w-full max-w-sm flex items-center justify-center gap-3 transition-all relative overflow-hidden group">
+							<Download className="w-6 h-6 md:w-7 md:h-7 relative z-10" /> 
+							<span className="relative z-10">JUST ₹99/- ONLY</span>
+							<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+						</motion.button>
+					</div>
+				</div>
+			</section>
+
+			{/* Value Section */}
+			<section className="py-24 bg-black text-white relative border-y-8 border-yellow-400">
+				<div className="absolute inset-0 bg-gradient-to-t from-black via-rose-950/20 to-black"></div>
+				<div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=2000&auto=format&fit=crop')] opacity-[0.03] bg-cover mix-blend-overlay"></div>
+				
+				<div className="max-w-5xl mx-auto px-4 text-center relative z-10">
+					<h2 className="text-3xl md:text-5xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-rose-200 to-white drop-shadow-lg">
+						आपके पास 2 OPTION हैं, आप क्या चुनेंगे?
+					</h2>
+					<div className="flex justify-center mb-4">
+						<Image src="/offers/img6.jpg" alt="Offer" width={600} height={600} />
+					</div>
+					
+					
+
+					<div className="bg-gradient-to-b from-slate-900 to-black rounded-[3rem] p-8 md:p-16 border-t border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.5)] relative overflow-hidden">
+						<div className="absolute top-0 right-0 p-8 opacity-10"><Zap className="w-48 h-48 text-yellow-500 rotate-12" /></div>
+						
+						<h3 className="text-2xl md:text-4xl font-black text-white mb-6 drop-shadow-lg leading-tight relative z-10">
+							1000 से ज्यादा Hindi E-Books and Audio Books
+						</h3>
+						
+						<div className="bg-yellow-400/10 border-y border-yellow-400/30 py-6 my-8 relative z-10">
+							<p className="text-xl md:text-3xl text-yellow-400 font-black leading-relaxed">
+								15,000₹ से ज्यादा वैल्यू का डाटा Download करें<br/><span className="text-white mt-2 inline-block">वह भी सिर्फ 99/- में!</span>
+							</p>
+						</div>
+						
+						{/* Price Display */}
+						<div className="bg-white text-slate-900 rounded-2xl p-6 inline-flex items-center justify-center gap-6 mb-10 mx-auto shadow-[0_10px_30px_rgba(255,255,255,0.1)] border-4 border-slate-200 relative z-10">
+							<span className="font-mono font-black text-4xl md:text-6xl text-[#111] tracking-tighter">₹99<span className="text-2xl md:text-4xl text-slate-400">/-</span></span>
+							<div className="h-16 w-1 bg-slate-200 rounded-full"></div>
+							<div className="text-left">
+								<span className="text-sm font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-2 py-0.5 rounded">One Time Fee</span>
+								<br/>
+								<span className="text-lg md:text-xl font-bold text-slate-600 mt-1 inline-block">Lifetime Access!</span>
+							</div>
+						</div>
+						
+						<div className="relative z-10 max-w-sm mx-auto">
+							<p className="text-emerald-400 font-black text-xl mb-4 bg-emerald-900/40 py-2 rounded-xl border border-emerald-500/20">परंतु 'सिर्फ 99/- में'</p>
+							<motion.button 
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								className="bg-yellow-400 text-black hover:bg-yellow-500 font-black py-4 md:py-5 px-12 rounded-full shadow-[0_0_30px_rgba(250,204,21,0.4)] border-4 border-yellow-200 text-xl md:text-2xl w-full">
+								DOWNLOAD NOW
+							</motion.button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			{/* FAQ Section */}
+			<section className="py-12 bg-white px-4 relative">
+				<div className="max-w-3xl mx-auto">
+					<div className="text-center mb-6">
+						<h2 className="text-3xl md:text-5xl font-black text-slate-800 mb-4 inline-block drop-shadow-sm">
+							अक्सर पूछे जाने वाले सवाल (FAQs)
+						</h2>
+						<div className="w-24 h-1.5 bg-yellow-400 mx-auto rounded-full mt-2"></div>
+					</div>
+
+					<div className="space-y-4">
+						{faqs.map((faq, idx) => (
+							<div key={idx} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all hover:border-slate-300">
+								<button 
+									onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+									className="w-full text-left p-6 font-bold text-slate-800 flex justify-between items-center bg-white hover:bg-slate-50 transition-colors">
+									<span className="text-lg pr-4">{faq.question}</span>
+									<span className={`transform transition-transform bg-slate-100 p-2 rounded-full flex-shrink-0 ${openFaq === idx ? 'rotate-180 text-rose-500 bg-rose-50' : 'text-slate-500'}`}>
+										<ChevronDown className="w-5 h-5" />
+									</span>
+								</button>
+								<AnimatePresence>
+									{openFaq === idx && (
+										<motion.div 
+											initial={{ height: 0, opacity: 0 }}
+											animate={{ height: "auto", opacity: 1 }}
+											exit={{ height: 0, opacity: 0 }}
+											className="px-6 pb-6 text-slate-600 bg-white font-medium border-t border-slate-100 pt-4 leading-relaxed">
+											{faq.answer}
+										</motion.div>
 									)}
-									target='_blank'
-									rel='noreferrer'>
-									<MessageCircle className='h-4 w-4' />
-									WhatsApp Support
-								</a>
-							</Button>
-							<Button
-								variant='outline'
-								className='flex-1 text-gray-800 hover:text-white border-gray-400/20 hover:bg-gray-400/10'
-								onClick={() => setSuccessDialogOpen(false)}>
-								Browse more scripts
-							</Button>
-						</div>
-					</DialogContent>
-				)}
-			</Dialog>
+								</AnimatePresence>
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="text-center mt-20 text-slate-400 text-sm font-medium">
+					<p>© 2026 E-Books Combo Offer. All rights reserved.</p>
+					<div className="flex justify-center gap-4 mt-4 text-xs">
+						<span className="hover:text-slate-600 cursor-pointer">Privacy Policy</span>
+						<span className="hover:text-slate-600 cursor-pointer">Terms & Conditions</span>
+						<span className="hover:text-slate-600 cursor-pointer">Refund Policy</span>
+					</div>
+				</div>
+			</section>
+
+			{/* Floating CTA for Mobile */}
+			<div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] z-50 md:hidden flex justify-between items-center">
+				<div>
+					<div className="text-xs text-slate-400 font-bold line-through">₹9,999 Original</div>
+					<div className="text-xl font-black text-rose-600">₹99/- Only</div>
+				</div>
+				<button className="bg-gradient-to-r from-rose-600 to-red-600 text-white font-black uppercase tracking-wide py-3 px-8 rounded-full shadow-lg shadow-rose-500/40 active:scale-95 transition-transform">
+					Buy Now
+				</button>
+			</div>
 		</div>
 	);
 }

@@ -13,13 +13,15 @@ export default function LayoutShell({ children }: { children: ReactNode }) {
 	const hideChrome =
 		pathname &&
 		HIDE_CHROME_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+		
+	const isOffersPage = pathname === "/offers" || pathname?.startsWith("/offers/");
 
 	return (
 		<>
-			<Navbar />
+			{!isOffersPage && <Navbar />}
 			{children}
-			<MobileBottomNav />
-			{!hideChrome && <Footer />}
+			{!isOffersPage && <MobileBottomNav />}
+			{!hideChrome && !isOffersPage && <Footer />}
 		</>
 	);
 }
