@@ -77,7 +77,7 @@ export async function POST(request) {
 		await connectDB();
 		
 		// Parse request body
-		const { productId, productSnapshot, amount, finalAmount, currency, paymentMethod, couponCode, paymentStatus, status, deliveryStatus } = await request.json();
+		const { productId, productSnapshot, amount, finalAmount, currency, paymentMethod, couponCode, transactionId, paymentStatus, status, deliveryStatus } = await request.json();
 
 		// Validate required fields
 		if (!productId || !finalAmount || !currency) {
@@ -122,6 +122,7 @@ export async function POST(request) {
 			status: status || "processing",
 			deliveryStatus: deliveryStatus,
 			couponCode: couponCode || null,
+			transactionId: transactionId || null,
 			createdAt: new Date(),
 		});
 
