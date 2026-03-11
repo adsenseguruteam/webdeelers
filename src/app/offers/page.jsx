@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Star, Download, ChevronDown, Zap, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 const features = [
 	"Read Anywhere Offline",
@@ -136,7 +137,7 @@ export default function BookOfferPage() {
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 									className="bg-gradient-to-b from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white text-2xl font-black py-4 px-12 rounded-full shadow-[0_0_40px_rgba(225,29,72,0.5)] border-2 border-rose-300 transition-all w-full md:max-w-sm flex flex-col items-center group relative overflow-hidden">
-									<span className="relative z-10">JUST ₹99/- ONLY</span>
+									<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">JUST ₹99/- ONLY</Link>
 									<span className="text-[10px] font-medium opacity-80 mt-1 uppercase tracking-widest relative z-10">Instant Download Access</span>
 									<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
 								</motion.button>
@@ -197,7 +198,9 @@ export default function BookOfferPage() {
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								className="bg-gradient-to-r from-rose-600 to-red-700 text-white font-black py-4 px-12 rounded-full shadow-[0_10px_30px_rgba(225,29,72,0.4)] hover:shadow-[0_15px_40px_rgba(225,29,72,0.6)] border border-rose-400/50 text-xl md:text-2xl transition-all">
+								<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE">
 								BUY NOW @ JUST ₹99/- 🔥
+								</Link>
 							</motion.button>
 						</div>
 					</div>
@@ -263,7 +266,7 @@ export default function BookOfferPage() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							className="bg-white text-[#7A0016] hover:bg-yellow-400 font-black py-4 px-10 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] text-xl md:text-2xl transition-all border-4 border-white/20">
-							GRAB ALL FOR JUST ₹99/- 🔥
+							<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">GRAB ALL FOR JUST ₹99/- 🔥</Link>
 						</motion.button>
 						<p className="mt-6 font-medium text-rose-300 text-sm">ऑफर कुछ ही समय के लिए उपलब्ध है। अभी डाउनलोड करें!</p>
 					</div>
@@ -383,7 +386,7 @@ export default function BookOfferPage() {
 							whileTap={{ scale: 0.95 }}
 							className="bg-gradient-to-r from-red-600 to-rose-700 text-white font-black py-4 md:py-5 px-12 rounded-full shadow-[0_15px_40px_rgba(225,29,72,0.4)] hover:shadow-[0_20px_50px_rgba(225,29,72,0.5)] border border-rose-400 text-xl md:text-2xl w-full max-w-sm flex items-center justify-center gap-3 transition-all relative overflow-hidden group">
 							<Download className="w-6 h-6 md:w-7 md:h-7 relative z-10" /> 
-							<span className="relative z-10">JUST ₹99/- ONLY</span>
+							<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">JUST ₹99/- ONLY</Link>
 							<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
 						</motion.button>
 					</div>
@@ -435,7 +438,7 @@ export default function BookOfferPage() {
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								className="bg-yellow-400 text-black hover:bg-yellow-500 font-black py-4 md:py-5 px-12 rounded-full shadow-[0_0_30px_rgba(250,204,21,0.4)] border-4 border-yellow-200 text-xl md:text-2xl w-full">
-								DOWNLOAD NOW
+								<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">DOWNLOAD NOW</Link>
 							</motion.button>
 						</div>
 					</div>
@@ -494,9 +497,11 @@ export default function BookOfferPage() {
 					<div className="text-xs text-slate-400 font-bold line-through">₹9,999 Original</div>
 					<div className="text-xl font-black text-rose-600">₹99/- Only</div>
 				</div>
+				<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">
 				<button className="bg-gradient-to-r from-rose-600 to-red-600 text-white font-black uppercase tracking-wide py-3 px-8 rounded-full shadow-lg shadow-rose-500/40 active:scale-95 transition-transform">
 					Buy Now
 				</button>
+				</Link>
 			</div>
 		</div>
 	);
