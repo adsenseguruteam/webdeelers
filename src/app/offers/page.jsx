@@ -117,8 +117,8 @@ export default function BookOfferPage() {
 				
 				const baseUrl = window.location.origin;
 				// Adjust this to point to the actual success processing route from the main shop API
-				form.appendChild(createInput("surl", `${baseUrl}/api/payu/callback`));
-				form.appendChild(createInput("furl", `${baseUrl}/api/payu/callback`));
+				form.appendChild(createInput("surl", `${baseUrl}/api/payu/offers-callback`));
+				form.appendChild(createInput("furl", `${baseUrl}/api/payu/offers-callback`));
 				form.appendChild(createInput("hash", hash));
 				
 				form.appendChild(createInput("udf1", udf1));
