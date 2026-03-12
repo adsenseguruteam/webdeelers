@@ -189,14 +189,16 @@ export default function RootLayout({
 				{/* Google Analytics Script */}
 				<Script
 					async
-					src='https://www.googletagmanager.com/gtag/js?id=G-N3VCPJDW2D'
+					src="https://www.googletagmanager.com/gtag/js?id=G-N3VCPJDW2D"
+					strategy="afterInteractive"
 				/>
 				<Script
+					id="google-analytics"
 					suppressHydrationWarning
 					dangerouslySetInnerHTML={{
 						__html: `
 							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
+							function gtag(){window.dataLayer.push(arguments);}
 							gtag('js', new Date());
 							gtag('config', 'G-N3VCPJDW2D');
 						`,
