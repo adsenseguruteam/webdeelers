@@ -4,7 +4,6 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import { sendEmail } from "@/lib/emails";
-import { EMAIL } from "@/lib/constant";
 
 export async function POST(request) {
 	try {
@@ -54,6 +53,7 @@ export async function POST(request) {
 		await connectDB();
 
 		const productId = udf2;
+		const orderContext = udf3 ? JSON.parse(udf3) : {};
 		// Check if transaction was successful
 		if (status === "success") {
 			// Find if order already exists
@@ -61,12 +61,14 @@ export async function POST(request) {
 			
 			if (existingOrder) {
 			    // Payment already processed for this txnid
+			    if (orderContext.isOfferPurchase) {
+					return NextResponse.redirect(new URL("/offers/success", request.url));
+				}
 			    return NextResponse.redirect(new URL("/dashboard/orders?payment=success", request.url));
 			}
 
             const product = await Product.findById(productId);
             // We proceed even if product isn't found, mapping basic details just in case
-			const orderContext = udf3 ? JSON.parse(udf3) : {};
 
 			// Generate order ID
 			const orderId = `ORD-${Date.now()}`;
@@ -102,11 +104,34 @@ export async function POST(request) {
 
 			// Send confirmation email to admin (matching orders/route.js)
 			try {
-				await sendEmail({
-					to: EMAIL,
-					subject: `New Order: ${newOrder.productSnapshot.title}`,
-					html: "<p>There is a new order for your product.</p><p>Order ID: " + orderId + "</p><p>Product: " + newOrder.productSnapshot.title + "</p><p>Amount: " + newOrder.finalAmount + " " + newOrder.currency + "</p>",
-				});
+				// await sendEmail({
+				// 	to: EMAIL,
+				// 	subject: `New Order: ${newOrder.productSnapshot.title}`,
+				// 	html: "<p>There is a new order for your product.</p><p>Order ID: " + orderId + "</p><p>Product: " + newOrder.productSnapshot.title + "</p><p>Amount: " + newOrder.finalAmount + " " + newOrder.currency + "</p>",
+				// });
+
+				// Send confirmation email to buyer if it's an offer purchase
+				if (orderContext.isOfferPurchase && email) {
+					const baseUrl = new URL(request.url).origin;
+					await sendEmail({
+						to: email,
+						subject: `Your 1000+ Hindi E-Books Combo is Ready! 🎉`,
+						html: `
+						<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
+							<h2 style="color: #e11d48; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Payment Successful!</h2>
+							<p>Hi ${firstname || 'there'},</p>
+							<p>Thank you for purchasing the <strong>1000+ Hindi E-Books and Audio Books Combo</strong>. Your secure lifetime access has been successfully unlocked.</p>
+							<p>You can instantly view, listen, and download all your books by accessing your private dashboard link below:</p>
+							<div style="text-align: center; margin: 35px 0;">
+								<a href="${baseUrl}/offers/success" style="background-color: #e11d48; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">Access My Books Now -></a>
+							</div>
+							<p><strong>Important:</strong> We recommend adding a shortcut of the Google Drive folders to your own Drive so it's always easy to find.</p>
+							<p>If you experience any issues, simply reply to this email for premium support.</p>
+							<p>Happy Reading & Listening,<br/><strong>The Knowledge Team</strong></p>
+						</div>
+						`
+					});
+				}
 			} catch (emailError) {
 				console.error("Failed to send notification email:", emailError);
 			}
@@ -114,6 +139,9 @@ export async function POST(request) {
 			await newOrder.save();
 			
 			// Redirect user back to UI using 303 See Other, which forces a GET request
+			if (orderContext.isOfferPurchase) {
+				return NextResponse.redirect(new URL("/offers/success", request.url), { status: 303 });
+			}
 			return NextResponse.redirect(new URL("/dashboard/orders?payment=success", request.url), { status: 303 });
 		} else {
 			// Payment failed or is pending

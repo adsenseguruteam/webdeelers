@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Star, Download, ChevronDown, Zap, Users } from "lucide-react";
+import { CheckCircle2, Star, Download, ChevronDown, Zap, Users, Shield } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const features = [
 	"Read Anywhere Offline",
@@ -54,6 +56,87 @@ const faqs = [
 export default function BookOfferPage() {
 	const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 15, seconds: 0 });
 	const [openFaq, setOpenFaq] = useState(0);
+	const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [formData, setFormData] = useState({
+		firstname: "",
+		email: "",
+		phone: ""
+	});
+
+	const handleOpenCheckout = (e) => {
+		e.preventDefault();
+		setShowCheckoutModal(true);
+	};
+
+	const handleCheckoutSubmit = async (e) => {
+		e.preventDefault();
+		if (!formData.firstname || !formData.email || !formData.phone) {
+			toast.error("Please fill in all details");
+			return;
+		}
+
+		try {
+			setIsProcessing(true);
+			const payload = {
+				amount: 99,
+				productinfo: "1000+ Hindi E-Books and Audio Books Combo",
+				firstname: formData.firstname,
+				email: formData.email,
+				phone: formData.phone,
+				userId: "guest", // Placeholder for unauthenticated user
+				productId: "hindi_ebook_combo_99",
+				finalAmount: 99,
+				isOfferPurchase: true,
+			};
+
+			const response = await axios.post("/api/payu/initiate", payload);
+
+			if (response.data.success) {
+				const { hash, txnid, key, udf1, udf2, udf3 } = response.data;
+				
+				const form = document.createElement("form");
+				form.action = "https://secure.payu.in/_payment"; 
+				form.method = "POST";
+				
+				const createInput = (name, value) => {
+					const input = document.createElement("input");
+					input.type = "hidden";
+					input.name = name;
+					input.value = value;
+					return input;
+				};
+
+				form.appendChild(createInput("key", key));
+				form.appendChild(createInput("txnid", txnid));
+				form.appendChild(createInput("amount", payload.amount));
+				form.appendChild(createInput("productinfo", payload.productinfo));
+				form.appendChild(createInput("firstname", payload.firstname));
+				form.appendChild(createInput("email", payload.email));
+				form.appendChild(createInput("phone", payload.phone));
+				
+				const baseUrl = window.location.origin;
+				// Adjust this to point to the actual success processing route from the main shop API
+				form.appendChild(createInput("surl", `${baseUrl}/api/payu/callback`));
+				form.appendChild(createInput("furl", `${baseUrl}/api/payu/callback`));
+				form.appendChild(createInput("hash", hash));
+				
+				form.appendChild(createInput("udf1", udf1));
+				form.appendChild(createInput("udf2", udf2));
+				form.appendChild(createInput("udf3", udf3));
+
+				document.body.appendChild(form);
+				form.submit();
+			} else {
+				toast.error(response.data.message || "Failed to initiate payment");
+				setIsProcessing(false);
+			}
+		} catch (error) {
+			console.error("PayU initiation error:", error);
+			toast.error(error.response?.data?.message || "Failed to connect to payment gateway");
+			setIsProcessing(false);
+		}
+	};
 
 	useEffect(() => {
 		const timer = setInterval(() => {
@@ -134,10 +217,11 @@ export default function BookOfferPage() {
 							<div className="text-center flex flex-col items-center">
 								<p className="text-emerald-400 font-bold mb-2 animate-pulse bg-emerald-900/40 px-4 py-1 rounded-full border border-emerald-500/20">सीमित समय के लिए स्पेशल ऑफर!</p>
 								<motion.button 
+									onClick={handleOpenCheckout}
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
 									className="bg-gradient-to-b from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white text-2xl font-black py-4 px-12 rounded-full shadow-[0_0_40px_rgba(225,29,72,0.5)] border-2 border-rose-300 transition-all w-full md:max-w-sm flex flex-col items-center group relative overflow-hidden">
-									<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">JUST ₹99/- ONLY</Link>
+									<span className="relative z-10">JUST ₹99/- ONLY</span>
 									<span className="text-[10px] font-medium opacity-80 mt-1 uppercase tracking-widest relative z-10">Instant Download Access</span>
 									<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
 								</motion.button>
@@ -195,12 +279,11 @@ export default function BookOfferPage() {
 						<div className="mt-14 text-center relative z-10 bg-white/5 rounded-2xl p-6 border border-white/10 max-w-2xl mx-auto">
 							<p className="text-emerald-400 font-bold mb-6 text-lg">जी हाँ! यह सभी ई-बुक्स और ऑडियो बुक्स आपको मिलेंगी, वह भी सिर्फ एक बार पेमेंट करके।</p>
 							<motion.button 
+								onClick={handleOpenCheckout}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								className="bg-gradient-to-r from-rose-600 to-red-700 text-white font-black py-4 px-12 rounded-full shadow-[0_10px_30px_rgba(225,29,72,0.4)] hover:shadow-[0_15px_40px_rgba(225,29,72,0.6)] border border-rose-400/50 text-xl md:text-2xl transition-all">
-								<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE">
+								className="bg-gradient-to-r from-rose-600 to-red-700 text-white font-black py-4 px-12 rounded-full shadow-[0_10px_30px_rgba(225,29,72,0.4)] hover:shadow-[0_15px_40px_rgba(225,29,72,0.6)] border border-rose-400/50 text-xl md:text-2xl transition-all block w-max mx-auto text-center w-full">
 								BUY NOW @ JUST ₹99/- 🔥
-								</Link>
 							</motion.button>
 						</div>
 					</div>
@@ -260,13 +343,14 @@ export default function BookOfferPage() {
 						</div>
 					</div>
 
-					<div className="mt-16 bg-black/30 rounded-3xl p-8 border border-white/10 inline-block">
+					<div className="mt-16 bg-black/30 rounded-3xl  p-8 border border-white/10 inline-block">
 						<p className="text-yellow-400 font-bold text-lg md:text-xl mb-6">इन सभी किताबों को पढ़ने के लिए आपको हजारों रुपये खर्च करने पड़ सकते हैं!</p>
 						<motion.button 
+							onClick={handleOpenCheckout}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
-							className="bg-white text-[#7A0016] hover:bg-yellow-400 font-black py-4 px-10 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] text-xl md:text-2xl transition-all border-4 border-white/20">
-							<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">GRAB ALL FOR JUST ₹99/- 🔥</Link>
+							className="bg-white text-[#7A0016] hover:bg-yellow-400 font-black py-4 px-4 rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] text-lg md:text-2xl transition-all border-4 border-white/20 block mt-6 mx-auto sm:mx-0">
+							<span className="relative z-10">GRAB ALL FOR JUST ₹99/- 🔥</span>
 						</motion.button>
 						<p className="mt-6 font-medium text-rose-300 text-sm">ऑफर कुछ ही समय के लिए उपलब्ध है। अभी डाउनलोड करें!</p>
 					</div>
@@ -382,11 +466,12 @@ export default function BookOfferPage() {
 						</div>
 						
 						<motion.button 
+							onClick={handleOpenCheckout}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							className="bg-gradient-to-r from-red-600 to-rose-700 text-white font-black py-4 md:py-5 px-12 rounded-full shadow-[0_15px_40px_rgba(225,29,72,0.4)] hover:shadow-[0_20px_50px_rgba(225,29,72,0.5)] border border-rose-400 text-xl md:text-2xl w-full max-w-sm flex items-center justify-center gap-3 transition-all relative overflow-hidden group">
 							<Download className="w-6 h-6 md:w-7 md:h-7 relative z-10" /> 
-							<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">JUST ₹99/- ONLY</Link>
+							<span className="relative z-10">JUST ₹99/- ONLY</span>
 							<div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
 						</motion.button>
 					</div>
@@ -435,10 +520,11 @@ export default function BookOfferPage() {
 						<div className="relative z-10 max-w-sm mx-auto">
 							<p className="text-emerald-400 font-black text-xl mb-4 bg-emerald-900/40 py-2 rounded-xl border border-emerald-500/20">परंतु 'सिर्फ 99/- में'</p>
 							<motion.button 
+								onClick={handleOpenCheckout}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								className="bg-yellow-400 text-black hover:bg-yellow-500 font-black py-4 md:py-5 px-12 rounded-full shadow-[0_0_30px_rgba(250,204,21,0.4)] border-4 border-yellow-200 text-xl md:text-2xl w-full">
-								<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">DOWNLOAD NOW</Link>
+								className="bg-yellow-400 text-black hover:bg-yellow-500 font-black py-4 md:py-5 px-12 rounded-full shadow-[0_0_30px_rgba(250,204,21,0.4)] border-4 border-yellow-200 text-xl md:text-2xl w-full block text-center">
+								<span className="relative z-10">DOWNLOAD NOW</span>
 							</motion.button>
 						</div>
 					</div>
@@ -497,12 +583,100 @@ export default function BookOfferPage() {
 					<div className="text-xs text-slate-400 font-bold line-through">₹9,999 Original</div>
 					<div className="text-xl font-black text-rose-600">₹99/- Only</div>
 				</div>
-				<Link href="https://u.payu.in/PAYUMN/Tr72UF6yOViE" className="relative z-10">
-				<button className="bg-gradient-to-r from-rose-600 to-red-600 text-white font-black uppercase tracking-wide py-3 px-8 rounded-full shadow-lg shadow-rose-500/40 active:scale-95 transition-transform">
+				<button 
+					onClick={handleOpenCheckout}
+					className="bg-gradient-to-r from-rose-600 to-red-600 text-white font-black uppercase tracking-wide py-3 px-8 rounded-full shadow-lg shadow-rose-500/40 active:scale-95 transition-transform">
 					Buy Now
 				</button>
-				</Link>
 			</div>
+
+			{/* Checkout Modal */}
+			<AnimatePresence>
+				{showCheckoutModal && (
+					<div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+						<motion.div 
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.95 }}
+							className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden relative border border-slate-100">
+							
+							{/* Header */}
+							<div className="bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white relative">
+								<button 
+									onClick={() => setShowCheckoutModal(false)}
+									className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+								</button>
+								<h3 className="text-2xl font-black mb-1 text-yellow-400">Checkout</h3>
+								<p className="text-slate-300 font-medium text-sm">Fill details to get instant download access</p>
+							</div>
+
+							{/* Form */}
+							<form onSubmit={handleCheckoutSubmit} className="p-6">
+								<div className="flex justify-between items-center mb-6 pb-6 border-b border-slate-100">
+									<div>
+										<h4 className="font-bold text-slate-800">1000+ E-Books Combo</h4>
+										<p className="text-xs text-slate-500 font-medium">Lifetime Access</p>
+									</div>
+									<div className="text-2xl font-black text-rose-600">₹99</div>
+								</div>
+
+								<div className="space-y-4">
+									<div>
+										<label className="block text-sm font-bold text-slate-700 mb-1.5">Full Name</label>
+										<input 
+											type="text" 
+											required
+											value={formData.firstname}
+											onChange={e => setFormData({...formData, firstname: e.target.value})}
+											className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all placeholder:text-slate-400 font-medium"
+											placeholder="e.g. Rahul Kumar"
+										/>
+									</div>
+									<div>
+										<label className="block text-sm font-bold text-slate-700 mb-1.5">Email Address</label>
+										<input 
+											type="email" 
+											required
+											value={formData.email}
+											onChange={e => setFormData({...formData, email: e.target.value})}
+											className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all placeholder:text-slate-400 font-medium"
+											placeholder="Books will be sent here"
+										/>
+									</div>
+									<div>
+										<label className="block text-sm font-bold text-slate-700 mb-1.5">Phone Number</label>
+										<input 
+											type="tel" 
+											required
+											value={formData.phone}
+											onChange={e => setFormData({...formData, phone: e.target.value})}
+											className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 outline-none transition-all placeholder:text-slate-400 font-medium"
+											placeholder="10-digit mobile number"
+										/>
+									</div>
+								</div>
+
+								<button 
+									type="submit"
+									disabled={isProcessing}
+									className="w-full mt-8 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-black uppercase tracking-wider py-4 rounded-xl shadow-[0_10px_20px_rgba(225,29,72,0.2)] hover:shadow-[0_15px_30px_rgba(225,29,72,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+									{isProcessing ? (
+										<><Loader2 className="w-5 h-5 animate-spin" /> Processing...</>
+									) : (
+										<>Pay Securely <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></>
+									)}
+								</button>
+								
+								<div className="mt-6 flex items-center justify-center gap-4 text-slate-400">
+									<div className="flex items-center gap-1.5"><Shield size={14} className="text-emerald-500" /><span className="text-xs font-semibold">100% Secure</span></div>
+									<div className="flex items-center gap-1.5"><Zap size={14} className="text-amber-500" /><span className="text-xs font-semibold">Instant Access</span></div>
+								</div>
+							</form>
+						</motion.div>
+					</div>
+				)}
+			</AnimatePresence>
 		</div>
 	);
 }

@@ -13,6 +13,7 @@ export async function POST(request) {
 			productId,
 			couponCode,
 			finalAmount,
+			isOfferPurchase,
 		} = await request.json();
 
 		if (!amount || !productinfo || !firstname || !email || !phone) {
@@ -39,11 +40,15 @@ export async function POST(request) {
 		const udf1 = userId || "";
 		const udf2 = productId || "";
 		// serialize order context
-		const udf3 = JSON.stringify({
+		const orderContext = {
 			couponCode: couponCode || null,
 			finalAmount: finalAmount,
 			currency: "INR"
-		});
+		};
+		if (isOfferPurchase) {
+			orderContext.isOfferPurchase = true;
+		}
+		const udf3 = JSON.stringify(orderContext);
 		const udf4 = "";
 		const udf5 = "";
 
@@ -57,6 +62,9 @@ export async function POST(request) {
 			hash,
 			txnid,
 			key,
+			udf1,
+			udf2,
+			udf3
 		});
 	} catch (error) {
 		console.error("Error initiating PayU transaction:", error);
