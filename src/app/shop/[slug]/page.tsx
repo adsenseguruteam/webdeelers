@@ -84,7 +84,6 @@ export default function ProductDetailPage() {
 
 	const [product, setProduct] = useState<Product | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [isBuying, setIsBuying] = useState(false);
 	const [selectedImage, setSelectedImage] = useState(0);
 
 	const [popularProducts, setPopularProducts] = useState<Product[]>([]);
@@ -247,8 +246,6 @@ export default function ProductDetailPage() {
 		);
 	}
 
-	// console.log(product)
-
 	return (
 		<div className='min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100'>
 			{/* Breadcrumb */}
@@ -280,11 +277,10 @@ export default function ProductDetailPage() {
 					{/* Left: Images */}
 					<div className='space-y-4'>
 						<div className='relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg'>
-							{product.thumbnail ||
+							{
 							product.images[selectedImage] ? (
 								<img
 									src={
-										product.thumbnail ||
 										product.images[selectedImage]
 									}
 									alt={product.title}
@@ -406,10 +402,10 @@ export default function ProductDetailPage() {
 							<Button
 								onClick={handleBuy}
 								disabled={
-									isBuying || product.status !== "active"
+									product.status !== "active"
 								}
 								className='flex-1 bg-gradient-to-r cursor-pointer from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white py-6 text-lg font-semibold shadow-lg shadow-orange-500/25 rounded-xl'>
-								{isBuying ? (
+								{loading ? (
 									<Loader2
 										className='animate-spin mr-2'
 										size={20}
@@ -462,7 +458,11 @@ export default function ProductDetailPage() {
 							Description
 						</h3>
 						<div
-							className='prose prose-slate max-w-none text-slate-600 leading-relaxed'
+							className='prose prose-slate text-wrap max-w-none text-slate-600 leading-relaxed'
+							style={{
+								overflowWrap: "break-word",
+								wordBreak: "break-word",
+							}}
 							dangerouslySetInnerHTML={{
 								__html: DOMPurify.sanitize(product.description),
 							}}
