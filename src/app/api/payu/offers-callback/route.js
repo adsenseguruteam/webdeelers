@@ -74,6 +74,10 @@ export async function POST(request) {
 			} catch (emailError) {
 				console.error("Failed to send offers delivery email:", emailError);
 			}
+
+			if(udf2 === "adsense_course_299") {
+				return NextResponse.redirect(new URL("/google-adsense/success", request.url), { status: 303 });
+			}
 			
 			// Redirect user to the success dashboard using 303 See Other
 			return NextResponse.redirect(new URL("/offers/success", request.url), { status: 303 });

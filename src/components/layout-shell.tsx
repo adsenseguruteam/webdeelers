@@ -14,7 +14,7 @@ export default function LayoutShell({ children }: { children: ReactNode }) {
 		pathname &&
 		HIDE_CHROME_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 		
-	const isOffersPage = pathname === "/offers" || pathname?.startsWith("/offers/");
+	const isOffersPage = pathname === "/offers" || pathname?.startsWith("/offers/") || pathname?.startsWith("/google-adsense") || pathname?.startsWith("/google-adsense/");
 
 	return (
 		<>
