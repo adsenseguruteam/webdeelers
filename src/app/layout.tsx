@@ -92,6 +92,25 @@ export default function RootLayout({
 	return (
 		<html lang='en' suppressHydrationWarning>
 			<Head>
+				{/* Google Analytics Script */}
+				<Script
+					async
+					src="https://www.googletagmanager.com/gtag/js?id=G-N3VCPJDW2D"
+					strategy="afterInteractive"
+				/>
+				<Script
+					id="google-analytics"
+					suppressHydrationWarning
+					dangerouslySetInnerHTML={{
+						__html: `
+							window.dataLayer = window.dataLayer || [];
+							function gtag(){window.dataLayer.push(arguments);}
+							gtag('js', new Date());
+							gtag('config', 'G-N3VCPJDW2D');
+						`,
+					}}
+				/>
+				
 				{/* Taboola Pixel Code */}
 				<Script
 					type='text/javascript'
@@ -186,24 +205,7 @@ export default function RootLayout({
 						}),
 					}}
 				/>
-				{/* Google Analytics Script */}
-				<Script
-					async
-					src="https://www.googletagmanager.com/gtag/js?id=G-N3VCPJDW2D"
-					strategy="afterInteractive"
-				/>
-				<Script
-					id="google-analytics"
-					suppressHydrationWarning
-					dangerouslySetInnerHTML={{
-						__html: `
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){window.dataLayer.push(arguments);}
-							gtag('js', new Date());
-							gtag('config', 'G-N3VCPJDW2D');
-						`,
-					}}
-				/>
+				
 				{/* <script
 					async
 					src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXX'
