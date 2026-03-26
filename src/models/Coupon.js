@@ -65,8 +65,8 @@ const couponSchema = new mongoose.Schema({
 });
 
 // Index for better query performance
-couponSchema.index({ code: 1 });
-couponSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
+// couponSchema.index({ code: 1 });
+// couponSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
 
 // Pre-save middleware to update timestamps
 couponSchema.pre('save', function(next) {
