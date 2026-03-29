@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/userContext";
 import LayoutShell from "@/components/layout-shell";
 import Head from "next/head";
 import Script from "next/script";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 
 const geistSans = Geist({ subsets: ["latin"] });
 
@@ -216,6 +217,7 @@ export default function RootLayout({
 					<LayoutShell>
 						{children}
 						<Toaster />
+						<WhatsAppButton />
 					</LayoutShell>
 				</AuthProvider>
 			</body>
