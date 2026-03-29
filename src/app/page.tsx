@@ -529,7 +529,7 @@ export default function Home() {
 								digital properties on our marketplace. Founded
 								by{" "}
 								<span className='font-semibold text-slate-900'>
-									Dheeru Rajpoot
+									AdSense Guru (Amit Singh)
 								</span>{" "}
 								with over 4 years of experience in digital
 								marketing and web development.
