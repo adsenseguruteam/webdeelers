@@ -17,6 +17,7 @@ import {
 	TrendingUp,
 } from "lucide-react";
 import { userContext } from "@/context/userContext";
+import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 
 export default function Navbar() {
@@ -24,6 +25,7 @@ export default function Navbar() {
 	const pathname = usePathname();
 	const [isOpen, setIsOpen] = useState(false);
 	const { user, signOut } = userContext();
+	const { itemCount } = useCart();
 
 	const handleLogout = async () => {
 		await signOut();
@@ -83,8 +85,20 @@ export default function Navbar() {
 						})}
 					</div>
 
-					{/* Auth Buttons */}
+					{/* Cart & Auth Buttons */}
 					<div className='hidden md:flex items-center gap-3'>
+						{/* Cart Icon */}
+						<Link href='/shop/cart' className='relative p-2 text-slate-600 hover:text-sky-600 hover:bg-slate-50 rounded-lg transition-all duration-200 group'>
+							<ShoppingBag size={22} className='transition-transform group-hover:scale-110' />
+							{itemCount > 0 && (
+								<span className='absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-rose-500 text-[10px] font-bold text-white shadow-lg shadow-orange-500/20 animate-in zoom-in duration-300'>
+									{itemCount}
+								</span>
+							)}
+						</Link>
+
+						<div className='w-px h-6 bg-slate-200 mx-1' />
+
 						{user ? (
 							<div className='flex items-center gap-3'>
 								{user.role === "admin" && (
@@ -130,7 +144,15 @@ export default function Navbar() {
 					</div>
 
 					{/* Mobile Menu */}
-					<div className='md:hidden flex items-center gap-2'>
+					<div className='md:hidden flex items-center gap-3'>
+						<Link href='/shop/cart' className='relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg'>
+							<ShoppingBag size={22} />
+							{itemCount > 0 && (
+								<span className='absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-linear-to-r from-orange-500 to-rose-500 text-[10px] font-bold text-white shadow-lg shadow-orange-500/20'>
+									{itemCount}
+								</span>
+							)}
+						</Link>
 						{user && (
 							<Link href='/dashboard'>
 								<Button

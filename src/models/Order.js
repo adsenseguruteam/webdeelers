@@ -18,14 +18,14 @@ const orderSchema = new mongoose.Schema(
 			required: true,
 		},
 		
-		// Product being purchased
+		// Product being purchased (Legacy - for single item orders)
 		product: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Product",
-			required: true,
+			required: false,
 		},
 		
-		// Product details at time of purchase (snapshot)
+		// Product details at time of purchase (snapshot) (Legacy)
 		productSnapshot: {
 			title: String,
 			price: Number,
@@ -34,6 +34,29 @@ const orderSchema = new mongoose.Schema(
 			category: String,
 			thumbnail: String,
 		},
+
+		// Multi-item support
+		items: [
+			{
+				product: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: "Product",
+					required: true,
+				},
+				snapshot: {
+					title: String,
+					price: Number,
+					comparePrice: Number,
+					currency: String,
+					category: String,
+					thumbnail: String,
+				},
+				quantity: {
+					type: Number,
+					default: 1,
+				}
+			}
+		],
 		
 		// Pricing
 		amount: {

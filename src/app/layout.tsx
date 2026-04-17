@@ -4,6 +4,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/context/userContext";
+import { CartProvider } from "@/context/CartContext";
 import LayoutShell from "@/components/layout-shell";
 import Head from "next/head";
 import Script from "next/script";
@@ -214,11 +215,13 @@ export default function RootLayout({
 				className={`${geistSans.className} bg-gray-50`}
 				suppressHydrationWarning>
 				<AuthProvider>
-					<LayoutShell>
-						{children}
-						<Toaster />
-						<WhatsAppButton />
-					</LayoutShell>
+					<CartProvider>
+						<LayoutShell>
+							{children}
+							<Toaster />
+							<WhatsAppButton />
+						</LayoutShell>
+					</CartProvider>
 				</AuthProvider>
 			</body>
 		</html>
