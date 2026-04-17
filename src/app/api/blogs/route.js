@@ -1,7 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import Blog from "@/models/Blog";
 import User from "@/models/User";
-import Plan from "@/models/Plan";
 import { getDataFromToken } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { sendEmail } from "@/lib/emails";
@@ -125,60 +124,6 @@ export async function POST(request) {
 			return NextResponse.json({ success: true, blog: newBlog });
 		}
 
-		// Fetch Plan details
-		// Assuming plan names in User match Plan names in DB (case insensitive)
-		const plan = await Plan.findOne({
-			name: { $regex: new RegExp(`^${user.currentPlan}$`, "i") },
-		});
-
-		if (!plan) {
-			// Fallback if plan not found in DB (should not happen if seeded)
-			// Default to Free: 1 per week
-			// Or return error. Let's return error to enforce plan creation.
-			return NextResponse.json(
-				{ success: false, message: "Plan configuration not found." },
-				{ status: 400 }
-			);
-		}
-
-		const now = new Date();
-		let canPost = false;
-
-		if (plan.frequency === "daily") {
-			if (
-				!user.lastPostDate ||
-				new Date(user.lastPostDate).toDateString() !==
-					now.toDateString()
-			) {
-				canPost = true;
-			}
-		} else {
-			// Weekly
-			const oneWeek = 7 * 24 * 60 * 60 * 1000;
-			if (
-				!user.periodStartDate ||
-				now - new Date(user.periodStartDate) > oneWeek
-			) {
-				// Reset period
-				user.postCount = 0;
-				user.periodStartDate = now;
-			}
-
-			if (user.postCount < plan.postLimit) {
-				canPost = true;
-			}
-		}
-
-		if (!canPost) {
-			return NextResponse.json(
-				{
-					success: false,
-					message: `You have reached your limit for the ${user.currentPlan} plan.`,
-				},
-				{ status: 403 }
-			);
-		}
-
 		// Ensure slug uniqueness
 		if (body.slug) {
 			const existingBlog = await Blog.findOne({ slug: body.slug });
@@ -207,13 +152,7 @@ export async function POST(request) {
 			html: "<p>There is a new blog post for review.</p><p>Blog ID: " + newBlog._id + "</p><p>Blog Title: " + newBlog.title + "</p><p>Author: " + user.name + "</p>",
 			})
 
-		
-
 		// Update user stats
-		user.lastPostDate = now;
-		if (plan.frequency !== "daily") {
-			user.postCount += 1;
-		}
 		await user.save();
 
 		return NextResponse.json({ success: true, blog: newBlog });

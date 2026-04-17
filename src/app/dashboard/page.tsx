@@ -499,12 +499,6 @@ export default function Dashboard() {
 									</div>
 									<h3 className="mt-4 font-bold text-lg text-slate-900">{user?.name}</h3>
 									<p className="text-sm text-slate-500">{user?.email}</p>
-									<div className="flex items-center gap-2 mt-2">
-										<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium">
-											<Zap size={12} />
-											{user?.currentPlan ? user.currentPlan.charAt(0).toUpperCase() + user.currentPlan.slice(1) : "Free"} Plan
-										</span>
-									</div>
 									<Link href="/dashboard/profile" className="w-full mt-4">
 										<Button variant="outline" className="w-full border-slate-200 hover:bg-slate-50">
 											View Profile

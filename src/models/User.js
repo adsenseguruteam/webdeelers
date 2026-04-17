@@ -66,20 +66,9 @@ const userSchema = new mongoose.Schema(
 		emailVerificationExpiry: Date,
 		passwordResetToken: String,
 		passwordResetExpiry: Date,
-		currentPlan: {
-			type: String,
-			enum: ["free", "premium", "daily"],
-			default: "free",
-		},
-		planExpiry: Date,
 		postCount: {
 			type: Number,
 			default: 0,
-		},
-		lastPostDate: Date,
-		periodStartDate: {
-			type: Date,
-			default: Date.now,
 		},
 	},
 	{ timestamps: true }

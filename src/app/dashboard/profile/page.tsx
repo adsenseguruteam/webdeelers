@@ -233,9 +233,6 @@ export default function ProfilePage() {
 									<p className="text-slate-500 text-sm">{formData.email}</p>
 
 									<div className="mt-4 flex items-center gap-2">
-										<Badge className={getPlanBadgeColor(user?.currentPlan)}>
-											{(user?.currentPlan ? user.currentPlan.charAt(0).toUpperCase() + user.currentPlan.slice(1) : "Free")} Plan
-										</Badge>
 										{user?.isEmailVerified && (
 											<Badge variant="outline" className="border-emerald-200 text-emerald-600 bg-emerald-50">
 												<CheckCircle size={12} className="mr-1" />

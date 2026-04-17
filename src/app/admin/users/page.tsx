@@ -19,14 +19,10 @@ import {
 	Loader2,
 	AlertCircle,
 	Calendar,
-	DollarSign,
-	FileText,
 	Star,
 	X,
 	Save,
 	Copy,
-	Check,
-	ShoppingBag,
 	MapPin,
 	Zap,
 	ChevronLeft,
@@ -500,33 +496,6 @@ export default function AdminUsersPage() {
 														</td>
 														<td className='px-6 py-4'>
 															<div className='space-y-2'>
-																{/* Plan Badge */}
-																<div
-																	className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all shadow-sm ${
-																		userItem.currentPlan ===
-																		"premium"
-																			? "bg-amber-50 text-amber-700 border-amber-200 shadow-amber-100/50"
-																			: userItem.currentPlan ===
-																			  "daily"
-																			? "bg-sky-50 text-sky-700 border-sky-200 shadow-sky-100/50"
-																			: "bg-slate-50 text-slate-600 border-slate-200 shadow-slate-100/50"
-																	}`}>
-																	<Zap
-																		size={
-																			12
-																		}
-																		className={
-																			userItem.currentPlan !==
-																			"free"
-																				? "fill-current"
-																				: ""
-																		}
-																	/>
-																	{userItem.currentPlan?.toUpperCase() ||
-																		"FREE"}{" "}
-																	PLAN
-																</div>
-
 																{/* Status Indicators */}
 																<div className='flex flex-wrap gap-1.5'>
 																	{userItem.isBlocked ? (

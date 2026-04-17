@@ -8,14 +8,10 @@ import {
 	FileText,
 	Users,
 	LogOut,
-	Mail,
 	Shield,
 	ChevronRight,
 	BookOpen,
-	CreditCard,
-	CheckCircle,
 	Plus,
-	TrendingUp,
 	User,
 	ShoppingBag,
 	ShoppingBasket,
@@ -36,14 +32,7 @@ export const adminMenuItems = [
 	{ icon: ShoppingBasket, label: "Orders", href: "/admin/orders" },
 	{ icon: Tag, label: "Coupons", href: "/admin/coupons" },
 	{ icon: Users, label: "Users", href: "/admin/users" },
-	{ icon: Mail, label: "Emails", href: "/admin/emails" },
 	{ icon: BookOpen, label: "Blogs", href: "/admin/blogs" },
-	{ icon: CreditCard, label: "Plans", href: "/admin/plans" },
-	{
-		icon: CheckCircle,
-		label: "Verifications",
-		href: "/admin/verifications",
-	},
 ];
 
 export const userMenuItems = [
@@ -51,7 +40,6 @@ export const userMenuItems = [
 	{ icon: Plus, label: "Listings", href: "/dashboard/listings" },
 	{ icon: ShoppingBag, label: "Orders", href: "/dashboard/orders" },
 	{ icon: BookOpen, label: "My Blogs", href: "/dashboard/blogs" },
-	{ icon: TrendingUp, label: "Upgrade Plan", href: "/dashboard/upgrade" },
 	{ icon: User, label: "Profile", href: "/dashboard/profile" },
 ];
 
