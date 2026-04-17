@@ -24,6 +24,13 @@ import {
 	Star,
 	X,
 	Save,
+	Copy,
+	Check,
+	ShoppingBag,
+	MapPin,
+	Zap,
+	ChevronLeft,
+	ChevronRight,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { userContext } from "@/context/userContext";
@@ -35,19 +42,24 @@ export default function AdminUsersPage() {
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [filterStatus, setFilterStatus] = useState("all");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [paginationData, setPaginationData] = useState<any>(null);
+	const [statsData, setStatsData] = useState<any>(null);
 	const [editingUser, setEditingUser] = useState<any>(null);
 
 	useEffect(() => {
 		const fetchUsers = async () => {
 			try {
-				if (!user) {
-					return;
-				}
+				if (!user) return;
+				setLoading(true);
 				const response = await fetch(
-					`/api/admin/users?adminId=${user?._id}`
+					`/api/admin/users?adminId=${user?._id}&page=${currentPage}&search=${searchTerm}&filter=${filterStatus}&limit=15`
 				);
 				const data = await response.json();
-				setUsers(data);
+				setUsers(data.users || []);
+				setPaginationData(data.pagination);
+				setStatsData(data.stats);
 			} catch (error) {
 				console.error("Failed to fetch users:", error);
 			} finally {
@@ -56,20 +68,23 @@ export default function AdminUsersPage() {
 		};
 
 		fetchUsers();
-	}, [user]);
+	}, [user, currentPage, searchTerm, filterStatus]);
 
-	const filteredUsers = users.filter(
-		(user: any) =>
-			user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			user.phone?.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	// Reset to page 1 when search or filter changes
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchTerm, filterStatus]);
+
+	// Use users directly as they are already filtered/searched on server
+	const filteredUsers = users;
 
 	const [editFormData, setEditFormData] = useState({
 		name: "",
 		email: "",
 		phone: "",
 		bio: "",
+		location: "",
+		company: "",
 	});
 
 	const handleEditUser = (targetUser: any) => {
@@ -79,6 +94,8 @@ export default function AdminUsersPage() {
 			email: targetUser.email || "",
 			phone: targetUser.phone || "",
 			bio: targetUser.bio || "",
+			location: targetUser.location || "",
+			company: targetUser.company || "",
 		});
 	};
 
@@ -190,9 +207,12 @@ export default function AdminUsersPage() {
 		}
 	};
 
-	const blockedUsers = users.filter((u: any) => u.isBlocked).length;
-	const verifiedUsers = users.filter((u: any) => u.verified).length;
-	const unverifiedUsers = users.filter((u: any) => !u.verified).length;
+	const blockedUsers = statsData?.blockedUsers || 0;
+	const verifiedUsers = statsData?.verifiedUsers || 0;
+	const premiumUsers = statsData?.premiumUsers || 0;
+	const totalUsers = statsData?.totalUsers || 0;
+	const totalActiveListings = statsData?.totalActiveListings || 0;
+	const totalPlatformSales = statsData?.totalPlatformSales || 0;
 
 	return (
 		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
@@ -229,103 +249,123 @@ export default function AdminUsersPage() {
 					</div>
 				</div>
 
-				{/* Stats */}
+				{/* Dashboard Stats */}
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8'>
-					<Card className='bg-linear-to-br from-white to-blue-50/30 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-linear-to-br from-slate-900 to-slate-800 border-none shadow-xl relative overflow-hidden group'>
+						<div className='absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors' />
 						<CardContent className='p-6'>
-							<div className='flex items-center justify-between'>
+							<div className='flex items-center justify-between relative z-10'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
+									<p className='text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1'>
 										Total Users
 									</p>
-									<p className='text-3xl font-bold text-slate-900 mb-1'>
-										{users.length}
+									<p className='text-3xl font-black text-white mb-1'>
+										{totalUsers}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
+									<div className='flex items-center gap-1.5 text-xs text-slate-400 font-medium'>
 										<Users size={12} />
-										<span>Registered</span>
+										<span>Lifetime Registrations</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20'>
+								<div className='w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform'>
 									<Users size={24} className='text-white' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-emerald-50/30 border border-emerald-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Verified Users
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Verified Accounts
 									</p>
-									<p className='text-3xl font-bold text-emerald-600 mb-1'>
+									<p className='text-3xl font-black text-emerald-600 mb-1'>
 										{verifiedUsers}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
+									<div className='flex items-center gap-1.5 text-xs text-emerald-600 font-medium'>
 										<CheckCircle size={12} />
-										<span>Verified</span>
+										<span>Trusted Users</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20'>
-									<CheckCircle
-										size={24}
-										className='text-white'
-									/>
+								<div className='w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-500 transition-all duration-300'>
+									<CheckCircle size={24} className='text-emerald-500 group-hover:text-white transition-colors' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-amber-50/30 border border-amber-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Unverified Users
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Premium Plans
 									</p>
-									<p className='text-3xl font-bold text-amber-600 mb-1'>
-										{unverifiedUsers}
+									<p className='text-3xl font-black text-amber-600 mb-1'>
+										{premiumUsers}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
-										<XCircle size={12} />
-										<span>Pending</span>
+									<div className='flex items-center gap-1.5 text-xs text-amber-600 font-medium'>
+										<Zap size={12} className='fill-current' />
+										<span>Paid Subscriptions</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20'>
-									<XCircle size={24} className='text-white' />
+								<div className='w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-500 transition-all duration-300'>
+									<Zap size={24} className='text-amber-500 group-hover:text-white transition-colors fill-current' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-rose-50/30 border border-rose-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
 										Blocked Users
 									</p>
-									<p className='text-3xl font-bold text-rose-600 mb-1'>
+									<p className='text-3xl font-black text-rose-600 mb-1'>
 										{blockedUsers}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
+									<div className='flex items-center gap-1.5 text-xs text-rose-600 font-medium'>
 										<Ban size={12} />
-										<span>Blocked</span>
+										<span>Restricted Access</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-rose-400 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/20'>
-									<Ban size={24} className='text-white' />
+								<div className='w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center group-hover:bg-rose-500 transition-all duration-300'>
+									<Ban size={24} className='text-rose-500 group-hover:text-white transition-colors' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 				</div>
 
+				{/* Filters Row */}
+				<div className='flex flex-wrap gap-2 mb-6'>
+					{[
+						{ id: "all", label: "All Users", icon: Users },
+						{ id: "premium", label: "Premium", icon: Zap },
+						{ id: "verified", label: "Verified", icon: CheckCircle },
+						{ id: "blocked", label: "Blocked", icon: Ban },
+					].map((filter) => (
+						<button
+							key={filter.id}
+							onClick={() => setFilterStatus(filter.id)}
+							className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+								filterStatus === filter.id
+									? "bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20"
+									: "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+							}`}>
+							<filter.icon size={14} className={filter.id === "premium" && filterStatus === "premium" ? "fill-current" : ""} />
+							{filter.label}
+						</button>
+					))}
+				</div>
+
 				{/* Users Table */}
 				<div className='overflow-x-auto'>
-					<Card className='bg-white border border-slate-200 shadow-lg'>
+					<Card className='bg-white border border-slate-200 shadow-lg p-0'>
 						<CardContent className='p-0'>
 							{loading ? (
 								<div className='p-16 text-center'>
@@ -338,21 +378,25 @@ export default function AdminUsersPage() {
 									</p>
 								</div>
 							) : filteredUsers.length > 0 ? (
-								<div className='w-[360px] md:w-full overflow-x-auto'>
+								<>
+									<div className='w-[360px] md:w-full overflow-x-auto'>
 									<table className='w-full'>
 										<thead>
 											<tr className='border-b border-slate-200 bg-linear-to-r from-slate-50 to-slate-100/50'>
 												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
-													User
+													User Info
 												</th>
 												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
-													Contact
+													Account
 												</th>
 												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
-													Stats
+													Activity
 												</th>
 												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
-													Status
+													Blogs
+												</th>
+												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
+													Business
 												</th>
 												<th className='px-6 py-4 text-left text-sm font-semibold text-slate-700'>
 													Joined
@@ -369,29 +413,32 @@ export default function AdminUsersPage() {
 														key={userItem._id}
 														className='border-b border-slate-100 hover:bg-slate-50/50 transition-colors group'>
 														<td className='px-6 py-4'>
-															<div className='flex items-center gap-3'>
-																<div className='relative'>
-																	<div className='w-12 h-12 rounded-full bg-linear-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-md'>
-																		{userItem.name
-																			?.charAt(
-																				0
-																			)
-																			.toUpperCase() ||
-																			"U"}
-																	</div>
-																	{userItem.verified && (
-																		<div className='absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center shadow-sm'>
-																			<CheckCircle
-																				size={
-																					12
+															<div className='flex items-center gap-4'>
+																<div className='relative shrink-0'>
+																	<div className='w-14 h-14 rounded-2xl bg-linear-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600 font-bold text-xl shadow-inner border border-white/50 overflow-hidden'>
+																		{userItem.avatar ? (
+																			<img
+																				src={
+																					userItem.avatar
 																				}
-																				className='text-white'
+																				alt={
+																					userItem.name
+																				}
+																				className='w-full h-full object-cover'
 																			/>
-																		</div>
-																	)}
-																	{userItem.isBlocked && (
-																		<div className='absolute -bottom-1 -right-1 w-5 h-5 bg-rose-500 rounded-full border-2 border-white flex items-center justify-center shadow-sm'>
-																			<Ban
+																		) : (
+																			userItem.name
+																				?.charAt(
+																					0
+																				)
+																				.toUpperCase() ||
+																			"U"
+																		)}
+																	</div>
+																	{userItem.role ===
+																		"admin" && (
+																		<div className='absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-lg border-2 border-white flex items-center justify-center shadow-lg'>
+																			<Shield
 																				size={
 																					12
 																				}
@@ -400,166 +447,236 @@ export default function AdminUsersPage() {
 																		</div>
 																	)}
 																</div>
-																<div>
-																	<p className='text-sm font-bold text-slate-900'>
+																<div className='min-w-0'>
+																	<p className='text-sm font-bold text-slate-900 truncate hover:text-sky-600 transition-colors'>
 																		{userItem.name ||
-																			"Unknown"}
+																			"Unknown User"}
 																	</p>
-																	{userItem.bio && (
-																		<p className='text-xs text-slate-500 line-clamp-1 mt-0.5'>
-																			{
-																				userItem.bio
-																			}
-																		</p>
+																	<div className='flex items-center gap-1.5 mt-1'>
+																		<button
+																			onClick={() => {
+																				navigator.clipboard.writeText(
+																					userItem.email
+																				);
+																				toast.success(
+																					"Email copied!"
+																				);
+																			}}
+																			className='group/copy flex items-center gap-1.5 text-xs text-slate-500 hover:text-sky-600 transition-colors'>
+																			<Mail
+																				size={
+																					12
+																				}
+																			/>
+																			<span className='truncate max-w-[120px]'>
+																				{
+																					userItem.email
+																				}
+																			</span>
+																			<Copy
+																				size={
+																					10
+																				}
+																				className='opacity-0 group-hover/copy:opacity-100 transition-opacity'
+																			/>
+																		</button>
+																	</div>
+																	{userItem.phone && (
+																		<div className='flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-400'>
+																			<Phone
+																				size={
+																					10
+																				}
+																			/>
+																			<span>
+																				{
+																					userItem.phone
+																				}
+																			</span>
+																		</div>
 																	)}
 																</div>
 															</div>
 														</td>
 														<td className='px-6 py-4'>
-															<div className='space-y-1.5'>
-																<div className='flex items-center gap-2 text-sm text-slate-700'>
-																	<Mail
+															<div className='space-y-2'>
+																{/* Plan Badge */}
+																<div
+																	className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all shadow-sm ${
+																		userItem.currentPlan ===
+																		"premium"
+																			? "bg-amber-50 text-amber-700 border-amber-200 shadow-amber-100/50"
+																			: userItem.currentPlan ===
+																			  "daily"
+																			? "bg-sky-50 text-sky-700 border-sky-200 shadow-sky-100/50"
+																			: "bg-slate-50 text-slate-600 border-slate-200 shadow-slate-100/50"
+																	}`}>
+																	<Zap
 																		size={
-																			14
+																			12
 																		}
-																		className='text-slate-400'
+																		className={
+																			userItem.currentPlan !==
+																			"free"
+																				? "fill-current"
+																				: ""
+																		}
 																	/>
-																	<span className='text-xs'>
-																		{
-																			userItem.email
-																		}
-																	</span>
+																	{userItem.currentPlan?.toUpperCase() ||
+																		"FREE"}{" "}
+																	PLAN
 																</div>
-																{userItem.phone && (
-																	<div className='flex items-center gap-2 text-sm text-slate-700'>
-																		<Phone
-																			size={
-																				14
-																			}
-																			className='text-slate-400'
-																		/>
-																		<span className='text-xs'>
-																			{
-																				userItem.phone
-																			}
+
+																{/* Status Indicators */}
+																<div className='flex flex-wrap gap-1.5'>
+																	{userItem.isBlocked ? (
+																		<span className='inline-flex items-center gap-1 px-2 py-0.5 bg-rose-50 text-rose-700 rounded-md text-[10px] font-bold border border-rose-100'>
+																			<Ban size={10} />
+																			BLOCKED
 																		</span>
-																	</div>
-																)}
+																	) : (
+																		<span className='inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded-md text-[10px] font-bold border border-emerald-100'>
+																			<CheckCircle size={10} />
+																			ACTIVE
+																		</span>
+																	)}
+																	{userItem.verified && (
+																		<span className='inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold border border-blue-100'>
+																			<Shield size={10} />
+																			VERIFIED
+																		</span>
+																	)}
+																</div>
 															</div>
 														</td>
 														<td className='px-6 py-4'>
-															<div className='grid grid-cols-2 gap-3'>
-																<div className='bg-slate-50 rounded-lg p-2 border border-slate-100'>
-																	<p className='text-xs text-slate-500 mb-0.5'>
+															<div className='flex gap-4'>
+																<div className='text-center'>
+																	<p className='text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1'>
 																		Listings
 																	</p>
-																	<p className='text-sm font-bold text-slate-900 flex items-center gap-1'>
-																		<FileText
-																			size={
-																				12
-																			}
-																		/>
+																	<div className='inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 text-slate-900 font-bold group-hover:bg-white group-hover:shadow-md transition-all'>
 																		{userItem
 																			.listings
 																			?.length ||
 																			0}
-																	</p>
+																	</div>
 																</div>
-																<div className='bg-slate-50 rounded-lg p-2 border border-slate-100'>
-																	<p className='text-xs text-slate-500 mb-0.5'>
-																		Rating
+																<div className='text-center'>
+																	<p className='text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1'>
+																		Orders
 																	</p>
-																	<p className='text-sm font-bold text-slate-900 flex items-center gap-1'>
-																		<Star
+																	<div className='inline-flex items-center justify-center w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 text-sky-700 font-bold group-hover:bg-white group-hover:shadow-md transition-all'>
+																		{userItem.orderCount ||
+																			0}
+																	</div>
+																</div>
+															</div>
+														</td>
+														<td className='px-6 py-4'>
+															<div className='text-center'>
+																<p className='text-[10px] font-bold text-slate-400 uppercase tracking-tight mb-1'>
+																	Blogs
+																</p>
+																<div className='inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold group-hover:bg-white group-hover:shadow-md transition-all'>
+																	{userItem.blogCount || 0}
+																</div>
+															</div>
+														</td>
+														<td className='px-6 py-4'>
+															<div className='space-y-3'>
+																{/* Sales */}
+																<div>
+																	<div className='flex items-center gap-1.5 text-xs text-slate-500 mb-1'>
+																		<TrendingUp
 																			size={
 																				12
 																			}
-																			className='text-amber-500 fill-amber-500'
+																			className='text-emerald-500'
 																		/>
+																		<span>
+																			Total
+																			Sales
+																		</span>
+																	</div>
+																	<p className='text-sm font-bold text-slate-900'>
+																		$
 																		{(
-																			userItem.rating ||
+																			userItem.totalSales ||
 																			0
-																		).toFixed(
-																			1
+																		).toLocaleString(
+																			"en-IN"
 																		)}
 																	</p>
 																</div>
-																{userItem.totalSales !==
-																	undefined && (
-																	<div className='bg-emerald-50 rounded-lg p-2 border border-emerald-100'>
-																		<p className='text-xs text-slate-600 mb-0.5'>
-																			Sales
-																		</p>
-																		<p className='text-sm font-bold text-emerald-700 flex items-center gap-1'>
-																			<DollarSign
-																				size={
-																					12
-																				}
-																			/>
-																			{userItem.totalSales ||
-																				0}
-																		</p>
+
+																{/* Reputation */}
+																<div className='flex items-center gap-2'>
+																	<div className='flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100'>
+																		<Star
+																			size={
+																				10
+																			}
+																			className='text-amber-500 fill-amber-500'
+																		/>
+																		<span className='text-[10px] font-bold text-amber-700'>
+																			{(
+																				userItem.rating ||
+																				0
+																			).toFixed(
+																				1
+																			)}
+																		</span>
+																	</div>
+																	<span className='text-[10px] text-slate-400'>
+																		(
+																		{userItem
+																			.reviews
+																			?.length ||
+																			0}{" "}
+																		reviews)
+																	</span>
+																</div>
+															</div>
+														</td>
+														<td className='px-6 py-4'>
+															<div className='flex flex-col gap-1'>
+																<div className='flex items-center gap-1.5 text-xs text-slate-700 font-medium'>
+																	<Calendar
+																		size={
+																			12
+																		}
+																		className='text-slate-400'
+																	/>
+																	<span>
+																		{userItem.createdAt
+																			? new Date(
+																					userItem.createdAt
+																			  ).toLocaleDateString(
+																					"en-IN",
+																					{
+																						day: "2-digit",
+																						month: "short",
+																						year: "numeric",
+																					}
+																			  )
+																			: "N/A"}
+																	</span>
+																</div>
+																{userItem.location && (
+																	<div className='flex items-center gap-1.5 text-[10px] text-slate-400'>
+																		<MapPin
+																			size={
+																				10
+																			}
+																		/>
+																		<span className='truncate max-w-[100px]'>
+																			{
+																				userItem.location
+																			}
+																		</span>
 																	</div>
 																)}
-															</div>
-														</td>
-														<td className='px-6 py-4'>
-															<div className='flex flex-col gap-1.5'>
-																{userItem.verified ? (
-																	<span className='inline-flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold w-fit border border-emerald-200'>
-																		<CheckCircle
-																			size={
-																				12
-																			}
-																		/>
-																		Verified
-																	</span>
-																) : (
-																	<span className='inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold w-fit border border-amber-200'>
-																		<XCircle
-																			size={
-																				12
-																			}
-																		/>
-																		Unverified
-																	</span>
-																)}
-																{userItem.isBlocked && (
-																	<span className='inline-flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-semibold w-fit border border-rose-200'>
-																		<Ban
-																			size={
-																				12
-																			}
-																		/>
-																		Blocked
-																	</span>
-																)}
-																{userItem.role ===
-																	"admin" && (
-																	<span className='inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold w-fit border border-blue-200'>
-																		<Shield
-																			size={
-																				12
-																			}
-																		/>
-																		Admin
-																	</span>
-																)}
-															</div>
-														</td>
-														<td className='px-6 py-4'>
-															<div className='flex items-center gap-2 text-sm text-slate-700'>
-																<Calendar
-																	size={14}
-																	className='text-slate-400'
-																/>
-																<span className='text-xs'>
-																	{userItem.createdAt
-																		? new Date(
-																				userItem.createdAt
-																		  ).toLocaleDateString()
-																		: "N/A"}
-																</span>
 															</div>
 														</td>
 														<td className='px-6 py-4'>
@@ -673,6 +790,64 @@ export default function AdminUsersPage() {
 										</tbody>
 									</table>
 								</div>
+								
+								{/* Pagination Controls */}
+								{paginationData && paginationData.totalPages > 1 && (
+									<div className='px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4'>
+										<div className='text-xs font-medium text-slate-500'>
+											Showing <span className='text-slate-900 font-bold'>{(currentPage - 1) * 15 + 1}</span> to <span className='text-slate-900 font-bold'>{Math.min(currentPage * 15, paginationData.totalUsers)}</span> of <span className='text-slate-900 font-bold'>{paginationData.totalUsers}</span> users
+										</div>
+										<div className='flex items-center gap-2'>
+											<Button
+												variant='outline'
+												size='sm'
+												onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+												disabled={currentPage === 1}
+												className='h-9 w-9 p-0 rounded-lg border-slate-200 text-slate-600 disabled:opacity-50 transition-all hover:bg-white hover:shadow-md'
+											>
+												<ChevronLeft size={16} />
+											</Button>
+											
+											<div className='flex items-center gap-1'>
+												{Array.from({ length: Math.min(5, paginationData.totalPages) }, (_, i) => {
+													let pageNum;
+													if (paginationData.totalPages <= 5) {
+														pageNum = i + 1;
+													} else {
+														if (currentPage <= 3) pageNum = i + 1;
+														else if (currentPage >= paginationData.totalPages - 2) pageNum = paginationData.totalPages - 4 + i;
+														else pageNum = currentPage - 2 + i;
+													}
+													
+													return (
+														<button
+															key={pageNum}
+															onClick={() => setCurrentPage(pageNum)}
+															className={`h-9 w-9 rounded-lg text-xs font-bold transition-all ${
+																currentPage === pageNum
+																	? "bg-slate-900 text-white shadow-lg shadow-slate-900/20"
+																	: "bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+															}`}
+														>
+															{pageNum}
+														</button>
+													);
+												})}
+											</div>
+
+											<Button
+												variant='outline'
+												size='sm'
+												onClick={() => setCurrentPage(prev => Math.min(paginationData.totalPages, prev + 1))}
+												disabled={currentPage === paginationData.totalPages}
+												className='h-9 w-9 p-0 rounded-lg border-slate-200 text-slate-600 disabled:opacity-50 transition-all hover:bg-white hover:shadow-md'
+											>
+												<ChevronRight size={16} />
+											</Button>
+										</div>
+									</div>
+								)}
+								</>
 							) : (
 								<div className='p-16 text-center'>
 									<AlertCircle
@@ -716,92 +891,142 @@ export default function AdminUsersPage() {
 									</Button>
 								</div>
 
-								<div className='space-y-4'>
-									<div>
-										<label className='block text-sm font-medium text-slate-700 mb-2'>
-											Name
-										</label>
-										<Input
-											type='text'
-											value={editFormData.name}
-											onChange={(e) =>
-												setEditFormData({
-													...editFormData,
-													name: e.target.value,
-												})
-											}
-											className='w-full'
-											placeholder='Enter name'
-										/>
+								<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+									<div className='space-y-4'>
+										<div>
+											<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+												Full Name
+											</label>
+											<Input
+												type='text'
+												value={editFormData.name}
+												onChange={(e) =>
+													setEditFormData({
+														...editFormData,
+														name: e.target.value,
+													})
+												}
+												className='h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all'
+												placeholder='Enter name'
+											/>
+										</div>
+
+										<div>
+											<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+												Email Address
+											</label>
+											<Input
+												type='email'
+												value={editFormData.email}
+												onChange={(e) =>
+													setEditFormData({
+														...editFormData,
+														email: e.target.value,
+													})
+												}
+												className='h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all'
+												placeholder='Enter email'
+											/>
+										</div>
+
+										<div>
+											<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+												Phone Number
+											</label>
+											<Input
+												type='tel'
+												value={editFormData.phone}
+												onChange={(e) =>
+													setEditFormData({
+														...editFormData,
+														phone: e.target.value,
+													})
+												}
+												className='h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all'
+												placeholder='Enter phone number'
+											/>
+										</div>
 									</div>
 
-									<div>
-										<label className='block text-sm font-medium text-slate-700 mb-2'>
-											Email
-										</label>
-										<Input
-											type='email'
-											value={editFormData.email}
-											onChange={(e) =>
-												setEditFormData({
-													...editFormData,
-													email: e.target.value,
-												})
-											}
-											className='w-full'
-											placeholder='Enter email'
-										/>
-									</div>
+									<div className='space-y-4'>
+										<div>
+											<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+												Location
+											</label>
+											<Input
+												type='text'
+												value={editFormData.location}
+												onChange={(e) =>
+													setEditFormData({
+														...editFormData,
+														location: e.target.value,
+													})
+												}
+												className='h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all'
+												placeholder='e.g. Mumbai, India'
+											/>
+										</div>
 
-									<div>
-										<label className='block text-sm font-medium text-slate-700 mb-2'>
-											Phone
-										</label>
-										<Input
-											type='tel'
-											value={editFormData.phone}
-											onChange={(e) =>
-												setEditFormData({
-													...editFormData,
-													phone: e.target.value,
-												})
-											}
-											className='w-full'
-											placeholder='Enter phone number'
-										/>
+										<div>
+											<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+												Company / Business
+											</label>
+											<Input
+												type='text'
+												value={editFormData.company}
+												onChange={(e) =>
+													setEditFormData({
+														...editFormData,
+														company: e.target.value,
+													})
+												}
+												className='h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all'
+												placeholder='Enter company name'
+											/>
+										</div>
+										<div className='pt-2'>
+											<p className='text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-dashed border-slate-200'>
+												<Shield
+													size={14}
+													className='inline mr-2 text-sky-500'
+												/>
+												These details are visible to
+												other users on the platform.
+											</p>
+										</div>
 									</div>
+								</div>
 
-									<div>
-										<label className='block text-sm font-medium text-slate-700 mb-2'>
-											Bio
-										</label>
-										<textarea
-											value={editFormData.bio}
-											onChange={(e) =>
-												setEditFormData({
-													...editFormData,
-													bio: e.target.value,
-												})
-											}
-											className='w-full min-h-[100px] px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500'
-											placeholder='Enter bio'
-										/>
-									</div>
+								<div className='mt-6'>
+									<label className='block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1'>
+										Bio / Description
+									</label>
+									<textarea
+										value={editFormData.bio}
+										onChange={(e) =>
+											setEditFormData({
+												...editFormData,
+												bio: e.target.value,
+											})
+										}
+										className='w-full min-h-[120px] px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all resize-none text-sm'
+										placeholder='Tell us about the user...'
+									/>
+								</div>
 
-									<div className='flex gap-3 pt-4'>
-										<Button
-											onClick={handleSaveEdit}
-											className='flex-1 bg-linear-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white gap-2 shadow-lg shadow-sky-500/20'>
-											<Save size={18} />
-											Save Changes
-										</Button>
-										<Button
-											variant='outline'
-											onClick={() => setEditingUser(null)}
-											className='flex-1 border-slate-200'>
-											Cancel
-										</Button>
-									</div>
+								<div className='flex gap-3 mt-8'>
+									<Button
+										onClick={handleSaveEdit}
+										className='flex-1 h-12 bg-linear-to-r from-slate-900 to-slate-800 hover:from-sky-600 hover:to-blue-600 text-white font-bold rounded-xl shadow-xl shadow-slate-900/10 transition-all duration-300 transform active:scale-[0.98]'>
+										<Save size={18} className='mr-2' />
+										Save Changes
+									</Button>
+									<Button
+										variant='outline'
+										onClick={() => setEditingUser(null)}
+										className='h-12 px-6 border-slate-200 text-slate-600 font-semibold rounded-xl hover:bg-slate-50 transition-all'>
+										Cancel
+									</Button>
 								</div>
 							</CardContent>
 						</Card>

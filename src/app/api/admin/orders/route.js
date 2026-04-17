@@ -66,7 +66,17 @@ export async function GET(request) {
 					_id: null,
 					totalRevenue: {
 						$sum: {
-							$cond: [{ $eq: ["$paymentStatus", "completed"] }, "$finalAmount", 0]
+							$cond: [
+								{ $eq: ["$paymentStatus", "completed"] },
+								{
+									$cond: [
+										{ $eq: ["$currency", "USD"] },
+										{ $multiply: ["$finalAmount", 83] },
+										"$finalAmount",
+									],
+								},
+								0,
+							],
 						}
 					},
 					totalOrders: { $sum: 1 },

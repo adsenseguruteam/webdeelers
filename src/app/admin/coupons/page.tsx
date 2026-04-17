@@ -27,6 +27,14 @@ import {
   Trash2,
   Tag,
   Search,
+  Copy,
+  Calendar,
+  Layers,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Users,
+  ShoppingBag,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -211,36 +219,45 @@ export default function CouponsAdminPage() {
     });
   };
 
-  const filteredCoupons = coupons.filter((coupon) => {
-    const matchesSearch = coupon.code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || 
-                         (filterStatus === "active" && coupon.isActive) ||
-                         (filterStatus === "inactive" && !coupon.isActive);
-    return matchesSearch && matchesStatus;
-  });
-
-  const getStatusBadge = (coupon: Coupon) => {
+  const getCouponStatus = (coupon: Coupon) => {
     const now = new Date();
     const validFrom = new Date(coupon.validFrom);
     const validUntil = new Date(coupon.validUntil);
 
-    if (!coupon.isActive) {
-      return <Badge variant="destructive">Inactive</Badge>;
-    }
+    if (!coupon.isActive) return "inactive";
+    if (now < validFrom) return "scheduled";
+    if (now > validUntil) return "expired";
+    if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) return "used_up";
+    return "active";
+  };
 
-    if (now < validFrom) {
-      return <Badge variant="secondary">Scheduled</Badge>;
-    }
+  const filteredCoupons = coupons.filter((coupon) => {
+    const matchesSearch = coupon.code.toLowerCase().includes(searchTerm.toLowerCase());
+    const status = getCouponStatus(coupon);
+    const matchesStatus = filterStatus === "all" || filterStatus === status;
+    return matchesSearch && matchesStatus;
+  });
 
-    if (now > validUntil) {
-      return <Badge variant="outline">Expired</Badge>;
-    }
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    toast.success("Coupon code copied!");
+  };
 
-    if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
-      return <Badge variant="outline">Used Up</Badge>;
+  const getStatusBadge = (coupon: Coupon) => {
+    const status = getCouponStatus(coupon);
+    
+    switch (status) {
+      case "inactive":
+        return <Badge variant="destructive" className="bg-rose-500/10 text-rose-600 border-rose-200">Inactive</Badge>;
+      case "scheduled":
+        return <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 border-blue-200">Scheduled</Badge>;
+      case "expired":
+        return <Badge variant="outline" className="bg-slate-500/10 text-slate-500 border-slate-200">Expired</Badge>;
+      case "used_up":
+        return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-200">Used Up</Badge>;
+      default:
+        return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200 hover:bg-emerald-500/20">Active</Badge>;
     }
-
-    return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Active</Badge>;
   };
 
   if (loading) {
@@ -256,10 +273,10 @@ export default function CouponsAdminPage() {
       <AdminSidebar />
 
       <div className="flex-1 gap-3 md:ml-64 p-4 md:p-6 lg:p-8">
-            <div className="flex flex-col mb-4 sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex flex-col mb-8 sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                <h1 className="text-3xl font-bold text-slate-900">Coupon Management</h1>
-                <p className="text-slate-600 mt-1">Create and manage discount coupons</p>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Promotions & Coupons</h1>
+                <p className="text-slate-500 mt-1 font-medium">Manage discounts and rewards for your customers</p>
                 </div>
                 <Button 
                 onClick={() => setShowCreateDialog(true)}
@@ -283,15 +300,18 @@ export default function CouponsAdminPage() {
                         className="pl-10"
                     />
                     </div>
-                    <div className="w-full sm:w-48">
+                    <div className="w-full sm:w-64">
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
                         <SelectTrigger>
                         <SelectValue placeholder="Filter by status" />
                         </SelectTrigger>
                         <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
+                        <SelectItem value="all">All Coupons</SelectItem>
+                        <SelectItem value="active">Active Only</SelectItem>
+                        <SelectItem value="scheduled">Scheduled</SelectItem>
+                        <SelectItem value="expired">Expired</SelectItem>
+                        <SelectItem value="used_up">Used Up</SelectItem>
+                        <SelectItem value="inactive">Manually Disabled</SelectItem>
                         </SelectContent>
                     </Select>
                     </div>
@@ -299,15 +319,17 @@ export default function CouponsAdminPage() {
                 </CardContent>
             </Card>
 
-            {/* Coupons List */}
-            <div className="grid gap-4">
+            {/* Coupons Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredCoupons.length === 0 ? (
-                <Card className="border-slate-200">
-                    <CardContent className="p-12 text-center">
-                    <Tag className="mx-auto h-12 w-12 text-slate-300 mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No coupons found</h3>
-                    <p className="text-slate-500 mb-4">
-                        {searchTerm ? "Try adjusting your search terms" : "Create your first coupon to get started"}
+                <Card className="border-slate-200 col-span-full">
+                    <CardContent className="p-16 text-center">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Tag className="h-10 w-10 text-slate-300" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">No coupons found</h3>
+                    <p className="text-slate-500 mb-8 max-w-sm mx-auto">
+                        {searchTerm ? "We couldn't find any coupons matching your search. Try adjusting your keywords." : "Start growing your sales by creating your first promotional coupon today."}
                     </p>
                     {!searchTerm && (
                         <Button 
@@ -322,66 +344,113 @@ export default function CouponsAdminPage() {
                 </Card>
                 ) : (
                 filteredCoupons.map((coupon) => (
-                    <Card key={coupon._id} className="border-slate-200 hover:border-orange-300 transition-colors">
-                    <CardContent className="p-6">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-xl font-bold text-slate-900">{coupon.code}</h3>
-                            {getStatusBadge(coupon)}
+                    <Card key={coupon._id} className="border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-orange-500/10 transition-all duration-300 group overflow-hidden">
+                      {/* Decorative sidebar color */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+                        getCouponStatus(coupon) === 'active' ? 'bg-emerald-500' : 
+                        getCouponStatus(coupon) === 'inactive' ? 'bg-rose-500' : 
+                        getCouponStatus(coupon) === 'scheduled' ? 'bg-blue-500' : 'bg-slate-300'
+                      }`} />
+
+                    <CardContent className="p-0">
+                        <div className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <h3 className="text-2xl font-black text-slate-900 tracking-tight select-all">{coupon.code}</h3>
+                                        <button 
+                                          onClick={() => handleCopyCode(coupon.code)}
+                                          className="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-md transition-colors"
+                                          title="Copy Code"
+                                        >
+                                          <Copy size={14} />
+                                        </button>
+                                    </div>
+                                    {getStatusBadge(coupon)}
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-black text-orange-600 uppercase tracking-wider">
+                                        {coupon.discountType === "percentage" ? "Percentage" : "Cash Discount"}
+                                    </p>
+                                    <p className="text-3xl font-black text-slate-900">
+                                        {coupon.discountType === "percentage" 
+                                            ? `${coupon.discountValue}%` 
+                                            : `$${coupon.discountValue}`}
+                                    </p>
+                                </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                            <div>
-                                <p className="text-sm text-slate-500">Discount</p>
-                                <p className="font-semibold text-slate-900">
-                                {coupon.discountType === "percentage" 
-                                    ? `${coupon.discountValue}%` 
-                                    : `$${coupon.discountValue}`}
-                                </p>
+                            <div className="space-y-4">
+                                {/* Usage Progress */}
+                                <div>
+                                    <div className="flex justify-between text-[11px] font-black uppercase tracking-widest text-slate-500 mb-1.5">
+                                        <span>Redemption Rate</span>
+                                        <span>{coupon.usedCount} / {coupon.usageLimit || "∞"}</span>
+                                    </div>
+                                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                                        <div 
+                                          className={`h-full transition-all duration-1000 ${
+                                            getCouponStatus(coupon) === 'used_up' ? 'bg-amber-500' : 'bg-orange-500'
+                                          }`}
+                                          style={{ 
+                                            width: coupon.usageLimit 
+                                              ? `${(coupon.usedCount / coupon.usageLimit) * 100}%` 
+                                              : `${Math.min(coupon.usedCount * 5, 100)}%` 
+                                          }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                                            <Calendar size={12} className="text-slate-400" /> Valid Until
+                                        </p>
+                                        <p className="text-xs font-black text-slate-700">
+                                            {new Date(coupon.validUntil).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                        </p>
+                                    </div>
+                                    <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                                            <ShoppingBag size={12} className="text-slate-400" /> Min. Spend
+                                        </p>
+                                        <p className="text-xs font-black text-slate-700">
+                                            ${coupon.minimumAmount || "0"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {coupon.maximumDiscount && (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-100 rounded-lg text-emerald-700 text-[11px] font-bold">
+                                        <CheckCircle2 size={12} />
+                                        Max Discount: ${coupon.maximumDiscount}
+                                    </div>
+                                )}
+
+                                {(coupon.applicableCategories.length > 0 || coupon.applicableProducts.length > 0) && (
+                                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 border border-blue-100 rounded-lg text-blue-700 text-[11px] font-bold overflow-hidden">
+                                        <Layers size={12} className="shrink-0" />
+                                        <span className="truncate">
+                                            Valid for {coupon.applicableCategories.length || coupon.applicableProducts.length} specific rules
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                            
-                            <div>
-                                <p className="text-sm text-slate-500">Usage</p>
-                                <p className="font-semibold text-slate-900">
-                                {coupon.usedCount} / {coupon.usageLimit || "∞"}
-                                </p>
-                            </div>
-                            
-                            <div>
-                                <p className="text-sm text-slate-500">Valid Until</p>
-                                <p className="font-semibold text-slate-900">
-                                {new Date(coupon.validUntil).toLocaleDateString()}
-                                </p>
-                            </div>
-                            </div>
-                            
-                            {coupon.minimumAmount > 0 && (
-                            <div className="mt-2">
-                                <p className="text-sm text-slate-500">Minimum Order: ${coupon.minimumAmount}</p>
-                            </div>
-                            )}
                         </div>
                         
-                        <div className="flex items-center gap-2">
-                            <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditCoupon(coupon)}
+                        <div className="flex items-center bg-slate-50 border-t border-slate-100 divide-x divide-slate-200">
+                            <button
+                              onClick={() => handleEditCoupon(coupon)}
+                              className="flex-1 py-4 text-xs font-black text-slate-600 hover:text-orange-600 hover:bg-white transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
                             >
-                            <Edit className="h-4 w-4 mr-1" />
-                            Edit
-                            </Button>
-                            <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteCoupon(coupon._id)}
-                            className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
+                              <Edit size={14} /> Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCoupon(coupon._id)}
+                              className="flex-1 py-4 text-xs font-black text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-center gap-2 uppercase tracking-widest"
                             >
-                            <Trash2 className="h-4 w-4 mr-1" />
-                            Delete
-                            </Button>
-                        </div>
+                              <Trash2 size={14} /> Delete
+                            </button>
                         </div>
                     </CardContent>
                     </Card>

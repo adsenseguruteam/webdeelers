@@ -9,7 +9,10 @@ export async function GET(request) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const adminId = searchParams.get("adminId");
-		const status = searchParams.get("status");
+		const filter = searchParams.get("filter") || "all";
+		const search = searchParams.get("search") || "";
+		const page = parseInt(searchParams.get("page")) || 1;
+		const limit = parseInt(searchParams.get("limit")) || 15;
 
 		await connectDB();
 
@@ -21,12 +24,67 @@ export async function GET(request) {
 			);
 		}
 
-		const query = status ? { status } : {};
-		const listings = await Listing.find(query)
-			.populate("seller")
-			.sort({ createdAt: -1 });
+		// Build query
+		const query = {};
+		if (filter !== "all") {
+			query.status = filter;
+		}
 
-		return NextResponse.json(listings);
+		if (search) {
+			query.$or = [
+				{ title: { $regex: search, $options: "i" } },
+				{ description: { $regex: search, $options: "i" } },
+				{ category: { $regex: search, $options: "i" } },
+			];
+		}
+
+		// Base query for current page
+		const listings = await Listing.find(query)
+			.populate("seller", "name email emailVerified")
+			.sort({ createdAt: -1 })
+			.skip((page - 1) * limit)
+			.limit(limit);
+
+		// Get total count for current query
+		const totalQueryResult = await Listing.countDocuments(query);
+
+		// Get global stats for cards
+		const [
+			totalListings,
+			activeListings,
+			pendingListings,
+			rejectedListings,
+			soldListings,
+			totalValueResult,
+		] = await Promise.all([
+			Listing.countDocuments(),
+			Listing.countDocuments({ status: "active" }),
+			Listing.countDocuments({ status: "pending" }),
+			Listing.countDocuments({ status: "rejected" }),
+			Listing.countDocuments({ status: "sold" }),
+			Listing.aggregate([
+				{ $match: { status: "active" } },
+				{ $group: { _id: null, total: { $sum: "$price" } } },
+			]),
+		]);
+
+		return NextResponse.json({
+			listings,
+			pagination: {
+				totalListings: totalQueryResult,
+				totalPages: Math.ceil(totalQueryResult / limit),
+				currentPage: page,
+				limit,
+			},
+			stats: {
+				totalListings,
+				activeListings,
+				pendingListings,
+				rejectedListings,
+				soldListings,
+				totalMarketplaceValue: totalValueResult[0]?.total || 0,
+			},
+		});
 	} catch (error) {
 		console.error("Admin all listings fetch error:", error);
 		return NextResponse.json(

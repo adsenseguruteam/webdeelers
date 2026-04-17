@@ -28,10 +28,16 @@ import {
 	XCircle,
 	Clock,
 	Package,
-	Trash2,
-	Edit3,
 	RefreshCw,
 	DollarSign,
+	CreditCard,
+	Zap,
+	Wallet,
+	Tag,
+	Info,
+	ArrowRight,
+	Edit3,
+	Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -147,7 +153,7 @@ export default function AdminOrdersPage() {
 			// Convert total revenue to user's currency
 			const convertedStats = {
 				...fetchedStats,
-				totalRevenue: fetchedStats.totalRevenue, // Assuming original revenue is in INR
+				totalRevenue: fetchedStats.totalRevenue, // Now calculated as INR on server
 			};
 
 			setStats(convertedStats);
@@ -170,51 +176,70 @@ export default function AdminOrdersPage() {
 		return () => clearTimeout(timer);
 	}, [searchQuery]);
 
+	const getPaymentMethodIcon = (method?: string) => {
+		switch (method?.toLowerCase()) {
+			case "binance":
+				return <Wallet size={14} className='text-amber-500' />;
+			case "upi":
+				return <Zap size={14} className='text-emerald-500' />;
+			case "card":
+			case "payu":
+				return <CreditCard size={14} className='text-blue-500' />;
+			default:
+				return <DollarSign size={14} className='text-slate-400' />;
+		}
+	};
+
 	const getPaymentStatusBadge = (status: string) => {
 		switch (status) {
 			case "completed":
 				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium'>
-						<CheckCircle size={12} /> Paid
+					<span className='flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-full text-[11px] font-black uppercase tracking-wider'>
+						<CheckCircle size={10} /> Paid
 					</span>
 				);
 			case "pending":
 				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium'>
-						<Clock size={12} /> Pending
+					<span className='flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-100 rounded-full text-[11px] font-black uppercase tracking-wider'>
+						<Clock size={10} /> Pending
 					</span>
 				);
 			case "failed":
 				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium'>
-						<XCircle size={12} /> Failed
+					<span className='flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 text-rose-700 border border-rose-100 rounded-full text-[11px] font-black uppercase tracking-wider'>
+						<XCircle size={10} /> Failed
 					</span>
 				);
 			case "processing":
 				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium'>
-						<DollarSign size={12} /> Processing
+					<span className='flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-full text-[11px] font-black uppercase tracking-wider'>
+						<RefreshCw size={10} className='animate-spin' /> Processing
 					</span>
 				);
 			default:
-				return null;
+				return (
+					<span className='flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 text-slate-700 border border-slate-100 rounded-full text-[11px] font-black uppercase tracking-wider'>
+						{status}
+					</span>
+				);
 		}
 	};
 
 	const getOrderStatusBadge = (status: string) => {
+		const baseStyles = "px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border";
 		switch (status) {
 			case "completed":
-				return <Badge className='bg-emerald-500'>Completed</Badge>;
+				return <Badge className={`${baseStyles} bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50`}>Completed</Badge>;
 			case "pending":
-				return <Badge className='bg-amber-500'>Pending</Badge>;
+				return <Badge className={`${baseStyles} bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-50`}>Pending</Badge>;
 			case "processing":
-				return <Badge className='bg-blue-500'>Processing</Badge>;
+				return <Badge className={`${baseStyles} bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-50`}>Processing</Badge>;
 			case "cancelled":
-				return <Badge className='bg-rose-500'>Cancelled</Badge>;
+				return <Badge className={`${baseStyles} bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-50`}>Cancelled</Badge>;
 			case "refunded":
-				return <Badge className='bg-slate-500'>Refunded</Badge>;
+				return <Badge className={`${baseStyles} bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-50`}>Refunded</Badge>;
 			default:
-				return null;
+				return <Badge className={baseStyles}>{status}</Badge>;
 		}
 	};
 
@@ -317,11 +342,11 @@ export default function AdminOrdersPage() {
 									/>
 								</div>
 								<div>
-									<p className='text-xs text-slate-500'>
-										Total Revenue
+									<p className='text-xs font-black text-slate-400 uppercase tracking-widest'>
+										Total Revenue (INR)
 									</p>
-									<p className='text-xl font-bold text-slate-900'>
-										{stats.totalRevenue.toFixed(2)}
+									<p className='text-2xl font-black text-slate-900'>
+										₹{stats.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
 									</p>
 								</div>
 							</div>
@@ -433,9 +458,9 @@ export default function AdminOrdersPage() {
 				</div>
 
 				{/* Orders Table */}
-				<Card className='bg-white border-slate-200 shadow-sm'>
-					<CardHeader>
-						<CardTitle className='text-lg'>Recent Orders</CardTitle>
+				<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 overflow-hidden'>
+					<CardHeader className='border-b border-slate-50 bg-slate-50/30'>
+						<CardTitle className='text-xl font-black text-slate-900'>Transaction Registry</CardTitle>
 					</CardHeader>
 					<CardContent className='p-0'>
 						{loading ? (
@@ -462,27 +487,24 @@ export default function AdminOrdersPage() {
 						) : (
 							<div className='overflow-x-auto'>
 								<table className='w-full'>
-									<thead className='bg-slate-50 border-b border-slate-200'>
+									<thead className='bg-slate-50 border-b border-slate-100'>
 										<tr>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Order ID
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+												Order Identity
 											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Customer
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+												Customer Details
 											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Product
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+												Transaction
 											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Amount
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+												Financials
 											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Payment
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
+												Timeline
 											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
-												Date
-											</th>
-											<th className='text-left px-6 py-4 text-sm font-medium text-slate-600'>
+											<th className='text-left px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>
 												Actions
 											</th>
 										</tr>
@@ -493,69 +515,63 @@ export default function AdminOrdersPage() {
 												key={order._id}
 												className='hover:bg-slate-50'>
 												<td className='px-6 py-4'>
-													<span className='font-mono text-sm text-slate-900'>
-														{order.orderId}
-													</span>
-												</td>
-												<td className='px-6 py-4'>
-													<div>
-														<p className='font-medium text-slate-900'>
-															{order.user?.name ||
-																"N/A"}
-														</p>
-														<p className='text-sm text-slate-500'>
-															{order.user
-																?.email ||
-																"N/A"}
-														</p>
-													</div>
-												</td>
-												<td className='px-6 py-4'>
-													<div className='flex items-center gap-3'>
-														{order.productSnapshot
-															?.thumbnail ? (
-															<img
-																src={
-																	order
-																		.productSnapshot
-																		.thumbnail
-																}
-																alt=''
-																className='w-10 h-10 rounded-lg object-cover'
-															/>
-														) : (
-															<div className='w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center'>
-																<Package
-																	size={16}
-																	className='text-slate-400'
-																/>
-															</div>
-														)}
-														<span className='text-sm text-slate-900 line-clamp-1 max-w-[150px]'>
-															{order
-																.productSnapshot
-																?.title ||
-																"N/A"}
+													<div className='flex flex-col'>
+														<span className='font-mono text-xs font-black text-slate-900'>
+															#{order.orderId}
 														</span>
+														<div className='flex items-center gap-1.5 mt-1'>
+															{getOrderStatusBadge(order.status)}
+														</div>
 													</div>
 												</td>
 												<td className='px-6 py-4'>
-													<span className='font-medium text-slate-900'>
-														{order.currency}{" "}
-														{order.finalAmount.toFixed(
-															2,
-														)}
-													</span>
+													<div className='flex flex-col'>
+														<p className='text-xs font-black text-slate-900'>
+															{order.user?.name || "Anonymous"}
+														</p>
+														<p className='text-[10px] font-bold text-slate-400'>
+															{order.user?.email || "N/A"}
+														</p>
+													</div>
 												</td>
 												<td className='px-6 py-4'>
-													{getPaymentStatusBadge(
-														order.paymentStatus,
-													)}
+													<div className='flex flex-col gap-1.5'>
+														<div className='flex items-center gap-2'>
+															{getPaymentMethodIcon(order.paymentMethod as string)}
+															<span className='text-[10px] font-black text-slate-600 uppercase tracking-widest'>
+																{order.paymentMethod || "Direct"}
+															</span>
+														</div>
+														<div className='text-[9px] font-mono text-slate-400 truncate max-w-[120px]' title={order.transactionId}>
+															TX: {order.transactionId || "N/A"}
+														</div>
+													</div>
 												</td>
-												<td className='px-6 py-4 text-sm text-slate-600'>
-													{formatDate(
-														order.createdAt,
-													)}
+												<td className='px-6 py-4'>
+													<div className='flex flex-col'>
+														<div className='flex items-baseline gap-1'>
+															<span className='text-xs font-black text-slate-900'>
+																{order.currency === 'USD' ? '$' : '₹'}
+																{order.finalAmount.toLocaleString()}
+															</span>
+														</div>
+														{order.razorpay?.orderId && (
+															<span className='text-[9px] font-bold text-blue-500 uppercase flex items-center gap-1'>
+																<Zap size={8} /> Gateway Payment
+															</span>
+														)}
+														{getPaymentStatusBadge(order.paymentStatus)}
+													</div>
+												</td>
+												<td className='px-6 py-4'>
+													<div className='flex flex-col'>
+														<p className='text-[10px] font-black text-slate-700 uppercase'>
+															{new Date(order.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+														</p>
+														<p className='text-[9px] font-bold text-slate-400 uppercase'>
+															{new Date(order.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+														</p>
+													</div>
 												</td>
 												<td className='px-6 py-4 flex items-center gap-2'>
 													<Button

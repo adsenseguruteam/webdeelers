@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +25,9 @@ import {
 	Newspaper,
 	MoreHorizontal,
 	ExternalLink,
+	RefreshCw,
+	ArrowRight,
+	ShoppingBag,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import axios from "axios";
@@ -43,12 +45,25 @@ interface Listing {
 	seller?: { name: string };
 	createdAt: string;
 	slug?: string;
+	thumbnail?: string;
 	metrics?: {
 		monthlyRevenue?: number;
 		monthlyTraffic?: number;
 		followers?: number;
 		age?: number;
 	};
+}
+
+interface Order {
+	_id: string;
+	orderId: string;
+	finalAmount: number;
+	currency: string;
+	paymentStatus: string;
+	status: string;
+	createdAt: string;
+	user?: { name: string; email: string };
+	productSnapshot?: { title: string };
 }
 
 interface Blog {
@@ -75,41 +90,51 @@ export default function AdminPanel() {
 		totalRevenue: 0,
 		totalBlogs: 0,
 		pendingBlogs: 0,
+		totalMarketplaceValue: 0,
+		verifiedUsers: 0,
 	});
+	const [recentOrders, setRecentOrders] = useState<Order[]>([]);
 
 	const fetchData = async () => {
 		try {
-			if (!user) {
-				return;
-			}
-			// Fetch listings, users, and blogs in parallel
-			const [listingsResponse, usersResponse, blogsResponse] = await Promise.all([
-				axios.get(`/api/admin/all-listings?adminId=${user?._id}`),
-				axios.get(`/api/admin/users?adminId=${user?._id}`),
+			if (!user) return;
+			setLoading(true);
+
+			// Fetch all necessary data in parallel
+			const [listingsRes, usersRes, blogsRes, ordersRes] = await Promise.all([
+				axios.get(`/api/admin/all-listings?adminId=${user?._id}&limit=10`),
+				axios.get(`/api/admin/users?adminId=${user?._id}&limit=10`),
 				axios.get(`/api/blogs`),
+				axios.get(`/api/admin/orders?limit=5`),
 			]);
 
-			const allListings: Listing[] = listingsResponse.data || [];
-			const allUsers = usersResponse.data || [];
-			const allBlogs: Blog[] = blogsResponse.data?.blogs || [];
+			const allListings = listingsRes.data.listings || [];
+			const listingStats = listingsRes.data.stats || {};
+			const allUsers = usersRes.data.users || [];
+			const userStats = usersRes.data.stats || {};
+			const allBlogs = blogsRes.data.blogs || [];
+			const orders = ordersRes.data.orders || [];
+			const orderStats = ordersRes.data.stats || {};
 
 			setListings(allListings);
 			setBlogs(allBlogs);
+			setRecentOrders(orders);
 
-			// Calculate stats
-			const totalRevenue = allListings.reduce((sum: number, l: Listing) => sum + (l.price || 0), 0);
 			setStats({
-				totalListings: allListings.length,
-				totalUsers: allUsers.length,
-				pendingListings: allListings.filter((l) => l.status === "pending").length,
-				activeListings: allListings.filter((l) => l.status === "active").length,
-				rejectedListings: allListings.filter((l) => l.status === "rejected").length,
-				totalRevenue: totalRevenue,
+				totalListings: listingStats.totalListings || 0,
+				totalUsers: userStats.totalUsers || 0,
+				pendingListings: listingStats.pendingListings || 0,
+				activeListings: listingStats.activeListings || 0,
+				rejectedListings: listingStats.rejectedListings || 0,
+				totalRevenue: orderStats.totalRevenue || 0,
 				totalBlogs: allBlogs.length,
-				pendingBlogs: allBlogs.filter((b) => b.status === "pending" || b.status === "draft").length,
+				pendingBlogs: allBlogs.filter((b: any) => b.status === "draft" || b.status === "pending").length,
+				totalMarketplaceValue: listingStats.totalMarketplaceValue || 0,
+				verifiedUsers: userStats.verifiedUsers || 0,
 			});
 		} catch (error) {
-			console.error("Failed to fetch data:", error);
+			console.error("Failed to fetch dashboard data:", error);
+			toast.error("Error loading dashboard metrics");
 		} finally {
 			setLoading(false);
 		}
@@ -183,22 +208,8 @@ export default function AdminPanel() {
 		return statusConfig[status as keyof typeof statusConfig] || statusConfig.draft;
 	};
 
-	// Get recent and pending items
-	const recentListing = listings
-		.filter((l) => l.status === "active")
-		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-	
-	const pendingListing = listings
-		.filter((l) => l.status === "pending")
-		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-	
-	const recentBlog = blogs
-		.filter((b) => b.status === "published")
-		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
-	
-	const pendingBlog = blogs
-		.filter((b) => b.status === "draft" || b.status === "pending")
-		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+	// Items for UI
+	const pendingItemsCount = stats.pendingListings + stats.pendingBlogs;
 
 	return (
 		<div className='flex min-h-[calc(100vh-85px)] bg-linear-to-br from-slate-50 via-white to-slate-100'>
@@ -207,394 +218,288 @@ export default function AdminPanel() {
 			{/* Main Content */}
 			<main className='flex-1 md:ml-64 p-4 md:p-6 lg:p-8'>
 				{/* Header */}
-				<div className='mb-8 mt-5 md:mt-0'>
-					<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-						<div className='flex items-center gap-3'>
-							<div className='w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
-								<Sparkles size={24} className='text-white' />
+				<div className='mb-10'>
+					<div className='flex flex-col md:flex-row md:items-center justify-between gap-6'>
+						<div className='flex items-center gap-4'>
+							<div className='w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center shadow-xl shadow-indigo-500/20'>
+								<Shield size={28} className='text-white' />
 							</div>
 							<div>
-								<h1 className='text-2xl md:text-3xl font-bold text-slate-900'>
-									Admin Dashboard
-								</h1>
-								<p className='text-slate-500 text-sm'>
-									Welcome back! Here's what's happening today.
-								</p>
+								<h1 className='text-3xl font-black text-slate-900 tracking-tight'>Command Center</h1>
+								<div className='flex items-center gap-2 mt-1'>
+									<span className='w-2 h-2 bg-emerald-500 rounded-full animate-pulse' />
+									<p className='text-slate-500 text-sm font-medium'>Platform status: Operational</p>
+								</div>
 							</div>
 						</div>
-
-
-					</div>
-				</div>
-
-				{/* Stats Grid */}
-				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8'>
-					{[
-						{
-							title: "Total Listings",
-							value: stats.totalListings,
-							change: "+12%",
-							changeType: "up",
-							icon: FileText,
-							gradient: "from-blue-500 to-blue-600",
-							bgGradient: "from-blue-50 to-indigo-50",
-							borderColor: "border-blue-200",
-						},
-						{
-							title: "Pending Review",
-							value: stats.pendingListings,
-							change: "+5",
-							changeType: "up",
-							icon: Clock,
-							gradient: "from-amber-500 to-orange-500",
-							bgGradient: "from-amber-50 to-orange-50",
-							borderColor: "border-amber-200",
-						},
-						{
-							title: "Active Listings",
-							value: stats.activeListings,
-							change: "+8%",
-							changeType: "up",
-							icon: CheckCircle,
-							gradient: "from-emerald-500 to-teal-500",
-							bgGradient: "from-emerald-50 to-teal-50",
-							borderColor: "border-emerald-200",
-						},
-						{
-							title: "Total Users",
-							value: stats.totalUsers,
-							change: "+15%",
-							changeType: "up",
-							icon: Users,
-							gradient: "from-violet-500 to-purple-500",
-							bgGradient: "from-violet-50 to-purple-50",
-							borderColor: "border-violet-200",
-						},
-					].map((stat, index) => {
-						const Icon = stat.icon;
-						return (
-							<Card 
-								key={index} 
-								className={`relative overflow-hidden bg-gradient-to-br ${stat.bgGradient} ${stat.borderColor} border shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group`}>
-								<CardContent className='p-6'>
-									<div className='flex items-start justify-between'>
-										<div>
-											<p className='text-slate-600 text-sm font-medium mb-1'>
-												{stat.title}
-											</p>
-											<p className='text-3xl font-bold text-slate-900 mb-2'>
-												{stat.value}
-											</p>
-											<div className='flex items-center gap-1'>
-												{stat.changeType === "up" ? (
-													<ArrowUpRight size={14} className='text-emerald-500' />
-												) : (
-													<ArrowDownRight size={14} className='text-rose-500' />
-												)}
-												<span className={`text-xs font-semibold ${stat.changeType === "up" ? "text-emerald-600" : "text-rose-600"}`}>
-													{stat.change}
-												</span>
-												<span className='text-xs text-slate-400 ml-1'>vs last month</span>
-											</div>
-										</div>
-										<div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-											<Icon size={22} className='text-white' />
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						);
-					})}
-				</div>
-				{/* Recent Activity Section */}
-				<div className='mb-8'>
-					<div className='flex items-center justify-between mb-6'>
-						<h2 className='text-xl font-bold text-slate-900 flex items-center gap-2'>
-							<Activity size={20} className='text-orange-500' />
-							Recent Activity
-						</h2>
-						<Link href='/admin/listings'>
-							<Button variant='ghost' className='text-orange-600 hover:text-orange-700 hover:bg-orange-50 gap-1'>
-								View All <ArrowUpRight size={16} />
+						<div className='flex items-center gap-2 bg-white/50 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/50 shadow-sm'>
+							<Button variant='ghost' size='sm' onClick={fetchData} className='rounded-xl gap-2 font-bold text-slate-600 hover:text-indigo-600'>
+								<RefreshCw size={16} /> Sync Data
 							</Button>
-						</Link>
+							<div className='h-4 w-[1px] bg-slate-200 mx-1' />
+							<Link href='/'>
+								<Button size='sm' className='bg-slate-900 text-white hover:bg-slate-800 rounded-xl font-bold gap-2'>
+									Live Site <ExternalLink size={14} />
+								</Button>
+							</Link>
+						</div>
 					</div>
-
-					{loading ? (
-						<div className='flex items-center justify-center py-12'>
-							<Loader2 className='animate-spin text-orange-500' size={32} />
-						</div>
-					) : (
-						<div className='grid lg:grid-cols-2 gap-6'>
-							{/* Recent Listing Card */}
-							{recentListing ? (
-								<Card className='bg-white border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden'>
-									<div className='h-1 bg-gradient-to-r from-orange-500 to-rose-500' />
-									<CardContent className='p-6'>
-										<div className='flex items-start justify-between mb-4'>
-											<div className='flex items-center gap-3'>
-												<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center'>
-													<Package size={20} className='text-white' />
-												</div>
-												<div>
-													<p className='text-xs text-slate-500 font-medium'>RECENT LISTING</p>
-													<h3 className='font-semibold text-slate-900 line-clamp-1'>{recentListing.title}</h3>
-												</div>
-											</div>
-											{(() => {
-												const statusConfig = getListingStatusBadge(recentListing.status);
-												const StatusIcon = statusConfig.icon;
-												return (
-													<div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${statusConfig.bg}`}>
-														<StatusIcon size={12} className={statusConfig.iconColor} />
-														<span className='text-xs font-semibold capitalize'>{recentListing.status}</span>
-													</div>
-												);
-											})()}
-										</div>
-										<p className='text-sm text-slate-600 line-clamp-2 mb-4'>{recentListing.description}</p>
-										<div className='flex items-center justify-between'>
-											<div className='flex items-center gap-4 text-sm'>
-												<span className='text-slate-500'>{recentListing.category}</span>
-												<span className='font-semibold text-emerald-600'>${recentListing.price?.toLocaleString()}</span>
-											</div>
-											<Link href={`/marketplace/${recentListing.slug || recentListing._id}`} target='_blank'>
-												<Button size='sm' variant='ghost' className='text-orange-600 hover:text-orange-700 hover:bg-orange-50 gap-1'>
-													View <ExternalLink size={14} />
-												</Button>
-											</Link>
-										</div>
-									</CardContent>
-								</Card>
-							) : (
-								<Card className='bg-slate-50 border-slate-200 border-dashed'>
-									<CardContent className='p-8 text-center'>
-										<Package size={40} className='mx-auto mb-3 text-slate-300' />
-										<p className='text-slate-500 font-medium'>No recent listings</p>
-									</CardContent>
-								</Card>
-							)}
-
-							{/* Recent Blog Card */}
-							{recentBlog ? (
-								<Card className='bg-white border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 group overflow-hidden'>
-									<div className='h-1 bg-gradient-to-r from-violet-500 to-purple-500' />
-									<CardContent className='p-6'>
-										<div className='flex items-start justify-between mb-4'>
-											<div className='flex items-center gap-3'>
-												<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
-													<Newspaper size={20} className='text-white' />
-												</div>
-												<div>
-													<p className='text-xs text-slate-500 font-medium'>RECENT BLOG</p>
-													<h3 className='font-semibold text-slate-900 line-clamp-1'>{recentBlog.title}</h3>
-												</div>
-											</div>
-											{(() => {
-												const statusConfig = getBlogStatusBadge(recentBlog.status);
-												const StatusIcon = statusConfig.icon;
-												return (
-													<div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${statusConfig.bg}`}>
-														<StatusIcon size={12} className={statusConfig.iconColor} />
-														<span className='text-xs font-semibold capitalize'>{recentBlog.status}</span>
-													</div>
-												);
-											})()}
-										</div>
-										<p className='text-sm text-slate-600 line-clamp-2 mb-4'>{recentBlog.excerpt}</p>
-										<div className='flex items-center justify-between'>
-											<span className='text-sm text-slate-500'>
-												By {recentBlog.author?.name || 'Unknown'}
-											</span>
-											<Link href={`/blogs/${recentBlog.slug || recentBlog._id}`} target='_blank'>
-												<Button size='sm' variant='ghost' className='text-violet-600 hover:text-violet-700 hover:bg-violet-50 gap-1'>
-													Read <ExternalLink size={14} />
-												</Button>
-											</Link>
-										</div>
-									</CardContent>
-								</Card>
-							) : (
-								<Card className='bg-slate-50 border-slate-200 border-dashed'>
-									<CardContent className='p-8 text-center'>
-										<Newspaper size={40} className='mx-auto mb-3 text-slate-300' />
-										<p className='text-slate-500 font-medium'>No recent blogs</p>
-									</CardContent>
-								</Card>
-							)}
-						</div>
-					)}
 				</div>
 
-				{/* Pending Review Section */}
-				{(pendingListing || pendingBlog) && (
-					<div className='mb-8'>
-						<div className='flex items-center justify-between mb-6'>
-							<h2 className='text-xl font-bold text-slate-900 flex items-center gap-2'>
-								<Clock size={20} className='text-amber-500' />
-								Pending Review
-								<span className='px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold'>
-									{stats.pendingListings + stats.pendingBlogs}
-								</span>
-							</h2>
+				{/* Primary Financial Stats */}
+				<div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-10'>
+					<Card className='md:col-span-2 bg-slate-900 border-slate-800 shadow-2xl overflow-hidden group'>
+						<div className='absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700'>
+							<DollarSign size={160} className='text-white' />
+						</div>
+						<CardContent className='p-8 relative z-10'>
+							<div className='flex flex-col md:flex-row md:items-end justify-between gap-6'>
+								<div>
+									<p className='text-indigo-300 text-xs font-black uppercase tracking-[0.2em] mb-4'>Estimated Platform Revenue</p>
+									<h2 className='text-5xl md:text-6xl font-black text-white mb-4 tracking-tighter'>
+										₹{stats.totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+									</h2>
+									<div className='flex items-center gap-3'>
+										<div className='flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full'>
+											<ArrowUpRight size={14} className='text-emerald-400' />
+											<span className='text-xs font-black text-emerald-400'>+24.8%</span>
+										</div>
+										<p className='text-slate-400 text-sm font-medium'>vs. previous 30 days</p>
+									</div>
+								</div>
+								<div className='grid grid-cols-2 gap-8 border-t md:border-t-0 md:border-l border-slate-800 pt-6 md:pt-0 md:pl-10'>
+									<div>
+										<p className='text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1'>Market Value</p>
+										<p className='text-xl font-black text-white'>₹{(stats.totalMarketplaceValue / 1000000).toFixed(1)}M</p>
+									</div>
+									<div>
+										<p className='text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1'>Growth Rate</p>
+										<p className='text-xl font-black text-white'>12.4%</p>
+									</div>
+								</div>
+							</div>
+						</CardContent>
+						<div className='h-1.5 w-full bg-slate-800'>
+							<div className='h-full bg-linear-to-r from-indigo-500 via-purple-500 to-rose-500 w-[78%]' />
+						</div>
+					</Card>
+
+					<Card className='bg-white border-slate-200 shadow-xl overflow-hidden relative'>
+						<div className='absolute -bottom-6 -right-6 text-slate-100 transform rotate-12 group-hover:rotate-0 transition-transform duration-500'>
+							<Users size={120} />
+						</div>
+						<CardContent className='p-8 relative z-10 h-full flex flex-col justify-between'>
+							<div>
+								<p className='text-slate-500 text-[10px] font-black uppercase tracking-widest mb-4'>User Ecosystem</p>
+								<h3 className='text-4xl font-black text-slate-900 tracking-tight mb-2'>{stats.totalUsers}</h3>
+								<div className='flex items-center gap-2 text-emerald-600 font-bold text-sm'>
+									<Zap size={14} /> 
+									<span>{stats.verifiedUsers} Verified Members</span>
+								</div>
+							</div>
+							<div className='mt-8 space-y-3'>
+								<div className='flex justify-between text-xs font-bold text-slate-500'>
+									<span>Verification Rate</span>
+									<span>{stats.totalUsers > 0 ? Math.round((stats.verifiedUsers / stats.totalUsers) * 100) : 0}%</span>
+								</div>
+								<div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden'>
+									<div className='h-full bg-indigo-600 rounded-full' style={{ width: `${stats.totalUsers > 0 ? (stats.verifiedUsers / stats.totalUsers) * 100 : 0}%` }} />
+								</div>
+								<Link href='/admin/users'>
+									<Button variant='outline' size='sm' className='w-full mt-4 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 rounded-xl text-[10px] tracking-widest uppercase'>Manage Directory</Button>
+								</Link>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+
+				<div className='grid lg:grid-cols-3 gap-8'>
+					{/* Activity Hub */}
+					<div className='lg:col-span-2 space-y-8'>
+						<div>
+							<div className='flex items-center justify-between mb-6'>
+								<h2 className='text-xl font-black text-slate-900 flex items-center gap-2'>
+									<Activity size={22} className='text-indigo-600' />
+									Recent Marketplace Activity
+								</h2>
+							</div>
+							
+							<div className='grid gap-4'>
+								{listings.slice(0, 3).map((listing) => {
+									const statusCfg = getListingStatusBadge(listing.status);
+									const SIcon = statusCfg.icon;
+									return (
+										<Card key={listing._id} className='bg-white border-slate-200 shadow-sm hover:shadow-md transition-all group p-4'>
+											<div className='flex items-center gap-4'>
+												<div className='w-14 h-14 rounded-xl overflow-hidden shrink-0 border border-slate-100 shadow-sm'>
+													<img src={listing.thumbnail || "/deelzobanner.png"} alt='' className='w-full h-full object-cover group-hover:scale-110 transition-transform duration-500' />
+												</div>
+												<div className='flex-1 min-w-0'>
+													<div className='flex items-center justify-between mb-1'>
+														<h4 className='font-bold text-slate-900 truncate pr-4'>{listing.title}</h4>
+														<span className='text-sm font-black text-slate-900'>₹{listing.price.toLocaleString()}</span>
+													</div>
+													<div className='flex items-center gap-3'>
+														<div className={`flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md border ${statusCfg.bg}`}>
+															<SIcon size={10} className={statusCfg.iconColor} /> {listing.status}
+														</div>
+														<span className='text-xs text-slate-400 font-medium'>By {listing.seller?.name || "Anonymous"}</span>
+														<span className='text-[10px] text-slate-300'>•</span>
+														<span className='text-xs text-slate-400 font-medium'>{new Date(listing.createdAt).toLocaleDateString()}</span>
+													</div>
+												</div>
+												<Link href={`/dashboard/edit-listing/${listing._id}`}>
+													<Button variant='ghost' size='sm' className='rounded-xl text-slate-400 hover:text-indigo-600'><MoreHorizontal size={20} /></Button>
+												</Link>
+											</div>
+										</Card>
+									);
+								})}
+								{listings.length === 0 && (
+									<div className='text-center py-10 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200'>
+										<Package size={40} className='mx-auto text-slate-300 mb-3' />
+										<p className='text-slate-500 font-bold'>No recent listings found</p>
+									</div>
+								)}
+								<Link href='/admin/listings'>
+									<Button variant='outline' className='w-full border-slate-200 text-slate-500 font-bold rounded-2xl hover:bg-slate-50 py-6'>
+										Access Full Marketplace Registry <ArrowRight size={16} className='ml-2' />
+									</Button>
+								</Link>
+							</div>
 						</div>
 
-						<div className='grid lg:grid-cols-2 gap-6'>
-							{/* Pending Listing */}
-							{pendingListing && (
-								<Card className='bg-white border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden'>
-									<div className='h-1 bg-gradient-to-r from-amber-500 to-orange-500' />
-									<CardContent className='p-6'>
-										<div className='flex items-start justify-between mb-4'>
-											<div className='flex items-center gap-3'>
-												<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center'>
-													<Package size={20} className='text-white' />
-												</div>
-												<div>
-													<p className='text-xs text-amber-600 font-medium'>PENDING LISTING</p>
-													<h3 className='font-semibold text-slate-900 line-clamp-1'>{pendingListing.title}</h3>
-												</div>
-											</div>
-											<div className='flex items-center gap-1.5 px-2.5 py-1 rounded-full border bg-amber-100 text-amber-700 border-amber-200'>
-												<Clock size={12} className='text-amber-600' />
-												<span className='text-xs font-semibold'>Pending</span>
-											</div>
-										</div>
-										<p className='text-sm text-slate-600 line-clamp-2 mb-4'>{pendingListing.description}</p>
-										<div className='flex items-center justify-between mb-4'>
-											<div className='flex items-center gap-4 text-sm'>
-												<span className='text-slate-500'>{pendingListing.category}</span>
-												<span className='font-semibold text-emerald-600'>${pendingListing.price?.toLocaleString()}</span>
-											</div>
-											<span className='text-xs text-slate-400'>
-												{new Date(pendingListing.createdAt).toLocaleDateString()}
-											</span>
-										</div>
-										<div className='flex gap-2'>
-											<Button
-												onClick={() => handleStatusUpdate(pendingListing._id, "active")}
-												className='flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white gap-2 shadow-lg shadow-emerald-500/20'>
-												<CheckCircle size={16} />
-												Approve
-											</Button>
-											<Button
-												onClick={() => handleStatusUpdate(pendingListing._id, "rejected")}
-												variant='outline'
-												className='flex-1 border-rose-200 text-rose-600 hover:bg-rose-50 hover:text-rose-700 gap-2'>
-												<XCircle size={16} />
-												Reject
-											</Button>
-										</div>
-									</CardContent>
-								</Card>
-							)}
-
-							{/* Pending Blog */}
-							{pendingBlog && (
-								<Card className='bg-white border-amber-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden'>
-									<div className='h-1 bg-gradient-to-r from-violet-500 to-purple-500' />
-									<CardContent className='p-6'>
-										<div className='flex items-start justify-between mb-4'>
-											<div className='flex items-center gap-3'>
-												<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center'>
-													<Newspaper size={20} className='text-white' />
-												</div>
-												<div>
-													<p className='text-xs text-violet-600 font-medium'>PENDING BLOG</p>
-													<h3 className='font-semibold text-slate-900 line-clamp-1'>{pendingBlog.title}</h3>
-												</div>
-											</div>
-											{(() => {
-												const statusConfig = getBlogStatusBadge(pendingBlog.status);
-												const StatusIcon = statusConfig.icon;
-												return (
-													<div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${statusConfig.bg}`}>
-														<StatusIcon size={12} className={statusConfig.iconColor} />
-														<span className='text-xs font-semibold capitalize'>{pendingBlog.status}</span>
+						{/* Recent Transactions (Orders) */}
+						<div>
+							<h2 className='text-xl font-black text-slate-900 flex items-center gap-2 mb-6'>
+								<BarChart3 size={22} className='text-emerald-600' />
+								Latest Platform Transactions
+							</h2>
+							<div className='bg-white rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/20 overflow-hidden'>
+								<table className='w-full text-left'>
+									<thead className='bg-slate-50 border-b border-slate-100'>
+										<tr>
+											<th className='px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>Identity</th>
+											<th className='px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>Amount</th>
+											<th className='px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest'>Status</th>
+										</tr>
+									</thead>
+									<tbody className='divide-y divide-slate-50'>
+										{recentOrders.map((order) => (
+											<tr key={order._id} className='hover:bg-slate-50/50 transition-colors'>
+												<td className='px-6 py-4'>
+													<div className='flex flex-col'>
+														<span className='text-xs font-black text-slate-900'>#{order.orderId}</span>
+														<span className='text-[10px] text-slate-500 font-medium'>{order.user?.name || "Member"}</span>
 													</div>
-												);
-											})()}
-										</div>
-										<p className='text-sm text-slate-600 line-clamp-2 mb-4'>{pendingBlog.excerpt}</p>
-										<div className='flex items-center justify-between mb-4'>
-											<span className='text-sm text-slate-500'>
-												By {pendingBlog.author?.name || 'Unknown'}
-											</span>
-											<span className='text-xs text-slate-400'>
-												{new Date(pendingBlog.createdAt).toLocaleDateString()}
-											</span>
-										</div>
-										<div className='flex gap-2'>
-											<Link href={`/admin/blogs`} className='flex-1'>
-												<Button className='w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white gap-2 shadow-lg shadow-violet-500/20'>
-													<ExternalLink size={16} />
-													Review
-												</Button>
-											</Link>
-										</div>
-									</CardContent>
-								</Card>
-							)}
+												</td>
+												<td className='px-6 py-4'>
+													<span className='text-xs font-black text-slate-900'>{order.currency === 'USD' ? '$' : '₹'}{order.finalAmount.toLocaleString()}</span>
+												</td>
+												<td className='px-6 py-4'>
+													<span className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${
+														order.paymentStatus === 'completed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'
+													}`}>
+														{order.paymentStatus}
+													</span>
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+								{recentOrders.length === 0 && (
+									<div className='text-center py-10 text-slate-400 text-sm font-medium'>No transactions logged</div>
+								)}
+							</div>
 						</div>
 					</div>
-				)}
 
-				{/* Additional Stats Row */}
-				<div className='grid grid-cols-2 md:grid-cols-4 mb-20 md:mb-0 gap-4'>
-					<Card className='bg-white border-slate-200 shadow-sm hover:shadow-md transition-all'>
-						<CardContent className='p-4'>
-							<div className='flex items-center gap-3'>
-								<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center'>
-									<Package size={18} className='text-white' />
+					{/* Action Center (Sidebar of Main) */}
+					<div className='space-y-8'>
+						<div className='bg-linear-to-br from-indigo-600 to-violet-700 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden'>
+							<div className='absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl' />
+							<div className='relative z-10'>
+								<h3 className='text-xl font-black mb-2 flex items-center gap-2'>
+									<AlertCircle size={22} /> Critical Tasks
+								</h3>
+								<p className='text-indigo-100 text-sm font-medium mb-6 opacity-80'>You have {pendingItemsCount} items awaiting your final approval.</p>
+								
+								<div className='space-y-4'>
+									<div className='flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10'>
+										<div className='flex items-center gap-3'>
+											<Package size={18} className='text-indigo-200' />
+											<span className='text-sm font-bold'>Pending Listings</span>
+										</div>
+										<span className='text-lg font-black'>{stats.pendingListings}</span>
+									</div>
+									<div className='flex items-center justify-between p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10'>
+										<div className='flex items-center gap-3'>
+											<Newspaper size={18} className='text-indigo-200' />
+											<span className='text-sm font-bold'>Blog Reviews</span>
+										</div>
+										<span className='text-lg font-black'>{stats.pendingBlogs}</span>
+									</div>
+								</div>
+
+								<Link href='/admin/listings?filter=pending'>
+									<Button className='w-full mt-8 bg-white text-indigo-600 hover:bg-slate-50 font-black rounded-2xl py-6 shadow-xl'>
+										START REVIEW <Zap size={16} className='ml-2' />
+									</Button>
+								</Link>
+							</div>
+						</div>
+
+						{/* Platform Efficiency */}
+						<Card className='bg-white border-slate-200 shadow-xl rounded-[2.5rem] p-8 overflow-hidden'>
+							<h3 className='text-lg font-black text-slate-900 mb-6 flex items-center gap-2'>
+								<TrendingUp size={20} className='text-rose-500' />
+								Activity Pulse
+							</h3>
+							
+							<div className='space-y-6'>
+								<div>
+									<div className='flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'>
+										<span>Marketplace Liquidity</span>
+										<span className='text-emerald-600'>84% Optimal</span>
+									</div>
+									<div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden'>
+										<div className='h-full bg-emerald-500 rounded-full w-[84%]' />
+									</div>
 								</div>
 								<div>
-									<p className='text-xs text-slate-500'>Total Blogs</p>
-									<p className='text-xl font-bold text-slate-900'>{stats.totalBlogs}</p>
+									<div className='flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'>
+										<span>Listing Approval Latency</span>
+										<span className='text-blue-600'>Fast</span>
+									</div>
+									<div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden'>
+										<div className='h-full bg-blue-500 rounded-full w-[92%]' />
+									</div>
+								</div>
+								<div>
+									<div className='flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2'>
+										<span>Member Verification</span>
+										<span className='text-violet-600'>Trending Up</span>
+									</div>
+									<div className='h-2 w-full bg-slate-100 rounded-full overflow-hidden'>
+										<div className='h-full bg-violet-500 rounded-full w-[67%]' />
+									</div>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
-					<Card className='bg-white border-slate-200 shadow-sm hover:shadow-md transition-all'>
-						<CardContent className='p-4'>
-							<div className='flex items-center gap-3'>
-								<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center'>
-									<Newspaper size={18} className='text-white' />
+
+							<div className='mt-8 pt-8 border-t border-slate-100 grid grid-cols-2 gap-4'>
+								<div className='p-4 bg-slate-50 rounded-2xl'>
+									<p className='text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1'>Rejected</p>
+									<p className='text-xl font-black text-slate-900'>{stats.rejectedListings}</p>
 								</div>
-								<div>
-									<p className='text-xs text-slate-500'>Pending Blogs</p>
-									<p className='text-xl font-bold text-slate-900'>{stats.pendingBlogs}</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-					<Card className='bg-white border-slate-200 shadow-sm hover:shadow-md transition-all'>
-						<CardContent className='p-4'>
-							<div className='flex items-center gap-3'>
-								<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center'>
-									<XCircle size={18} className='text-white' />
-								</div>
-								<div>
-									<p className='text-xs text-slate-500'>Rejected</p>
-									<p className='text-xl font-bold text-slate-900'>{stats.rejectedListings}</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-					<Card className='bg-white border-slate-200 shadow-sm hover:shadow-md transition-all'>
-						<CardContent className='p-4'>
-							<div className='flex items-center gap-3'>
-								<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center'>
-									<Eye size={18} className='text-white' />
-								</div>
-								<div>
-									<p className='text-xs text-slate-500'>Active Rate</p>
-									<p className='text-xl font-bold text-slate-900'>
+								<div className='p-4 bg-slate-50 rounded-2xl'>
+									<p className='text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1'>Active Rate</p>
+									<p className='text-xl font-black text-slate-900'>
 										{stats.totalListings > 0 ? Math.round((stats.activeListings / stats.totalListings) * 100) : 0}%
 									</p>
 								</div>
 							</div>
-						</CardContent>
-					</Card>
+						</Card>
+					</div>
 				</div>
 			</main>
 		</div>

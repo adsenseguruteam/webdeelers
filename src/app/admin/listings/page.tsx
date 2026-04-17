@@ -26,13 +26,21 @@ import {
 	Users,
 	MapPin,
 	Link as LinkIcon,
-	Image as ImageIcon,
+	ChevronLeft,
+	ChevronRight,
+	Tag,
+	Activity,
+	Layers,
+	ShieldCheck,
+	History,
+	HardDrive,
 } from "lucide-react";
 import AdminSidebar from "@/components/admin-sidebar";
 import { toast } from "sonner";
 import { userContext } from "@/context/userContext";
 import axios from "axios";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminListingsPage() {
 	const { user } = userContext();
@@ -40,27 +48,36 @@ export default function AdminListingsPage() {
 	const [loading, setLoading] = useState(true);
 	const [filter, setFilter] = useState("all");
 	const [searchTerm, setSearchTerm] = useState("");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [paginationData, setPaginationData] = useState<any>(null);
+	const [statsData, setStatsData] = useState<any>(null);
 	const [deleting, setDeleting] = useState<any>(null);
 	const [updating, setUpdating] = useState<any>(null);
 
 	const fetchListings = async () => {
 		try {
-			if (!user) {
-				return;
-			}
+			if (!user) return;
+			setLoading(true);
 			const response = await axios.get(
-				`/api/admin/all-listings?adminId=${user?._id}`
+				`/api/admin/all-listings?adminId=${user?._id}&page=${currentPage}&search=${searchTerm}&filter=${filter}&limit=15`
 			);
-			setListings(response.data);
+			setListings(response.data.listings || []);
+			setPaginationData(response.data.pagination);
+			setStatsData(response.data.stats);
 		} catch (error) {
 			console.error("Failed to fetch listings:", error);
 		} finally {
 			setLoading(false);
 		}
 	};
+
 	useEffect(() => {
 		fetchListings();
-	}, [user]);
+	}, [user, currentPage, searchTerm, filter]);
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [searchTerm, filter]);
 
 	const handleDeleteListing = async (listingId: string) => {
 		if (!window.confirm("Are you sure you want to delete this listing?"))
@@ -143,36 +160,14 @@ export default function AdminListingsPage() {
 		return configs[status] || configs.draft;
 	};
 
-	const filteredListings = listings.filter((listing: any) => {
-		const matchesStatus = filter === "all" || listing.status === filter;
-		const matchesSearch =
-			searchTerm === "" ||
-			listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			listing.category
-				?.toLowerCase()
-				.includes(searchTerm.toLowerCase()) ||
-			listing.description
-				?.toLowerCase()
-				.includes(searchTerm.toLowerCase()) ||
-			listing.seller?.name
-				?.toLowerCase()
-				.includes(searchTerm.toLowerCase());
-		return matchesStatus && matchesSearch;
-	});
+	const filteredListings = listings;
 
-	const totalListings = listings.length;
-	const activeListings = listings.filter(
-		(l: any) => l.status === "active"
-	).length;
-	const pendingListings = listings.filter(
-		(l: any) => l.status === "pending"
-	).length;
-	const rejectedListings = listings.filter(
-		(l: any) => l.status === "rejected"
-	).length;
-	const soldListings = listings.filter(
-		(l: any) => l.status === "sold"
-	).length;
+	const totalListingsCount = statsData?.totalListings || 0;
+	const activeListingsCount = statsData?.activeListings || 0;
+	const pendingListingsCount = statsData?.pendingListings || 0;
+	const rejectedListingsCount = statsData?.rejectedListings || 0;
+	const soldListingsCount = statsData?.soldListings || 0;
+	const totalMarketplaceValue = statsData?.totalMarketplaceValue || 0;
 
 	return (
 		<div className='flex min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-100'>
@@ -210,121 +205,113 @@ export default function AdminListingsPage() {
 				</div>
 
 				{/* Stats */}
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 mb-8'>
-					<Card className='bg-linear-to-br from-white to-blue-50/30 border border-blue-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mb-8'>
+					<Card className='bg-linear-to-br from-slate-900 to-slate-800 border-none shadow-xl relative overflow-hidden group'>
+						<div className='absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors' />
 						<CardContent className='p-6'>
-							<div className='flex items-center justify-between'>
+							<div className='flex items-center justify-between relative z-10'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Total Listings
+									<p className='text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Market Value
 									</p>
-									<p className='text-3xl font-bold text-slate-900 mb-1'>
-										{totalListings}
+									<p className='text-2xl font-black text-white mb-1'>
+										${totalMarketplaceValue.toLocaleString()}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
-										<FileText size={12} />
-										<span>All listings</span>
+									<div className='flex items-center gap-1 text-xs text-emerald-400 uppercase font-black'>
+										<TrendingUp size={12} />
+										<span>Live Value</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20'>
-									<FileText
-										size={24}
-										className='text-white'
-									/>
+								<div className='w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10'>
+									<DollarSign size={20} className='text-emerald-400' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-emerald-50/30 border border-emerald-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
-						<CardContent className='p-6'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
+						<CardContent className='p-6 cursor-default transition-colors'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Active Listings
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Active Inventory
 									</p>
-									<p className='text-3xl font-bold text-emerald-600 mb-1'>
-										{activeListings}
+									<p className='text-3xl font-black text-slate-900 mb-1'>
+										{activeListingsCount}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
-										<CheckCircle size={12} />
-										<span>Published</span>
+									<div className='flex items-center gap-1.5 text-xs text-sky-600 font-bold'>
+										<Globe size={12} />
+										<span>Public Views</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/20'>
-									<CheckCircle
-										size={24}
-										className='text-white'
-									/>
+								<div className='w-12 h-12 rounded-xl bg-sky-50 flex items-center justify-center group-hover:bg-sky-500 transition-all duration-300'>
+									<Globe size={20} className='text-sky-500 group-hover:text-white transition-colors' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-amber-50/30 border border-amber-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
 										Pending Review
 									</p>
-									<p className='text-3xl font-bold text-amber-600 mb-1'>
-										{pendingListings}
+									<p className='text-3xl font-black text-amber-600 mb-1'>
+										{pendingListingsCount}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
+									<div className='flex items-center gap-1.5 text-xs text-amber-600 font-bold'>
 										<Clock size={12} />
-										<span>Awaiting</span>
+										<span>Needs Approval</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20'>
-									<Clock size={24} className='text-white' />
+								<div className='w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center group-hover:bg-amber-500 transition-all duration-300'>
+									<Clock size={20} className='text-amber-500 group-hover:text-white transition-colors' />
 								</div>
 							</div>
 						</CardContent>
 					</Card>
 
-					<Card className='bg-linear-to-br from-white to-rose-50/30 border border-rose-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
 						<CardContent className='p-6'>
 							<div className='flex items-center justify-between'>
 								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Rejected
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Successful Sales
 									</p>
-									<p className='text-3xl font-bold text-rose-600 mb-1'>
-										{rejectedListings}
+									<p className='text-3xl font-black text-blue-600 mb-1'>
+										{soldListingsCount}
 									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
-										<XCircle size={12} />
-										<span>Rejected</span>
-									</div>
-								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-rose-400 to-rose-600 flex items-center justify-center shadow-lg shadow-rose-500/20'>
-									<XCircle size={24} className='text-white' />
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					<Card className='bg-linear-to-br from-white to-cyan-50/30 border border-cyan-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1'>
-						<CardContent className='p-6'>
-							<div className='flex items-center justify-between'>
-								<div className='flex-1'>
-									<p className='text-slate-600 text-sm font-medium mb-1'>
-										Sold Listings
-									</p>
-									<p className='text-3xl font-bold text-cyan-600 mb-1'>
-										{soldListings}
-									</p>
-									<div className='flex items-center gap-1 text-xs text-slate-500'>
+									<div className='flex items-center gap-1.5 text-xs text-blue-600 font-bold'>
 										<ShoppingBag size={12} />
-										<span>Sold</span>
+										<span>Transferred</span>
 									</div>
 								</div>
-								<div className='w-14 h-14 rounded-xl bg-linear-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/20'>
-									<ShoppingBag
-										size={24}
-										className='text-white'
-									/>
+								<div className='w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 transition-all duration-300'>
+									<ShoppingBag size={20} className='text-blue-500 group-hover:text-white transition-colors' />
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					<Card className='bg-white border-slate-200 shadow-xl shadow-slate-200/20 hover:shadow-slate-300/30 transition-all duration-300 relative overflow-hidden group'>
+						<CardContent className='p-6'>
+							<div className='flex items-center justify-between'>
+								<div className='flex-1'>
+									<p className='text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1'>
+										Total Impact
+									</p>
+									<p className='text-3xl font-black text-slate-900 mb-1'>
+										{totalListingsCount}
+									</p>
+									<div className='flex items-center gap-1.5 text-xs text-slate-500 font-bold'>
+										<FileText size={12} />
+										<span>Total Requests</span>
+									</div>
+								</div>
+								<div className='w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center group-hover:bg-slate-900 transition-all duration-300'>
+									<FileText size={20} className='text-slate-600 group-hover:text-white transition-colors' />
 								</div>
 							</div>
 						</CardContent>
@@ -332,39 +319,33 @@ export default function AdminListingsPage() {
 				</div>
 
 				{/* Filter Tabs */}
-				<div className='flex w-[360px] md:w-full items-center gap-3 mb-6 overflow-x-auto pb-2'>
-					<div className='flex items-center gap-2 text-slate-600 text-sm font-medium'>
-						<Filter size={18} />
-						<span>Filter:</span>
-					</div>
+				<div className='flex w-full items-center gap-2 mb-8 overflow-x-auto pb-4'>
 					{["all", "active", "pending", "rejected", "sold"].map(
 						(status) => {
-							const count =
-								status === "all"
-									? listings.length
-									: listings.filter(
-											(l: any) => l.status === status
-									  ).length;
+							const counts: any = {
+								all: totalListingsCount,
+								active: activeListingsCount,
+								pending: pendingListingsCount,
+								rejected: rejectedListingsCount,
+								sold: soldListingsCount,
+							};
+							const active = filter === status;
 							return (
-								<Button
+								<button
 									key={status}
 									onClick={() => setFilter(status)}
-									variant='ghost'
-									className={`relative cursor-pointer transition-all duration-200 gap-2 h-10 px-4 ${
-										filter === status
-											? "bg-linear-to-r from-sky-500 to-blue-500 text-white shadow-lg shadow-sky-500/30 hover:from-sky-600 hover:to-blue-600"
-											: "border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 hover:border-slate-300"
+									className={`flex items-center gap-3 px-5 py-2.5 rounded-xl text-sm font-bold transition-all border whitespace-nowrap ${
+										active
+											? "bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-900/20"
+											: "bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
 									}`}>
-									<span className='font-medium'>
-										{status.charAt(0).toUpperCase() +
-											status.slice(1)}
+									<span className='capitalize'>
+										{status}
 									</span>
-									{filter === status && (
-										<span className='ml-1 px-1.5 py-0.5 bg-white/20 rounded-full text-xs font-semibold'>
-											{count}
-										</span>
-									)}
-								</Button>
+									<span className={`px-2 py-0.5 rounded-lg text-[10px] ${active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"}`}>
+										{counts[status]}
+									</span>
+								</button>
 							);
 						}
 					)}
@@ -393,349 +374,162 @@ export default function AdminListingsPage() {
 							return (
 								<Card
 									key={listing._id}
-									className='bg-white w-[360px] md:w-full border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 '>
-									<CardContent className='p-6'>
-										<div className='flex flex-col lg:flex-row gap-6'>
-											{/* Thumbnail Section */}
-
-											<div className='md:w-60'>
-												<div className='relative w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-100'>
-													<img
-														src={
-															listing.thumbnail ||
-															"/deelzobanner.png"
-														}
-														alt={listing.title}
-														className='w-full h-full max-h-[430px] object-cover group-hover:scale-105 transition-transform duration-300'
-													/>
-													<div className='absolute top-3 right-3'>
-														<div
-															className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${statusConfig.bg} shadow-sm`}>
-															<StatusIcon
-																size={14}
-																className={
-																	statusConfig.iconColor
-																}
-															/>
-															<span className='text-xs font-semibold capitalize'>
-																{listing.status}
-															</span>
-														</div>
+									className='bg-white overflow-hidden border border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-500 group'>
+									<CardContent className='p-0'>
+										<div className='flex flex-col lg:flex-row'>
+											{/* Thumbnail Section - More Compact */}
+											<div className='lg:w-60 relative overflow-hidden bg-slate-100 border-r border-slate-100 shrink-0'>
+												<Image
+													width={200}
+													height={100}
+													src={
+														listing.thumbnail ||
+														"/deelzobanner.png"
+													}
+													alt={listing.title}
+													className='h-65 w-60 object-cover transition-transform duration-700 group-hover:scale-110'
+												/>
+												<div className='absolute top-3 left-3'>
+													<span className='px-2 py-0.5 bg-white/95 backdrop-blur-md text-slate-900 rounded-md text-[9px] font-black uppercase tracking-widest shadow-sm border border-white'>
+														{listing.category}
+													</span>
+												</div>
+												<div className='absolute bottom-3 left-3'>
+													<div
+														className={`flex items-center gap-1 px-2 py-1 rounded-full backdrop-blur-md border shadow-lg ${statusConfig.bg.replace("bg-", "bg-opacity-90 bg-")}`}>
+														<StatusIcon
+															size={10}
+															className={
+																statusConfig.iconColor
+															}
+														/>
+														<span className='text-[9px] font-bold uppercase'>
+															{listing.status}
+														</span>
 													</div>
 												</div>
 											</div>
 
 											{/* Content Section */}
-											<div className='flex-1 min-w-0'>
-												{/* Header */}
-												<div className='mb-4'>
-													<h3 className='text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-sky-600 transition-colors'>
-														{listing.title}
-													</h3>
-													<p className='text-slate-600 mb-3 line-clamp-2'>
-														{listing.description}
-													</p>
-													<div className='flex items-center gap-3 flex-wrap'>
-														<span className='px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold border border-slate-200'>
-															{listing.category}
-														</span>
-														{listing.seller && (
-															<div className='flex items-center gap-2 text-sm text-slate-600'>
-																<Users
-																	size={14}
-																/>
-																<span>
-																	{
-																		listing
-																			.seller
-																			.name
-																	}
-																</span>
+											<div className='flex-1 p-5 md:p-6 lg:p-7 flex flex-col'>
+												<div className='flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4'>
+													<div className='flex-1 min-w-0'>
+														<h3 className='text-lg md:text-xl font-black text-slate-900 mb-1 leading-tight group-hover:text-blue-600 transition-colors truncate'>
+															{listing.title}
+														</h3>
+														<div className='flex items-center gap-3'>
+															<div className='flex items-center gap-1.5 text-[10px] font-bold text-slate-500'>
+																<Users size={12} className='text-slate-400' />
+																{listing.seller?.name || "Anonymous"}
 															</div>
-														)}
-													</div>
-												</div>
-
-												{/* Key Info Grid */}
-												<div className='grid grid-cols-2 md:grid-cols-4 gap-3 mb-4'>
-													<div className='bg-linear-to-br from-emerald-50 to-emerald-100/50 rounded-lg p-3 border border-emerald-100'>
-														<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-															<DollarSign
-																size={12}
-																className='text-emerald-600'
-															/>
-															Price
-														</p>
-														<p className='text-sm font-bold text-emerald-700'>
-															$
-															{listing.price?.toLocaleString() ||
-																"0"}
-														</p>
-													</div>
-													<div className='bg-slate-50 rounded-lg p-3 border border-slate-100'>
-														<p className='text-xs text-slate-500 mb-1 font-medium flex items-center gap-1'>
-															<EyeIcon
-																size={12}
-															/>
-															Views
-														</p>
-														<p className='text-sm font-bold text-slate-900'>
-															{listing.views || 0}
-														</p>
-													</div>
-													<div className='bg-slate-50 rounded-lg p-3 border border-slate-100'>
-														<p className='text-xs text-slate-500 mb-1 font-medium flex items-center gap-1'>
-															<TrendingUp
-																size={12}
-															/>
-															Bids
-														</p>
-														<p className='text-sm font-bold text-slate-900'>
-															{listing.bids
-																?.length || 0}
-														</p>
-													</div>
-													<div className='bg-slate-50 rounded-lg p-3 border border-slate-100'>
-														<p className='text-xs text-slate-500 mb-1 font-medium flex items-center gap-1'>
-															<Calendar
-																size={12}
-															/>
-															Created
-														</p>
-														<p className='text-sm font-bold text-slate-900'>
-															{listing.createdAt
-																? new Date(
-																		listing.createdAt
-																  ).toLocaleDateString()
-																: "N/A"}
-														</p>
-													</div>
-												</div>
-
-												{/* Metrics Section */}
-												{listing.metrics && (
-													<div className='grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-linear-to-br from-slate-50 to-blue-50/30 rounded-xl border border-slate-200 shadow-sm mb-4'>
-														{listing.metrics
-															.monthlyRevenue && (
-															<div className='bg-white/60 rounded-lg p-3 border border-white/80'>
-																<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-																	<DollarSign
-																		size={
-																			12
-																		}
-																		className='text-emerald-600'
-																	/>
-																	Monthly
-																	Revenue
-																</p>
-																<p className='text-sm font-bold text-slate-900'>
-																	$
-																	{listing.metrics.monthlyRevenue.toLocaleString()}
-																</p>
+															<span className='text-slate-200'>|</span>
+															<div className='flex items-center gap-1.5 text-[10px] font-bold text-slate-500'>
+																<Calendar size={12} className='text-slate-400' />
+																{new Date(listing.createdAt).toLocaleDateString()}
 															</div>
-														)}
-														{listing.metrics
-															.monthlyTraffic && (
-															<div className='bg-white/60 rounded-lg p-3 border border-white/80'>
-																<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-																	<EyeIcon
-																		size={
-																			12
-																		}
-																		className='text-blue-600'
-																	/>
-																	Monthly
-																	Traffic
-																</p>
-																<p className='text-sm font-bold text-slate-900'>
-																	{listing.metrics.monthlyTraffic.toLocaleString()}
-																</p>
-															</div>
-														)}
-														{listing.metrics
-															.followers && (
-															<div className='bg-white/60 rounded-lg p-3 border border-white/80'>
-																<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-																	<Users
-																		size={
-																			12
-																		}
-																		className='text-purple-600'
-																	/>
-																	Followers
-																</p>
-																<p className='text-sm font-bold text-slate-900'>
-																	{listing.metrics.followers.toLocaleString()}
-																</p>
-															</div>
-														)}
-														{listing.metrics
-															.country && (
-															<div className='bg-white/60 rounded-lg p-3 border border-white/80'>
-																<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-																	<MapPin
-																		size={
-																			12
-																		}
-																		className='text-rose-600'
-																	/>
-																	Country
-																</p>
-																<p className='text-sm font-bold text-slate-900'>
-																	{
-																		listing
-																			.metrics
-																			.country
-																	}
-																</p>
-															</div>
-														)}
-														{listing.metrics
-															.assetLink && (
-															<div className='bg-white/60 rounded-lg p-3 border border-white/80 col-span-2 md:col-span-4'>
-																<p className='text-xs text-slate-600 mb-1 font-medium flex items-center gap-1'>
-																	<LinkIcon
-																		size={
-																			12
-																		}
-																		className='text-sky-600'
-																	/>
-																	Asset Link
-																</p>
-																<a
-																	href={
-																		listing
-																			.metrics
-																			.assetLink
-																	}
-																	target='_blank'
-																	rel='noopener noreferrer'
-																	className='text-sm font-semibold text-sky-600 hover:text-sky-700 truncate block'>
-																	{
-																		listing
-																			.metrics
-																			.assetLink
-																	}
-																</a>
-															</div>
-														)}
-													</div>
-												)}
-
-												{/* Action Buttons */}
-												<div className='flex flex-wrap gap-2 pt-4 border-t border-slate-200'>
-													<Link
-														target='_blank'
-														href={`/marketplace/${
-															listing?.slug ||
-															listing?._id
-														}`}>
-														<Button
-															variant='outline'
-															size='sm'
-															className='border-slate-200 text-slate-700 hover:bg-slate-50 gap-1.5'>
-															<Eye size={16} />
-															Preview
-														</Button>
-													</Link>
-
-													<div className='relative group'>
-														<Button
-															variant='outline'
-															size='sm'
-															className='border-blue-200 text-blue-700 hover:bg-blue-50 gap-1.5'>
-															Status
-															<ChevronDown
-																size={16}
-															/>
-														</Button>
-														<div className='absolute left-0 mt-1 w-40 bg-white rounded-lg shadow-xl border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all'>
-															{[
-																"active",
-																"pending",
-																"sold",
-																"draft",
-																"rejected",
-															].map((status) => {
-																const config =
-																	getStatusConfig(
-																		status
-																	);
-																const Icon =
-																	config.icon;
-																return (
-																	<button
-																		key={
-																			status
-																		}
-																		onClick={() =>
-																			handleUpdateStatus(
-																				listing._id,
-																				status
-																			)
-																		}
-																		disabled={
-																			updating ===
-																			listing._id
-																		}
-																		className='w-full text-left cursor-pointer px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 first:rounded-t-lg last:rounded-b-lg transition-colors disabled:opacity-50 flex items-center gap-2'>
-																		<Icon
-																			size={
-																				14
-																			}
-																			className={
-																				config.iconColor
-																			}
-																		/>
-																		{status
-																			.charAt(
-																				0
-																			)
-																			.toUpperCase() +
-																			status.slice(
-																				1
-																			)}
-																	</button>
-																);
-															})}
 														</div>
 													</div>
+													<div className='md:text-right shrink-0'>
+														<p className='text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5'>Market Price</p>
+														<p className='text-2xl font-black text-slate-900'>${listing.price?.toLocaleString()}</p>
+													</div>
+												</div>
 
-													<Link
-														href={`/dashboard/edit-listing/${listing._id}`}>
+												{/* All Details Display Grid */}
+												<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6'>
+													{/* Metrics */}
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<Activity size={10} className='text-blue-500' />
+															Traffic
+														</p>
+														<p className='text-xs font-black text-slate-800'>{listing.metrics?.monthlyTraffic?.toLocaleString() || "N/A"}</p>
+													</div>
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<TrendingUp size={10} className='text-indigo-500' />
+															Offers
+														</p>
+														<p className='text-xs font-black text-slate-800'>{listing.bids?.length || 0}</p>
+													</div>
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<DollarSign size={10} className='text-emerald-500' />
+															Revenue
+														</p>
+														<p className='text-xs font-black text-slate-800'>${listing.metrics?.monthlyRevenue?.toLocaleString() || "0"}</p>
+													</div>
+													
+													{/* Technical Details */}
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<Tag size={10} className='text-sky-500' />
+															Niche
+														</p>
+														<p className='text-xs font-black text-slate-800 truncate' title={listing.details?.niche}>{listing.details?.niche || "N/A"}</p>
+													</div>
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<HardDrive size={10} className='text-rose-500' />
+															Source
+														</p>
+														<p className='text-xs font-black text-slate-800 truncate'>{listing.details?.trafficSource || "Organic"}</p>
+													</div>
+													<div className='bg-slate-50/50 rounded-xl p-2.5 border border-slate-100'>
+														<p className='text-[8px] font-black text-slate-400 uppercase mb-1.5 flex items-center gap-1'>
+															<Layers size={10} className='text-purple-500' />
+															Platform
+														</p>
+														<p className='text-xs font-black text-slate-800 truncate'>{listing.details?.platform || "Web"}</p>
+													</div>
+												</div>
+
+												<div className='flex flex-wrap items-center justify-between gap-4 pt-5 mt-auto border-t border-slate-100'>
+													<div className='flex flex-wrap gap-2'>
+														<Link target='_blank' href={`/marketplace/${listing.slug || listing._id}`}>
+															<Button variant='outline' size='sm' className='h-9 px-3 rounded-lg border-slate-200 text-slate-600 font-bold hover:bg-slate-50 text-[10px] gap-1.5'>
+																<Eye size={14} /> View
+															</Button>
+														</Link>
+														<Link href={`/dashboard/edit-listing/${listing._id}`}>
+															<Button variant='outline' size='sm' className='h-9 px-3 rounded-lg border-slate-200 text-slate-600 font-bold hover:bg-slate-50 text-[10px] gap-1.5'>
+																<Edit2 size={14} /> Edit
+															</Button>
+														</Link>
+													</div>
+
+													<div className='flex flex-wrap gap-2'>
+														<div className='relative group/status'>
+															<Button variant='outline' size='sm' className='h-9 px-3 rounded-lg border-blue-200 text-blue-700 font-bold hover:bg-blue-50 text-[10px] gap-1.5'>
+																Change Status <ChevronDown size={14} />
+															</Button>
+															<div className='absolute right-0 bottom-full mb-2 w-44 bg-white rounded-xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover/status:opacity-100 group-hover/status:visible transition-all duration-300 z-10 p-1.5'>
+																{["active", "pending", "sold", "draft", "rejected"].map((status) => {
+																	const config = getStatusConfig(status);
+																	const Icon = config.icon;
+																	return (
+																		<button
+																			key={status}
+																			onClick={() => handleUpdateStatus(listing._id, status)}
+																			className='w-full text-left cursor-pointer px-3 py-2 text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 rounded-lg transition-colors flex items-center justify-between'>
+																			<div className='flex items-center gap-2'>
+																				<Icon size={12} className={config.iconColor} />
+																				<span className='capitalize'>{status}</span>
+																			</div>
+																			{listing.status === status && <CheckCircle size={10} className='text-emerald-500' />}
+																		</button>
+																	);
+																})}
+															</div>
+														</div>
 														<Button
-															variant='outline'
+															variant='destructive'
 															size='sm'
-															className='border-sky-200 text-sky-700 hover:bg-sky-50 gap-1.5'>
-															<Edit2 size={16} />
-															Edit
+															onClick={() => handleDeleteListing(listing._id)}
+															className='h-9 px-4 rounded-lg bg-linear-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold text-[10px] gap-1.5 shadow-md shadow-rose-500/10'>
+															<Trash2 size={14} /> Delete
 														</Button>
-													</Link>
-
-													<Button
-														variant='destructive'
-														size='sm'
-														onClick={() =>
-															handleDeleteListing(
-																listing._id
-															)
-														}
-														disabled={
-															deleting ===
-															listing._id
-														}
-														className='bg-linear-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white gap-1.5 shadow-lg shadow-rose-500/20'>
-														{deleting ===
-														listing._id ? (
-															<Loader2
-																size={16}
-																className='animate-spin'
-															/>
-														) : (
-															<Trash2 size={16} />
-														)}
-														Delete
-													</Button>
+													</div>
 												</div>
 											</div>
 										</div>
@@ -763,6 +557,64 @@ export default function AdminListingsPage() {
 								)}
 							</CardContent>
 						</Card>
+					)}
+
+					{/* Pagination Footer */}
+					{paginationData && paginationData.totalPages > 1 && (
+						<div className='mt-8 px-6 py-6 bg-white border border-slate-200 rounded-2xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-6'>
+							<div className='text-xs font-bold text-slate-500 uppercase tracking-widest'>
+								Showing <span className='text-slate-900'>{(currentPage - 1) * 15 + 1}</span> to <span className='text-slate-900'>{Math.min(currentPage * 15, paginationData.totalListings)}</span> of <span className='text-slate-900'>{paginationData.totalListings}</span> Marketplace Assets
+							</div>
+							<div className='flex items-center gap-2'>
+								<Button
+									variant='outline'
+									size='sm'
+									onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+									disabled={currentPage === 1}
+									className='h-12 w-12 p-0 rounded-xl border-slate-200 text-slate-600 disabled:opacity-50 transition-all hover:bg-slate-50 hover:shadow-md'
+								>
+									<ChevronLeft size={20} />
+								</Button>
+								
+								<div className='flex items-center gap-1.5'>
+									{Array.from({ length: Math.min(5, paginationData.totalPages) }, (_, i) => {
+										let pageNum;
+										if (paginationData.totalPages <= 5) {
+											pageNum = i + 1;
+										} else {
+											if (currentPage <= 3) pageNum = i + 1;
+											else if (currentPage >= paginationData.totalPages - 2) pageNum = paginationData.totalPages - 4 + i;
+											else pageNum = currentPage - 2 + i;
+										}
+										
+										const active = currentPage === pageNum;
+										return (
+											<button
+												key={pageNum}
+												onClick={() => setCurrentPage(pageNum)}
+												className={`h-12 w-12 rounded-xl text-sm font-black transition-all ${
+													active
+														? "bg-slate-900 text-white shadow-2xl shadow-slate-900/40"
+														: "bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+												}`}
+											>
+												{pageNum}
+											</button>
+										);
+									})}
+								</div>
+
+								<Button
+									variant='outline'
+									size='sm'
+									onClick={() => setCurrentPage(prev => Math.min(paginationData.totalPages, prev + 1))}
+									disabled={currentPage === paginationData.totalPages}
+									className='h-12 w-12 p-0 rounded-xl border-slate-200 text-slate-600 disabled:opacity-50 transition-all hover:bg-slate-50 hover:shadow-md'
+								>
+									<ChevronRight size={20} />
+								</Button>
+							</div>
+						</div>
 					)}
 				</div>
 			</main>
