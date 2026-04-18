@@ -25,7 +25,6 @@ export async function GET(request) {
 		const page = parseInt(searchParams.get("page")) || 1;
 		const limit = parseInt(searchParams.get("limit")) || 10;
 		
-		// Build query
 		const query = { user: userId };
 		if (status) {
 			query.status = status;
@@ -35,7 +34,8 @@ export async function GET(request) {
 		
 		const [orders, total] = await Promise.all([
 			Order.find(query)
-				.populate("product", "title thumbnail slug")
+				.populate("user", "name email")
+				.populate("items.product")
 				.sort({ createdAt: -1 })
 				.skip(skip)
 				.limit(limit)
@@ -76,11 +76,8 @@ export async function POST(request) {
 
 		await connectDB();
 		
-		// Parse request body
 		const { 
-			productId, // Legacy single item
-			productSnapshot, // Legacy single item
-			items, // Multi-item array
+			items, // Array of { productId, quantity }
 			amount, 
 			finalAmount, 
 			currency, 
@@ -89,110 +86,82 @@ export async function POST(request) {
 			transactionId, 
 			paymentStatus, 
 			status, 
+			discountApplied,
 			deliveryStatus 
 		} = await request.json();
 
-		// Validate required fields
-		if ((!productId && (!items || items.length === 0)) || !finalAmount || !currency) {
+		if (!items || items.length === 0 || !finalAmount || !currency) {
 			return NextResponse.json(
 				{ success: false, message: "Missing required fields" },
 				{ status: 400 }
 			);
 		}
-		
-		// If amount is not provided, use finalAmount
-		const orderAmount = amount || finalAmount;
 
-		// Generate order ID
-		const orderId = `ORD-${Date.now()}`;
+		// Fetch products to create snapshots
+		const productIds = items.map(item => item.productId || item.product);
+		const productDocs = await Product.find({ _id: { $in: productIds } });
 
-		// Build order items
-		let orderItems = [];
-		let productTitles = [];
+		// Map items to snapshot structure
+		const orderItems = items.map(item => {
+			const product = productDocs.find(p => p._id.toString() === (item.productId || item.product).toString());
+			if (!product) throw new Error(`Product not found: ${item.productId}`);
 
-		if (items && items.length > 0) {
-			orderItems = items.map(item => ({
-				product: item.productId || item.product,
-				snapshot: item.snapshot || {
-					title: item.title,
-					price: item.price,
-					comparePrice: item.comparePrice,
-					thumbnail: item.thumbnail,
-					category: item.category,
-					currency: item.currency || currency
-				},
-				quantity: item.quantity || 1
-			}));
-			productTitles = items.map(item => item.title || item.snapshot?.title);
-		} else if (productId) {
-			// Handle legacy single-item format
-			const product = await Product.findById(productId);
-			if (!product) {
-				return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
-			}
-			orderItems = [{
-				product: productId,
-				snapshot: productSnapshot || {
+			return {
+				product: product._id,
+				quantity: item.quantity || 1,
+				snapshot: {
 					title: product.title,
 					price: product.price,
-					comparePrice: product.comparePrice,
+					currency: product.currency,
 					thumbnail: product.thumbnail,
 					category: product.category,
-					currency: product.currency || currency
-				},
-				quantity: 1
-			}];
-			productTitles = [product.title];
-		}
+				}
+			};
+		});
 
-		// Create order
+		const orderId = `ORD-${Date.now()}`;
+
 		const newOrder = new Order({
 			orderId,
 			user: userId,
-			items: orderItems,
-			// Keep legacy fields for backward compatibility if needed by other components
-			product: orderItems[0].product,
-			productSnapshot: orderItems[0].snapshot,
-			
-			amount: orderAmount,
+			items: orderItems,			
+			amount: amount || finalAmount,
 			finalAmount,
 			currency,
 			paymentMethod,
+			discountApplied: discountApplied || 0,
 			paymentStatus: paymentStatus || "processing",
 			status: status || "processing",
 			deliveryStatus: deliveryStatus || "pending",
 			couponCode: couponCode || null,
 			transactionId: transactionId || null,
-			createdAt: new Date(),
 		});
 
 		// Bulk increment salesCount
-		const productIds = orderItems.map(item => item.product);
 		await Product.updateMany(
 			{ _id: { $in: productIds } }, 
 			{ $inc: { salesCount: 1 } }
 		);
 
-		// send confirmation email to admin 
-		await sendEmail({
+		await newOrder.save();
+		
+		// Send confirmation email to admin (optional/background)
+		sendEmail({
 			to: EMAIL,
 			subject: `New Order: ${orderId}`,
 			html: `
 				<div style="font-family: sans-serif; padding: 20px;">
 					<h2>New Order Received</h2>
 					<p>Order ID: <strong>${orderId}</strong></p>
-					<p>Total Amount: <strong>${currency} ${finalAmount}</strong></p>
-					<p>Payment Method: <strong>${paymentMethod}</strong></p>
-					<hr/>
-					<h3>Items:</h3>
-					<ul>
-						${productTitles.map(title => `<li>${title}</li>`).join("")}
-					</ul>
+					<p>Total: <strong>${currency} ${finalAmount}</strong></p>
+					<p>Customer: <strong>${userId}</strong></p>
 				</div>
 			`,
-		});
+		}).catch(err => console.error("Email error:", err));
 
-		await newOrder.save();
+		// Clear user's cart on server if payment is being initiated/completed
+		const Cart = (await import("@/models/Cart")).default;
+		await Cart.findOneAndUpdate({ user: userId }, { $set: { items: [] } });
 
 		return NextResponse.json({
 			success: true,
@@ -200,8 +169,6 @@ export async function POST(request) {
 			order: {
 				_id: newOrder._id,
 				orderId: newOrder.orderId,
-				status: newOrder.status,
-				paymentStatus: newOrder.paymentStatus,
 			}
 		});
 	} catch (error) {

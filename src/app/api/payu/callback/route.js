@@ -112,6 +112,6 @@ export async function POST(request) {
 
 	} catch (error) {
 		console.error("Error processing PayU callback:", error);
-		return NextResponse.redirect(new URL("/shop?payment=failed", request.url), { status: 303 });
+		return NextResponse.redirect(new URL("/shop/cart?payment=failed", request.url), { status: 303 });
 	}
 }

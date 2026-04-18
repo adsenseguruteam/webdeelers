@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
 	Select,
 	SelectContent,
@@ -25,47 +24,50 @@ import {
 	Clock,
 	Download,
 	Package,
-	IndianRupee,
-	Eye,
+	LayoutGrid,
+	Hash,
+	Calendar,
+	ExternalLink,
+	Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import Link from "next/link";
 import AdminSidebar from "@/components/admin-sidebar";
+import InvoiceGenerator from "@/components/InvoiceGenerator";
+import Image from "next/image";
 
 interface Order {
 	_id: string;
 	orderId: string;
-	product: {
-		_id: string;
-		title: string;
-		thumbnail?: string;
-		slug: string;
-	};
-	productSnapshot: {
+	productSnapshot?: {
 		title: string;
 		price: number;
 		thumbnail?: string;
 		category?: string;
+		currency: string;
 	};
+	items?: {
+		product: string;
+		snapshot: {
+			title: string;
+			price: number;
+			thumbnail?: string;
+			category?: string;
+			currency: string;
+		};
+		quantity: number;
+	}[];
+	amount: number;
+	discountApplied?: number;
 	finalAmount: number;
 	currency: string;
-	paymentStatus:
-		| "pending"
-		| "completed"
-		| "failed"
-		| "refunded"
-		| "cancelled";
-	status: "pending" | "processing" | "completed" | "cancelled" | "refunded";
-	deliveryStatus: "pending" | "delivered" | "failed";
+	paymentStatus: string;
+	status: string;
 	createdAt: string;
 	paidAt?: string;
-	downloadExpiry?: string;
-	downloadCount?: number;
-	razorpay?: {
-		orderId?: string;
-		paymentId?: string;
-	};
+	transactionId?: string;
+	paymentMethod?: string;
 }
 
 export default function MyOrdersPage() {
@@ -79,12 +81,9 @@ export default function MyOrdersPage() {
 		try {
 			setLoading(true);
 			const params = new URLSearchParams();
-			if (selectedStatus !== "all")
-				params.append("status", selectedStatus);
+			if (selectedStatus !== "all") params.append("status", selectedStatus);
 
-			const response = await axios.get(
-				`/api/orders?${params.toString()}`,
-			);
+			const response = await axios.get(`/api/orders?${params.toString()}`);
 			setOrders(response.data.orders || []);
 		} catch (error) {
 			toast.error("Failed to fetch orders");
@@ -97,448 +96,263 @@ export default function MyOrdersPage() {
 		fetchOrders();
 	}, [selectedStatus]);
 
-	const getPaymentStatusBadge = (status: string) => {
-		switch (status) {
-			case "completed":
-				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium'>
-						<CheckCircle size={12} /> Paid
-					</span>
-				);
-			case "pending":
-				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium'>
-						<Clock size={12} /> Pending
-					</span>
-				);
-			case "failed":
-				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-medium'>
-						<XCircle size={12} /> Failed
-					</span>
-				);
-			case "refunded":
-				return (
-					<span className='flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium'>
-						<IndianRupee size={12} /> Refunded
-					</span>
-				);
-			default:
-				return null;
-		}
-	};
-
-	const getOrderStatusBadge = (status: string) => {
-		switch (status) {
-			case "completed":
-				return <Badge className='bg-emerald-500'>Completed</Badge>;
-			case "pending":
-				return <Badge className='bg-amber-500'>Pending</Badge>;
-			case "processing":
-				return <Badge className='bg-blue-500'>Processing</Badge>;
-			case "cancelled":
-				return <Badge className='bg-rose-500'>Cancelled</Badge>;
-			case "refunded":
-				return <Badge className='bg-slate-500'>Refunded</Badge>;
-			default:
-				return null;
-		}
-	};
-
-	const formatDate = (dateString: string) => {
-		return new Date(dateString).toLocaleDateString("en-IN", {
-			day: "numeric",
-			month: "short",
-			year: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-		});
-	};
-
-	const isDownloadAvailable = (order: Order) => {
+	const getStatusBadge = (status: string) => {
+		const colors = {
+			completed: "text-emerald-500",
+			pending: "text-amber-500",
+			failed: "text-rose-500",
+			processing: "text-blue-500",
+			cancelled: "text-slate-400",
+		};
+		const color = colors[status as keyof typeof colors] || colors.pending;
 		return (
-			order.paymentStatus === "completed" &&
-			order.deliveryStatus === "delivered"
-			// order.downloadExpiry &&
-			// new Date(order.downloadExpiry) > new Date()
+			<div className={`flex items-center gap-1.5 ${color}`}>
+				<div className={`w-1.5 h-1.5 rounded-full bg-current mr-1`} />
+				<span className="text-[10px] font-black uppercase tracking-widest">{status}</span>
+			</div>
 		);
 	};
 
-	const handleDownload = async (order: Order) => {
+	const formatDate = (dateString: string) => {
+		return new Date(dateString).toLocaleDateString("en-US", {
+			day: "numeric",
+			month: "short",
+			year: "numeric"
+		}).toUpperCase();
+	};
+
+	const handleDownload = async (order: Order, productId: string) => {
 		try {
-			// Get the product ID from the order
-			const productId = order.product._id || (order as any).product;
-
-			// Get download URL from the new API
-			const response = await axios.get(
-				`/api/products/${productId}/download`,
-			);
-
+			const response = await axios.get(`/api/products/${productId}/download`);
 			if (response.data.success) {
-				const { downloadUrl, type } = response.data;
-
-				if (type === "upload") {
-					// For uploaded files, open in new tab
-					window.open(downloadUrl, "_blank");
-				} else if (type === "link") {
-					// For external links, open in new tab
-					window.open(downloadUrl, "_blank");
-				}
-
+				window.open(response.data.downloadUrl, "_blank");
 				toast.success("Download started!");
 			} else {
 				toast.error(response.data.message || "Download not available");
 			}
 		} catch (error: any) {
-			console.error("Download error:", error);
-			toast.error(
-				error.response?.data?.message || "Failed to initiate download",
-			);
+			toast.error(error.response?.data?.message || "Download failed");
 		}
 	};
 
+	const getOrderItems = (order: Order) => {
+		if (order.items && order.items.length > 0) return order.items;
+		if (order.productSnapshot) return [{ snapshot: order.productSnapshot, quantity: 1, product: "" }];
+		return [];
+	};
+
 	return (
-		<div className='min-h-[calc(100vh-84px)] bg-gradient-to-br from-slate-50 via-white to-slate-100 py-8'>
+		<div className='min-h-screen bg-white'>
 			<AdminSidebar role='user' />
-			<div className=' md:ml-64 mx-auto px-4 md:px-6 lg:px-8'>
-				{/* Header */}
-				<div className='mb-8'>
-					<div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-						<div className='flex items-center gap-3'>
-							<div className='w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-lg shadow-orange-500/25'>
-								<ShoppingBag size={24} className='text-white' />
-							</div>
-							<div>
-								<h1 className='text-2xl md:text-3xl font-bold text-slate-900'>
-									My Orders
-								</h1>
-								<p className='text-slate-500 text-sm'>
-									Track your purchases and downloads
-								</p>
-							</div>
+			<div className='md:ml-64 p-4 sm:p-10 lg:p-16'>
+				
+				{/* Integrated Header */}
+				<div className='max-w-6xl mx-auto mb-4'>
+					<div className='flex flex-col sm:flex-row sm:items-end justify-between gap-8 pb-8 border-b border-slate-100'>
+						<div>
+							<h1 className='text-4xl font-black text-slate-900 tracking-tighter mb-2'>Orders</h1>
+							<p className='text-slate-400 font-bold text-xs uppercase tracking-[0.2em]'>Manage purchases and access items</p>
 						</div>
-						<Select
-							value={selectedStatus}
-							onValueChange={setSelectedStatus}>
-							<SelectTrigger className='w-[160px]'>
-								<SelectValue placeholder='Filter by status' />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value='all'>All Orders</SelectItem>
-								<SelectItem value='completed'>
-									Completed
-								</SelectItem>
-								<SelectItem value='pending'>Pending</SelectItem>
-								<SelectItem value='processing'>
-									Processing
-								</SelectItem>
-							</SelectContent>
-						</Select>
+						<div className="flex items-center gap-4">
+							<Select value={selectedStatus} onValueChange={setSelectedStatus}>
+								<SelectTrigger className='w-[180px] h-11 rounded-xl border border-slate-100 bg-slate-50/50 font-black text-[9px] tracking-[0.2em] px-4'>
+									<SelectValue placeholder='FILTER STATUS' />
+								</SelectTrigger>
+								<SelectContent className="rounded-xl border-slate-100 shadow-2xl">
+									<SelectItem value='all'>ALL TRANSACTIONS</SelectItem>
+									<SelectItem value='completed'>COMPLETED</SelectItem>
+									<SelectItem value='pending'>PENDING</SelectItem>
+									<SelectItem value='processing'>PROCESSING</SelectItem>
+								</SelectContent>
+							</Select>
+						</div>
 					</div>
 				</div>
 
-				{/* Orders List */}
-				{loading ? (
-					<div className='flex items-center justify-center py-20'>
-						<Loader2
-							className='animate-spin text-orange-500'
-							size={40}
-						/>
-					</div>
-				) : orders.length === 0 ? (
-					<Card className='bg-white border-slate-200'>
-						<CardContent className='p-12 text-center'>
-							<ShoppingBag
-								size={64}
-								className='mx-auto mb-4 text-slate-300'
-							/>
-							<h3 className='text-xl font-semibold text-slate-900 mb-2'>
-								No orders yet
-							</h3>
-							<p className='text-slate-500 mb-6'>
-								Start shopping to see your orders here
-							</p>
+				<div className="max-w-6xl mb-24 mx-auto">
+					{loading ? (
+						<div className='flex flex-col items-center justify-center py-32 gap-6'>
+							<Loader2 className='animate-spin text-slate-900/10' size={48} />
+							<p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">Synching with registry...</p>
+						</div>
+					) : orders.length === 0 ? (
+						<div className='py-32 text-center flex flex-col items-center border-2 border-dashed border-slate-50 rounded-[3rem]'>
+							<div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-300 mb-6">
+								<ShoppingBag size={32} />
+							</div>
+							<h3 className='text-xl font-black text-slate-900 tracking-tight mb-2'>No Orders Found</h3>
+							<p className='text-slate-400 font-bold text-xs mb-8 uppercase tracking-widest'>Your purchase history is empty</p>
 							<Link href='/shop'>
-								<Button className='bg-gradient-to-r from-orange-500 to-rose-500'>
-									Browse Products
-								</Button>
+								<Button className='h-12 px-8 rounded-xl bg-slate-900 border-0 text-white font-black uppercase text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all'>Explore Shop</Button>
 							</Link>
-						</CardContent>
-					</Card>
-				) : (
-					<div className='space-y-4'>
-						{orders.map((order) => (
-							<Card
-								key={order._id}
-								className='bg-white border-slate-200 hover:shadow-lg transition-shadow'>
-								<CardContent className='p-6'>
-									<div className='flex flex-col md:flex-row gap-6'>
-										{/* Product Image */}
-										<div className='flex-shrink-0'>
-											{order.productSnapshot
-												?.thumbnail ? (
-												<img
-													src={
-														order.productSnapshot
-															.thumbnail
-													}
-													alt=''
-													className='w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover'
-												/>
-											) : (
-												<div className='w-24 h-24 md:w-32 md:h-32 rounded-xl bg-slate-200 flex items-center justify-center'>
-													<Package
-														size={32}
-														className='text-slate-400'
-													/>
-												</div>
-											)}
-										</div>
+						</div>
+					) : (
+						<div className='space-y-4'>
+							{/* Table Header Labels - Desktop only */}
+							<div className="hidden lg:grid grid-cols-12 gap-6 px-10 py-3 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] border-b border-slate-50">
+								<div className="col-span-1">Ref</div>
+								<div className="col-span-5">Product Details</div>
+								<div className="col-span-2 text-center">Date</div>
+								<div className="col-span-2 text-center">Status</div>
+								<div className="col-span-2 text-right">Total</div>
+							</div>
 
-										{/* Order Details */}
-										<div className='flex-1 min-w-0'>
-											<div className='flex flex-col md:flex-row md:items-start md:justify-between gap-4'>
-												<div>
-													<div className='flex items-center gap-3 mb-2'>
-														<span className='font-mono text-sm text-slate-500'>
-															{order.orderId}
-														</span>
-														{getPaymentStatusBadge(
-															order.paymentStatus,
-														)}
-													</div>
-													<h3 className='text-lg font-semibold text-slate-900 mb-1'>
-														{order.productSnapshot
-															?.title ||
-															"Product"}
-													</h3>
-													<p className='text-sm text-slate-500 mb-3'>
-														Ordered on{" "}
-														{formatDate(
-															order.createdAt,
-														)}
-													</p>
-													<div className='flex items-center gap-4'>
-														<span className='text-xl font-bold text-slate-900'>
-															{order.currency}{" "}
-															{order.finalAmount.toFixed(
-																2,
-															)}
-														</span>
-														{getOrderStatusBadge(
-															order.status,
-														)}
-													</div>
-												</div>
+							<div className="divide-y divide-slate-50">
+								{orders.map((order) => {
+									const items = getOrderItems(order);
+									const isCompleted = order.paymentStatus === "completed";
+									return (
+										<div 
+											key={order._id} 
+											onClick={() => { setViewingOrder(order); setIsViewDialogOpen(true); }}
+											className='group flex flex-col lg:grid lg:grid-cols-12 lg:items-center gap-6 px-4 py-8 lg:px-10 lg:py-6 bg-white hover:bg-slate-50/50 transition-all cursor-pointer border lg:border-0 rounded-3xl lg:rounded-none mb-4 lg:mb-0'
+										>
+											{/* Reference */}
+											<div className="col-span-1">
+												<span className="font-mono text-[10px] font-black text-slate-400 group-hover:text-slate-900 transition-colors uppercase">#{order.orderId.slice(-4)}</span>
+											</div>
 
-												<div className='flex flex-col gap-2'>
-													{isDownloadAvailable(
-														order,
-													) ? (
-														<Button
-															className='bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-															onClick={() =>
-																handleDownload(
-																	order,
-																)
-															}>
-															<Download
-																size={16}
-																className='mr-2'
-															/>
-															Download
-														</Button>
-													) : order.paymentStatus ===
-													  "pending" ? (
-														<Button
-															variant='outline'
-															disabled>
-															<Clock
-																size={16}
-																className='mr-2'
-															/>
-															Pending Payment
-														</Button>
-													) : (
-														<Button
-															variant='outline'
-															disabled>
-															<Package
-																size={16}
-																className='mr-2'
-															/>
-															Processing
-														</Button>
+											{/* Product info */}
+											<div className="col-span-5 flex items-center gap-5">
+												<div className='relative w-12 h-12 flex-shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 flex items-center justify-center'>
+													{items[0]?.snapshot?.thumbnail ? (
+														<Image src={items[0].snapshot.thumbnail} alt="" fill className='object-cover opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all' />
+													) : <Package size={20} className="text-slate-200" />}
+													{items.length > 1 && (
+														<div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center text-[10px] font-black text-white">+{items.length-1}</div>
 													)}
-													<Button
-														variant='ghost'
-														size='sm'
-														onClick={() => {
-															setViewingOrder(
-																order,
-															);
-															setIsViewDialogOpen(
-																true,
-															);
-														}}>
-														<Eye
-															size={16}
-															className='mr-2'
-														/>
-														View Details
+												</div>
+												<div className="min-w-0">
+													<p className='text-[13px] font-black text-slate-900 truncate leading-none mb-1'>{items.length > 1 ? `${items[0].snapshot.title} & Bundle` : items[0]?.snapshot?.title}</p>
+													<p className='text-[10px] font-bold text-slate-400 uppercase tracking-widest'>{items[0]?.snapshot?.category || "DIGITAL ASSET"}</p>
+												</div>
+											</div>
+
+											{/* Date */}
+											<div className="col-span-2 lg:text-center">
+												<p className='text-[10px] font-black text-slate-900 uppercase tracking-widest'>{formatDate(order.createdAt)}</p>
+											</div>
+
+											{/* Status */}
+											<div className="col-span-2 flex lg:justify-center">
+												{getStatusBadge(order.paymentStatus)}
+											</div>
+
+											{/* Total */}
+											<div className="col-span-2 text-right">
+												<div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-center gap-4">
+													<p className='text-base font-black text-slate-900'>{order.currency} {order.finalAmount.toLocaleString()}</p>
+													<div className="lg:hidden">
+														<LayoutGrid size={16} className="text-slate-300 transform group-hover:rotate-90 transition-transform" />
+													</div>
+												</div>
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					)}
+				</div>
+
+				{/* Refined Modular Detail Modal */}
+				<Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+					<DialogContent className='max-w-2xl rounded-[2.5rem] p-0 border-0 shadow-2xl overflow-hidden bg-white'>
+						{viewingOrder && (
+							<div className="flex flex-col h-full max-h-[90vh]">
+								{/* Sticky Modal Header */}
+								<div className="p-8 pb-6 border-b border-slate-50 flex items-center justify-between">
+									<div className="flex items-center gap-4">
+										<div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+											<CheckCircle size={20} />
+										</div>
+										<div>
+											<DialogTitle className="text-xl font-black text-slate-900 tracking-tight leading-none mb-1">Receipt Details</DialogTitle>
+											<p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Verify and access purchases</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-2">
+										<InvoiceGenerator order={viewingOrder as any} variant="icon" />
+									</div>
+								</div>
+
+								{/* Scrollable Content */}
+								<div className="p-8 space-y-10 overflow-y-auto no-scrollbar pb-12">
+									{/* Info Strip */}
+									<div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
+										<div className="space-y-1">
+											<p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">REF ID</p>
+											<p className="font-mono text-[10px] font-black text-slate-900 uppercase">#{viewingOrder.orderId}</p>
+										</div>
+										<div className="space-y-1">
+											<p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">DATE</p>
+											<p className="text-[10px] font-black text-slate-900 uppercase">{new Date(viewingOrder.createdAt).toLocaleDateString()}</p>
+										</div>
+										<div className="space-y-1">
+											<p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">GATEWAY</p>
+											<p className="text-[10px] font-black text-slate-900 uppercase">{viewingOrder.paymentMethod || "SECURE"}</p>
+										</div>
+										<div className="space-y-1">
+											<p className="text-[9px] font-black text-slate-400 uppercase tracking-wider">STATUS</p>
+											<div className="flex">{getStatusBadge(viewingOrder.paymentStatus)}</div>
+										</div>
+									</div>
+
+									{/* Item Breakdown */}
+									<div className="space-y-4">
+										<div className="flex items-center justify-between px-2">
+											<p className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Digital Licenses</p>
+											<p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{getOrderItems(viewingOrder).length} POSITIONS</p>
+										</div>
+										<div className="space-y-2">
+											{getOrderItems(viewingOrder).map((item, idx) => (
+												<div key={idx} className="group bg-white p-5 rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-center gap-6 transition-all hover:bg-slate-50/30">
+													<div className="w-14 h-14 rounded-xl bg-slate-50 flex-shrink-0 relative overflow-hidden">
+														{item.snapshot.thumbnail ? (
+															<Image fill src={item.snapshot.thumbnail} alt="" className="object-cover group-hover:scale-110 transition-transform duration-500" />
+														) : <Package size={20} className="text-slate-200" />}
+													</div>
+													<div className="flex-1 text-center sm:text-left">
+														<p className="text-[9px] font-black text-slate-300 tracking-widest uppercase mb-0.5">{item.snapshot.category || "ASSET"}</p>
+														<h4 className="text-[15px] font-black text-slate-900 leading-tight mb-1">{item.snapshot.title}</h4>
+														<p className="text-[10px] font-bold text-slate-400 italic">Universal Digital Rights Verified</p>
+													</div>
+													<Button 
+														size="sm" 
+														className="h-10 px-6 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black uppercase text-[10px] tracking-widest gap-2 shadow-sm"
+														onClick={() => handleDownload(viewingOrder, item.product)}
+													>
+														<Download size={12} /> Download
 													</Button>
 												</div>
+											))}
+										</div>
+									</div>
+
+									{/* Total Financial Block */}
+									<div className="bg-slate-900 rounded-[2.5rem] p-8 sm:p-10 text-white relative overflow-hidden shadow-2xl">
+										<div className="absolute top-0 right-0 p-8 opacity-5 scale-150 rotate-12"><Shield size={100} /></div>
+										<div className="flex flex-col sm:flex-row justify-between items-end gap-6 relative z-10">
+											<div>
+												<p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-2">Funds Remitted</p>
+												<p className="text-5xl font-black tracking-tighter">
+													<span className="text-base font-medium text-white/30 mr-2">{viewingOrder.currency}</span>
+													{viewingOrder.finalAmount.toLocaleString()}
+												</p>
+											</div>
+											<div className="flex flex-col items-center sm:items-end gap-3 w-full sm:w-auto">
+												<div className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-500/20">SETTLED</div>
+												<p className="text-[9px] font-mono text-white/20 uppercase tracking-tighter break-all">TXID: {viewingOrder.transactionId || "INTERNAL_LEDGER"}</p>
 											</div>
 										</div>
 									</div>
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				)}
 
-				{/* View Order Dialog */}
-				<Dialog
-					open={isViewDialogOpen}
-					onOpenChange={setIsViewDialogOpen}>
-					<DialogContent className='max-w-2xl'>
-						<DialogHeader>
-							<DialogTitle>Order Details</DialogTitle>
-						</DialogHeader>
-						{viewingOrder && (
-							<div className='space-y-6'>
-								{/* Order Header */}
-								<div className='flex items-center justify-between p-4 bg-slate-50 rounded-xl'>
-									<div>
-										<p className='text-sm text-slate-500'>
-											Order ID
-										</p>
-										<p className='font-mono font-medium text-slate-900'>
-											{viewingOrder.orderId}
-										</p>
-									</div>
-									<div className='text-right'>
-										<p className='text-sm text-slate-500'>
-											Status
-										</p>
-										{getOrderStatusBadge(
-											viewingOrder.status,
-										)}
-									</div>
-								</div>
-
-								{/* Product Details */}
-								<div className='flex gap-4'>
-									{viewingOrder.productSnapshot?.thumbnail ? (
-										<img
-											src={
-												viewingOrder.productSnapshot
-													.thumbnail
-											}
-											alt=''
-											className='w-24 h-24 rounded-xl object-cover'
-										/>
-									) : (
-										<div className='w-24 h-24 rounded-xl bg-slate-200 flex items-center justify-center'>
-											<Package
-												size={32}
-												className='text-slate-400'
-											/>
-										</div>
-									)}
-									<div className='flex-1'>
-										<h3 className='font-semibold text-slate-900 mb-1'>
-											{viewingOrder.productSnapshot
-												?.title || "N/A"}
-										</h3>
-										<div className='flex items-center gap-4'>
-											<span className='text-lg font-bold text-slate-900'>
-												{viewingOrder.currency}{" "}
-												{viewingOrder.finalAmount.toFixed(
-													2,
-												)}
-											</span>
-										</div>
-									</div>
-								</div>
-
-								{/* Payment Details */}
-								<div className='border-t border-slate-200 pt-4'>
-									<h4 className='font-medium text-slate-900 mb-3'>
-										Payment Details
-									</h4>
-									<div className='space-y-2 text-sm'>
-										<div className='flex justify-between'>
-											<span className='text-slate-500'>
-												Payment Status
-											</span>
-											{getPaymentStatusBadge(
-												viewingOrder.paymentStatus,
-											)}
-										</div>
-										{viewingOrder.paidAt && (
-											<div className='flex justify-between'>
-												<span className='text-slate-500'>
-													Paid On
-												</span>
-												<span className='text-slate-900'>
-													{formatDate(
-														viewingOrder.paidAt,
-													)}
-												</span>
-											</div>
-										)}
-									</div>
-								</div>
-
-								{/* Download Section */}
-								{isDownloadAvailable(viewingOrder) && (
-									<div className='border-t border-slate-200 pt-4'>
-										<h4 className='font-medium text-slate-900 mb-3'>
-											Download Product
-										</h4>
-										<div className='p-4 bg-emerald-50 rounded-xl'>
-											<div className='flex items-center justify-between'>
-												<div>
-													<p className='text-sm text-emerald-700 mb-1'>
-														Your product is ready
-														for download
-													</p>
-													<p className='text-xs text-emerald-600'>
-														Download expires on{" "}
-														{formatDate(
-															viewingOrder.downloadExpiry!,
-														)}
-													</p>
-												</div>
-												<Button
-													className='bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-													onClick={() => {
-														toast.success(
-															"Download started!",
-														);
-													}}>
-													<Download
-														size={16}
-														className='mr-2'
-													/>
-													Download
-												</Button>
-											</div>
-										</div>
-									</div>
-								)}
-
-								{/* Support */}
-								<div className='border-t border-slate-200 pt-4'>
-									<p className='text-sm text-slate-500'>
-										Need help?{" "}
-										<Link
-											href='/contact'
-											className='text-orange-600 hover:underline'>
-											Contact Support
+									{/* Support Link */}
+									<div className="text-center pt-4">
+										<Link href="https://wa.me/919999999999" target="_blank" className="inline-flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-colors uppercase font-black text-[10px] tracking-widest">
+											Dispute or Support Issue? <ExternalLink size={12} />
 										</Link>
-									</p>
+									</div>
 								</div>
 							</div>
 						)}

@@ -1,7 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import axios from "axios";
+import { userContext } from "@/context/userContext";
 
 export interface CartItem {
 	_id: string;
@@ -22,53 +24,129 @@ interface CartContextType {
 	isInCart: (productId: string) => boolean;
 	getCartTotal: () => number;
 	itemCount: number;
+	loading: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
+	const { user } = userContext();
 	const [cart, setCart] = useState<CartItem[]>([]);
 	const [isInitialized, setIsInitialized] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-	// Load cart from localStorage on mount
+	// Sync local storage cart to server if user just logged in
+	const syncWithServer = useCallback(async (localItems: CartItem[]) => {
+		if (!user) return;
+		try {
+			setLoading(true);
+			const response = await axios.post("/api/cart", {
+				action: "sync",
+				items: localItems.map(i => i._id)
+			});
+			if (response.data.success) {
+				const serverItems = response.data.cart.map((item: any) => ({
+					...item.product,
+					_id: item.product._id // Normalize ID
+				}));
+				setCart(serverItems);
+			}
+		} catch (error) {
+			console.error("Cart sync error:", error);
+		} finally {
+			setLoading(false);
+		}
+	}, [user]);
+
+	// Fetch cart from server
+	const fetchCart = useCallback(async () => {
+		if (!user) return;
+		try {
+			setLoading(true);
+			const response = await axios.get("/api/cart");
+			if (response.data.success) {
+				const serverItems = response.data.cart.map((item: any) => ({
+					...item.product,
+					_id: item.product._id
+				}));
+				setCart(serverItems);
+			}
+		} catch (error) {
+			console.error("Fetch cart error:", error);
+		} finally {
+			setLoading(false);
+		}
+	}, [user]);
+
+	// Initial load
 	useEffect(() => {
 		const savedCart = localStorage.getItem("deelzo_cart");
+		let localItems: CartItem[] = [];
 		if (savedCart) {
 			try {
-				setCart(JSON.parse(savedCart));
+				localItems = JSON.parse(savedCart);
+				setCart(localItems);
 			} catch (e) {
-				console.error("Failed to parse cart from localStorage", e);
+				console.error("Failed to parse cart", e);
 			}
 		}
+		
+		if (user) {
+			syncWithServer(localItems);
+		}
 		setIsInitialized(true);
-	}, []);
+	}, [user, syncWithServer]);
 
-	// Save cart to localStorage on change
+	// Save to localStorage
 	useEffect(() => {
 		if (isInitialized) {
 			localStorage.setItem("deelzo_cart", JSON.stringify(cart));
 		}
 	}, [cart, isInitialized]);
 
-	const addToCart = (item: CartItem) => {
-		setCart((prevCart) => {
-			const existingItem = prevCart.find((i) => i._id === item._id);
-			if (existingItem) {
-				toast.info("Item is already in your cart");
-				return prevCart;
+	const addToCart = async (item: CartItem) => {
+		const existingItem = cart.find((i) => i._id === item._id);
+		if (existingItem) {
+			toast.info("Item is already in your cart");
+			return;
+		}
+
+		const newCart = [...cart, item];
+		setCart(newCart);
+		toast.success(`${item.title} added to cart!`);
+
+		if (user) {
+			try {
+				await axios.post("/api/cart", { productId: item._id, action: "add" });
+			} catch (error) {
+				console.error("Server add error:", error);
 			}
-			toast.success(`${item.title} added to cart!`);
-			return [...prevCart, item];
-		});
+		}
 	};
 
-	const removeFromCart = (productId: string) => {
-		setCart((prevCart) => prevCart.filter((item) => item._id !== productId));
+	const removeFromCart = async (productId: string) => {
+		const newCart = cart.filter((item) => item._id !== productId);
+		setCart(newCart);
 		toast.success("Item removed from cart");
+
+		if (user) {
+			try {
+				await axios.delete(`/api/cart?productId=${productId}`);
+			} catch (error) {
+				console.error("Server remove error:", error);
+			}
+		}
 	};
 
-	const clearCart = () => {
+	const clearCart = async () => {
 		setCart([]);
+		if (user) {
+			try {
+				await axios.delete("/api/cart?clear=true");
+			} catch (error) {
+				console.error("Server clear error:", error);
+			}
+		}
 	};
 
 	const isInCart = (productId: string) => {
@@ -89,6 +167,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 				isInCart,
 				getCartTotal,
 				itemCount: cart.length,
+				loading
 			}}>
 			{children}
 		</CartContext.Provider>

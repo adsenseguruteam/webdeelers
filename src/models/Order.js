@@ -22,7 +22,6 @@ const orderSchema = new mongoose.Schema(
 		product: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Product",
-			required: false,
 		},
 		
 		// Product details at time of purchase (snapshot) (Legacy)
@@ -35,7 +34,7 @@ const orderSchema = new mongoose.Schema(
 			thumbnail: String,
 		},
 
-		// Multi-item support
+		// Multi-item support with snapshots
 		items: [
 			{
 				product: {
@@ -46,10 +45,9 @@ const orderSchema = new mongoose.Schema(
 				snapshot: {
 					title: String,
 					price: Number,
-					comparePrice: Number,
 					currency: String,
-					category: String,
 					thumbnail: String,
+					category: String,
 				},
 				quantity: {
 					type: Number,
