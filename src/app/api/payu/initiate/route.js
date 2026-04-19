@@ -1,60 +1,84 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { connectDB } from "@/lib/mongodb";
+import Order from "@/models/Order";
+import Product from "@/models/Product";
 
 export async function POST(request) {
 	try {
+		await connectDB();
+		const body = await request.json();
 		const {
-			amount,
-			productinfo,
-			firstname,
+			amount: rawAmount,
+			productinfo: rawProductInfo,
+			firstname: rawFirstName,
 			email,
 			phone,
 			userId,
-			productId,
+			items,
 			couponCode,
+			discountApplied,
 			finalAmount,
-			isOfferPurchase,
-		} = await request.json();
+		} = body;
 
-		if (!amount || !productinfo || !firstname || !email || !phone) {
-			return NextResponse.json(
-				{ success: false, message: "Missing required fields" },
-				{ status: 400 },
-			);
-		}
+		// 1. Clean Inputs (Essential for PayU Hash integrity)
+		const amount = parseFloat(rawAmount).toFixed(2);
+		const productinfo = (rawProductInfo || "Order").replace(/[^a-zA-Z0-9]/g, "").substring(0, 50);
+		const firstname = (rawFirstName || "Customer").split(" ")[0].replace(/[^a-zA-Z0-9]/g, "");
+		const txnid = `T${Date.now()}${Math.floor(Math.random() * 999)}`.substring(0, 20);
+
+		// 2. Resolve Items for Snapshot
+		const productIds = items.map(item => item.productId);
+		const dbProducts = await Product.find({ _id: { $in: productIds } });
+		
+		const orderItems = items.map(item => {
+			const product = dbProducts.find(p => p._id.toString() === item.productId);
+			return {
+				product: item.productId,
+				quantity: item.quantity || 1,
+				snapshot: {
+					title: product?.title || "Item",
+					price: product?.price || 0,
+					currency: product?.currency || "USD",
+					thumbnail: product?.thumbnail || "",
+					category: product?.category || "Digital",
+				}
+			};
+		});
+
+		// 3. Create Pending Order
+		const newOrder = new Order({
+			user: userId,
+			items: orderItems,
+			amount: orderItems.reduce((acc, item) => acc + (item.snapshot.price * item.quantity), 0),
+			finalAmount: finalAmount,
+			currency: "USD",
+			discountApplied: discountApplied || 0,
+			couponCode: couponCode || null,
+			paymentMethod: "payu",
+			paymentStatus: "pending",
+			status: "pending",
+			transactionId: txnid,
+		});
+
+		await newOrder.save();
 
 		const key = process.env.PAYU_MERCHANT_KEY;
 		const salt = process.env.PAYU_MERCHANT_SALT;
 
 		if (!key || !salt) {
-			return NextResponse.json(
-				{ success: false, message: "PayU configuration missing" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ success: false, message: "Server Configuration Error" }, { status: 500 });
 		}
 
-		// Generate random transaction ID
-		const txnid = `txnid_${Date.now()}`;
+		// 4. Standard Professional Hash (16 Pipes)
+		// Sequence: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5|udf6|udf7|udf8|udf9|udf10|salt
+		// We only use udf1 (Internal ID) and udf2 (User ID) for simplicity
+		const udf1 = newOrder._id.toString();
+		const udf2 = userId || "";
+		const udf3 = ""; const udf4 = ""; const udf5 = ""; 
+		const udf6 = ""; const udf7 = ""; const udf8 = ""; const udf9 = ""; const udf10 = "";
 
-		// UDFs to pass custom data
-		const udf1 = userId || "";
-		const udf2 = productId || "";
-		// serialize order context
-		const orderContext = {
-			couponCode: couponCode || null,
-			finalAmount: finalAmount,
-			currency: "INR"
-		};
-		if (isOfferPurchase) {
-			orderContext.isOfferPurchase = true;
-		}
-		const udf3 = JSON.stringify(orderContext);
-		const udf4 = "";
-		const udf5 = "";
-
-		// Hash sequence: key|txnid|amount|productinfo|firstname|email|udf1|udf2|udf3|udf4|udf5||||||salt
-		const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}||||||${salt}`;
-
+		const hashString = `${key}|${txnid}|${amount}|${productinfo}|${firstname}|${email}|${udf1}|${udf2}|${udf3}|${udf4}|${udf5}|${udf6}|${udf7}|${udf8}|${udf9}|${udf10}|${salt}`;
 		const hash = crypto.createHash("sha512").update(hashString).digest("hex");
 
 		return NextResponse.json({
@@ -62,15 +86,15 @@ export async function POST(request) {
 			hash,
 			txnid,
 			key,
-			udf1,
-			udf2,
-			udf3
+			amount,
+			productinfo,
+			firstname,
+			email,
+			phone: phone || "9999999999",
+			udf1, udf2, udf3, udf4, udf5, udf6, udf7, udf8, udf9, udf10
 		});
 	} catch (error) {
-		console.error("Error initiating PayU transaction:", error);
-		return NextResponse.json(
-			{ success: false, message: "Internal server error" },
-			{ status: 500 },
-		);
+		console.error("Initiate Error:", error);
+		return NextResponse.json({ success: false, message: "Payment Initiation Failed" }, { status: 500 });
 	}
 }

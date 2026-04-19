@@ -48,7 +48,7 @@ interface Order {
 		currency: string;
 	};
 	items?: {
-		product: string;
+		product: { _id: string };
 		snapshot: {
 			title: string;
 			price: number;
@@ -68,6 +68,7 @@ interface Order {
 	paidAt?: string;
 	transactionId?: string;
 	paymentMethod?: string;
+	product?: string;
 }
 
 export default function MyOrdersPage() {
@@ -137,7 +138,7 @@ export default function MyOrdersPage() {
 
 	const getOrderItems = (order: Order) => {
 		if (order.items && order.items.length > 0) return order.items;
-		if (order.productSnapshot) return [{ snapshot: order.productSnapshot, quantity: 1, product: "" }];
+		if (order.productSnapshot && order.product) return [{ snapshot: order.productSnapshot, quantity: 1, product: { _id: order.product } }];
 		return [];
 	};
 
@@ -317,13 +318,19 @@ export default function MyOrdersPage() {
 														<h4 className="text-[15px] font-black text-slate-900 leading-tight mb-1">{item.snapshot.title}</h4>
 														<p className="text-[10px] font-bold text-slate-400 italic">Universal Digital Rights Verified</p>
 													</div>
-													<Button 
-														size="sm" 
-														className="h-10 px-6 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black uppercase text-[10px] tracking-widest gap-2 shadow-sm"
-														onClick={() => handleDownload(viewingOrder, item.product)}
-													>
-														<Download size={12} /> Download
-													</Button>
+													{viewingOrder.paymentStatus === "completed" && viewingOrder.status === "completed" ? (
+														<Button 
+															size="sm" 
+															className="h-10 px-6 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-black uppercase text-[10px] tracking-widest gap-2 shadow-sm"
+															onClick={() => handleDownload(viewingOrder, item.product._id)}
+														>
+															<Download size={12} /> Download
+														</Button>
+													) : (
+														<div className="px-4 py-2 rounded-lg bg-slate-50 border border-slate-100 text-[9px] font-black text-slate-300 uppercase tracking-widest">
+															Locked until verified
+														</div>
+													)}
 												</div>
 											))}
 										</div>

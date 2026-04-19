@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
+import Order from "@/models/Order";
 import { getDataFromToken } from "@/lib/auth";
 
 // GET /api/products/[id]/download - Get download URL for a product
@@ -10,60 +11,80 @@ export async function GET(request, { params }) {
 		
 		if (!userId) {
 			return NextResponse.json(
-				{ success: false, message: "Unauthorized" },
+				{ success: false, message: "Unauthorized. Please login." },
 				{ status: 401 }
 			);
 		}
 
 		await connectDB();
-		
 		const { id } = await params;
 		
-		// Find the product
+		// 1. Ownership Verification
+		// We only allow download if user has a completed order for this product
+		const hasPurchased = await Order.findOne({
+			user: userId,
+			paymentStatus: "completed",
+			status: "completed",
+			$or: [
+				{ "items.product": id },
+				{ product: id } // Fallback for legacy items
+			]
+		});
+
+		if (!hasPurchased) {
+			console.log(`Download denied for user ${userId} for product ${id}. No completed order found.`);
+			return NextResponse.json(
+				{ success: false, message: "Access Denied: Product purchase not verified or order still processing." },
+				{ status: 403 }
+			);
+		}
+
+		// 2. Find the product details
 		const product = await Product.findById(id);
 		
 		if (!product) {
 			return NextResponse.json(
-				{ success: false, message: "Product not found" },
+				{ success: false, message: "Product details not found" },
 				{ status: 404 }
 			);
 		}
 		
-		// Check if product has download options
-		if (!product.downloadOptions) {
+		// 3. Extract Download URL
+		const options = product.downloadOptions;
+		if (!options || (!options.file?.url && !options.link)) {
+			console.error(`Download config missing for product ${id}:`, options);
 			return NextResponse.json(
-				{ success: false, message: "No download available for this product" },
+				{ success: false, message: "This product does not have a downloadable file attached. Please contact support." },
 				{ status: 404 }
 			);
 		}
 		
-		// Return appropriate download URL based on type
 		let downloadUrl = null;
 		
-		if (product.downloadOptions.type === "upload" && product.downloadOptions.file?.url) {
-			// Use the direct URL from ImageKit
-			downloadUrl = product.downloadOptions.file.url;
-		} else if (product.downloadOptions.type === "link" && product.downloadOptions.link) {
-			downloadUrl = product.downloadOptions.link;
+		// Handle direct upload vs external link
+		if (options.type === "upload" && options.file?.url) {
+			downloadUrl = options.file.url;
+		} else if (options.type === "link" && options.link) {
+			downloadUrl = options.link;
 		}
 		
 		if (!downloadUrl) {
 			return NextResponse.json(
-				{ success: false, message: "Download URL not available" },
-				{ status: 404 }
+				{ success: false, message: "Internal Error: Download link is malformed or missing." },
+				{ status: 500 }
 			);
 		}
 		
 		return NextResponse.json({
 			success: true,
 			downloadUrl,
-			type: product.downloadOptions.type,
-			fileName: product.downloadOptions.file?.name || null
+			type: options.type,
+			fileName: options.file?.name || "download"
 		});
 	} catch (error) {
-		console.error("Error getting download URL:", error);
+		console.error("Critical download error:", error);
 		return NextResponse.json(
-			{ success: false, message: "Failed to get download URL" },
+			{ success: false, message: "An error occurred while retrieving your asset." },
 			{ status: 500 }
 		);
 	}

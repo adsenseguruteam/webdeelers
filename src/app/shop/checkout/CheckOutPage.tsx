@@ -53,7 +53,7 @@ interface CouponData {
 	maximumDiscount: number | null;
 }
 
-const INR_CONVERSION_RATE = 92;
+const INR_CONVERSION_RATE = 95;
 
 export default function CheckoutComponent() {
 	const searchParams = useSearchParams();
@@ -182,7 +182,11 @@ export default function CheckoutComponent() {
 
 			const response = await axios.post("/api/payu/initiate", payload);
 			if (response.data.success) {
-				const { hash, txnid, key } = response.data;
+				const { 
+					hash, txnid, key, amount, productinfo, firstname, email, phone,
+					udf1, udf2, udf3, udf4, udf5, udf6, udf7, udf8, udf9, udf10 
+				} = response.data;
+				
 				const form = document.createElement("form");
 				form.action = "https://secure.payu.in/_payment";
 				form.method = "POST";
@@ -195,17 +199,20 @@ export default function CheckoutComponent() {
 
 				addInput("key", key);
 				addInput("txnid", txnid);
-				addInput("amount", payload.amount);
-				addInput("productinfo", payload.productinfo);
-				addInput("firstname", payload.firstname);
-				addInput("email", payload.email);
-				addInput("phone", payload.phone);
+				addInput("amount", amount); 
+				addInput("productinfo", productinfo);
+				addInput("firstname", firstname);
+				addInput("email", email);
+				addInput("phone", phone);
 				addInput("surl", `${window.location.origin}/api/payu/callback`);
 				addInput("furl", `${window.location.origin}/api/payu/callback`);
 				addInput("hash", hash);
-				addInput("udf1", user?._id || "");
-				addInput("udf2", "cart_purchase");
-				addInput("udf3", JSON.stringify({ couponCode: payload.couponCode, finalAmount: payload.finalAmount }));
+				
+				// Standard UDF slotting
+				addInput("udf1", udf1); addInput("udf2", udf2); addInput("udf3", udf3);
+				addInput("udf4", udf4); addInput("udf5", udf5); addInput("udf6", udf6);
+				addInput("udf7", udf7); addInput("udf8", udf8); addInput("udf9", udf9);
+				addInput("udf10", udf10);
 
 				document.body.appendChild(form);
 				form.submit();
@@ -233,7 +240,9 @@ export default function CheckoutComponent() {
 
 			if (response.data.success) {
 				toast.success("Order Placed Successfully!");
-				clearCart();
+				setTimeout(() => {
+					clearCart();
+				}, 1000);
 				router.push("/dashboard/orders");
 			}
 		} catch (error) {

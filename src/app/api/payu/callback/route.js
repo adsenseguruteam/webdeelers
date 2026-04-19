@@ -3,115 +3,73 @@ import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
-import { sendEmail } from "@/lib/emails";
-// import { EMAIL } from "@/lib/constants";
 
 export async function POST(request) {
 	try {
-		// PayU sends data as URL-encoded form data
 		const formData = await request.formData();
-		
 		const status = formData.get("status");
-		const firstname = formData.get("firstname");
-		const amount = formData.get("amount");
 		const txnid = formData.get("txnid");
+		const amount = formData.get("amount");
+		const productinfo = formData.get("productinfo");
+		const firstname = formData.get("firstname");
+		const email = formData.get("email");
 		const hash = formData.get("hash");
 		const key = formData.get("key");
-		const productinfo = formData.get("productinfo");
-		const email = formData.get("email");
-		
-		const udf1 = formData.get("udf1"); // userId
-		const udf2 = formData.get("udf2"); // productId
-		const udf3 = formData.get("udf3"); // JSON order context
-		const udf4 = formData.get("udf4");
-		const udf5 = formData.get("udf5");
-		
 		const additionalCharges = formData.get("additionalCharges") || "";
 
+		const udf1 = formData.get("udf1") || "";
+		const udf2 = formData.get("udf2") || "";
+		const udf3 = formData.get("udf3") || "";
+		const udf4 = formData.get("udf4") || "";
+		const udf5 = formData.get("udf5") || "";
+		const udf6 = formData.get("udf6") || "";
+		const udf7 = formData.get("udf7") || "";
+		const udf8 = formData.get("udf8") || "";
+		const udf9 = formData.get("udf9") || "";
+		const udf10 = formData.get("udf10") || "";
+
 		const salt = process.env.PAYU_MERCHANT_SALT;
+		if (!salt) return NextResponse.redirect(new URL("/shop/cart?payment=error", request.url));
 
-		if (!salt) {
-			console.error("PayU Salt is missing");
-			return NextResponse.redirect(new URL("/dashboard/orders?payment=error", request.url));
-		}
-
-		// Calculate reverse hash to verify authenticity
+		// STRICT REVERSE HASH (17 Pipes)
+		// salt|status|udf10|udf9|udf8|udf7|udf6|udf5|udf4|udf3|udf2|udf1|email|firstname|productinfo|amount|txnid|key
 		let reverseHashString = "";
 		if (additionalCharges) {
-			reverseHashString = `${additionalCharges}|${salt}|${status}||||||${udf5 || ""}|${udf4 || ""}|${udf3 || ""}|${udf2 || ""}|${udf1 || ""}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
+			reverseHashString = `${additionalCharges}|${salt}|${status}|${udf10}|${udf9}|${udf8}|${udf7}|${udf6}|${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
 		} else {
-			reverseHashString = `${salt}|${status}||||||${udf5 || ""}|${udf4 || ""}|${udf3 || ""}|${udf2 || ""}|${udf1 || ""}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
+			reverseHashString = `${salt}|${status}|${udf10}|${udf9}|${udf8}|${udf7}|${udf6}|${udf5}|${udf4}|${udf3}|${udf2}|${udf1}|${email}|${firstname}|${productinfo}|${amount}|${txnid}|${key}`;
 		}
-		
+
 		const calculatedHash = crypto.createHash("sha512").update(reverseHashString).digest("hex");
 
 		if (calculatedHash !== hash) {
-			console.error("PayU Hash mismatch", { received: hash, calculated: calculatedHash });
-			return NextResponse.redirect(new URL("/dashboard/orders?payment=failed", request.url));
+			console.error("Hash Mismatch:", { txnid, calc: calculatedHash, received: hash });
+			return NextResponse.redirect(new URL("/shop/cart?payment=failed&reason=security", request.url));
 		}
 
-		// Ensure we connect to the database
 		await connectDB();
+		const order = await Order.findById(udf1) || await Order.findOne({ transactionId: txnid });
 
-		const productId = udf2;
-		const orderContext = udf3 ? JSON.parse(udf3) : {};
-		// Check if transaction was successful
+		if (!order) return NextResponse.redirect(new URL("/shop/cart?payment=failed&reason=not_found", request.url));
+
 		if (status === "success") {
-			// Find if order already exists
-			const existingOrder = await Order.findOne({ transactionId: txnid });
-			
-			if (existingOrder) {
-			    // Payment already processed for this txnid
-			    return NextResponse.redirect(new URL("/dashboard/orders?payment=success", request.url));
+			order.paymentStatus = "completed";
+			order.status = "completed";
+			order.deliveryStatus = "delivered";
+			order.paidAt = new Date();
+			await order.save();
+
+			if (order.items?.length > 0) {
+				const productIds = order.items.map(i => i.product);
+				await Product.updateMany({ _id: { $in: productIds } }, { $inc: { salesCount: 1 } });
 			}
-
-            const product = await Product.findById(productId);
-            // We proceed even if product isn't found, mapping basic details just in case
-
-			// Generate order ID
-			const orderId = `ORD-${Date.now()}`;
-
-			// Create order
-			const newOrder = new Order({
-				orderId,
-				user: udf1, // Set from frontend
-				product: productId,
-				productSnapshot: {
-					title: product?.title || productinfo,
-					price: product?.price || amount,
-					comparePrice: product?.comparePrice,
-					thumbnail: product?.thumbnail,
-					category: product?.category,
-				},
-				amount: product?.price || amount,
-				finalAmount: orderContext.finalAmount || amount,
-				currency: orderContext.currency || "INR",
-				paymentMethod: "payu",
-				paymentStatus: "completed",
-				status: "completed",
-				deliveryStatus: "delivered",
-				couponCode: orderContext.couponCode || null,
-        transactionId: txnid,
-				paidAt: new Date(),
-				createdAt: new Date(),
-			});
-
-      if (product) {
-			    await Product.findByIdAndUpdate(productId, { $inc: { salesCount: 1 } });
-      }
-
-			await newOrder.save();
-			
-			// Redirect user back to UI using 303 See Other, which forces a GET request
 			return NextResponse.redirect(new URL("/dashboard/orders?payment=success", request.url), { status: 303 });
 		} else {
-			// Payment failed or is pending
-			console.log(`PayU Payment ${status} for txnid: ${txnid}`);
-			return NextResponse.redirect(new URL(`/shop/checkout?product=${productId}`, request.url), { status: 303 });
+			order.paymentStatus = "failed"; order.status = "failed";
+			await order.save();
+			return NextResponse.redirect(new URL("/shop/cart?payment=failed", request.url), { status: 303 });
 		}
-
 	} catch (error) {
-		console.error("Error processing PayU callback:", error);
 		return NextResponse.redirect(new URL("/shop/cart?payment=failed", request.url), { status: 303 });
 	}
 }
