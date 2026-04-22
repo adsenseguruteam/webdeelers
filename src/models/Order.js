@@ -81,7 +81,7 @@ const orderSchema = new mongoose.Schema(
 		
 		paymentMethod: {
 			type: String,
-			enum: ["upi", "binance", "payu"],
+			enum: ["upi", "binance", "payu", "paypal"],
 		},
 		
 		// Payment Status
@@ -100,7 +100,7 @@ const orderSchema = new mongoose.Schema(
 		// Delivery/Download Status
 		deliveryStatus: {
 			type: String,
-			enum: ["pending", "delivered", "failed", "processing"],
+			enum: ["pending", "delivered", "failed", "processing","completed"],
 			default: "pending",
 		},
 		couponCode: {

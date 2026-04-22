@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -32,6 +31,7 @@ import axios from "axios";
 import { userContext } from "@/context/userContext";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 interface Product {
 	_id: string;
@@ -67,7 +67,7 @@ export default function CheckoutComponent() {
 	const [couponCode, setCouponCode] = useState("");
 	const [couponData, setCouponData] = useState<CouponData | null>(null);
 	const [isVerifyingCoupon, setIsVerifyingCoupon] = useState(false);
-	const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"payu" | "binance" | "">("");
+	const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"payu" | "binance" | "paypal" | "">("");
 	const [transactionId, setTransactionId] = useState("");
 	const [isVerifying, setIsVerifying] = useState(false);
 	const [showTransactionDialog, setShowTransactionDialog] = useState(false);
@@ -110,6 +110,15 @@ export default function CheckoutComponent() {
 	const cartTotal = useMemo(() => products.reduce((acc, p) => acc + p.price, 0), [products]);
 	const currency = products[0]?.currency || "USD";
 	const finalTotal = couponData ? couponData.finalAmount : cartTotal;
+
+	const paypalFee = useMemo(() => {
+		if (selectedPaymentMethod === "paypal") {
+			return parseFloat((finalTotal * 0.07).toFixed(2));
+		}
+		return 0;
+	}, [finalTotal, selectedPaymentMethod]);
+
+	const totalWithFee = useMemo(() => finalTotal + paypalFee, [finalTotal, paypalFee]);
 
 	const convertedInr = useMemo(() => {
 		return (finalTotal * INR_CONVERSION_RATE).toLocaleString("en-IN", {
@@ -162,6 +171,66 @@ export default function CheckoutComponent() {
 		}
 		if (selectedPaymentMethod === "binance") setShowTransactionDialog(true);
 		else if (selectedPaymentMethod === "payu") initiatePayU();
+	};
+
+	const handlePayPalCreateOrder = async () => {
+		try {
+			const response = await axios.post("/api/paypal/create-order", {
+				cart: {
+					items: products.map(p => ({
+						title: p.title,
+						price: p.price,
+						quantity: 1,
+						productId: p._id
+					})),
+					totalAmount: finalTotal,
+					finalAmount: totalWithFee,
+					currency: currency,
+				}
+			});
+
+			if (response.data.success) {
+				return response.data.orderID;
+			} else {
+				throw new Error(response.data.message);
+			}
+		} catch (error: any) {
+			console.error("PayPal Order Initiation Error:", error);
+			const message = error.response?.data?.message || error.message || "PayPal initiation failed";
+			toast.error(message);
+			// Re-throw to inform PayPal SDK that order creation failed
+			throw error;
+		}
+	};
+
+	const handlePayPalOnApprove = async (data: any) => {
+		try {
+			setIsProcessing(true);
+			const response = await axios.post("/api/paypal/capture-order", {
+				orderID: data.orderID,
+				cartData: {
+					items: products.map(p => ({ productId: p._id, quantity: 1 })),
+					totalAmount: finalTotal,
+					finalAmount: totalWithFee,
+					currency: currency,
+					couponCode: couponData?.code || null,
+					discountApplied: couponData?.discountAmount || 0,
+					paypalFee: paypalFee,
+				}
+			});
+
+			if (response.data.success) {
+				toast.success("Order Placed Successfully!");
+				setTimeout(() => clearCart(), 1000);
+				router.push("/dashboard/orders");
+			} else {
+				throw new Error(response.data.message);
+			}
+		} catch (error: any) {
+			toast.error(error.message || "Payment capture failed");
+		} finally {
+			setIsProcessing(false);
+		}
 	};
 
 	const initiatePayU = async () => {
@@ -352,6 +421,22 @@ export default function CheckoutComponent() {
 									<p className='font-black text-slate-900 text-xl leading-tight tracking-tight'>Binance Pay</p>
 									<p className='text-[10px] sm:text-xs text-slate-400 mt-2 font-bold uppercase tracking-widest'>USDT (BEP-20) Payment</p>
 								</button>
+
+								<button
+									onClick={() => setSelectedPaymentMethod("paypal")}
+									className={`group relative p-6 sm:p-8 rounded-[2rem] border-2 text-left transition-all duration-300 ${selectedPaymentMethod === "paypal" ? "border-sky-500 bg-white ring-8 ring-sky-500/5 shadow-2xl" : "border-slate-100 bg-white hover:border-slate-200"}`}
+								>
+									<div className="flex justify-between items-start mb-6">
+										<div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${selectedPaymentMethod === "paypal" ? "border-sky-500 bg-sky-500 shadow-lg shadow-sky-500/20" : "border-slate-200"}`}>
+											{selectedPaymentMethod === "paypal" && <div className='w-2 h-2 rounded-full bg-white animate-pulse' />}
+										</div>
+										<div className={`p-2 rounded-xl transition-colors ${selectedPaymentMethod === "paypal" ? "bg-sky-500 text-white" : "bg-slate-50 text-slate-300 group-hover:text-slate-400"}`}>
+											<Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" width={18} height={18} className={selectedPaymentMethod === "paypal" ? "brightness-0 invert" : "grayscale opacity-50"} />
+										</div>
+									</div>
+									<p className='font-black text-slate-900 text-xl leading-tight tracking-tight'>PayPal</p>
+									<p className='text-[10px] sm:text-xs text-slate-400 mt-2 font-bold uppercase tracking-widest'>Cards • PayPal Credit</p>
+								</button>
 							</div>
 						</section>
 
@@ -445,6 +530,12 @@ export default function CheckoutComponent() {
 											<span>-{currency} {couponData.discountAmount.toLocaleString()}</span>
 										</div>
 									)}
+									{paypalFee > 0 && (
+										<div className='flex justify-between items-center text-sky-400 text-xs font-black uppercase tracking-[0.15em]'>
+											<span>PayPal Fee (7%)</span>
+											<span>+{currency} {paypalFee.toLocaleString()}</span>
+										</div>
+									)}
 									<div className='flex justify-between items-center text-white/40 text-xs font-black uppercase tracking-[0.15em]'>
 										<span>Platform Fee</span>
 										<span className="text-emerald-400 font-black">WAIVED</span>
@@ -456,7 +547,7 @@ export default function CheckoutComponent() {
 												<p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-3">Total Payable Amount</p>
 												<p className="text-5xl sm:text-6xl font-black text-white leading-none tracking-tighter">
 													<span className="text-xl font-medium text-white/30 mr-2">{currency}</span>
-													{finalTotal.toLocaleString()}
+													{totalWithFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 												</p>
 											</div>
 
@@ -478,23 +569,61 @@ export default function CheckoutComponent() {
 									</div>
 
 									<div className="pt-10">
-										<Button
-											onClick={handleBuy}
-											disabled={isProcessing || !selectedPaymentMethod}
-											className='w-full py-10 rounded-[2rem] text-xl font-black bg-white hover:bg-slate-100 text-slate-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/5'
-										>
-											{isProcessing ? (
-												<div className="flex items-center gap-3">
-													<Loader2 className='animate-spin' size={24} />
-													<span className="uppercase tracking-widest">Processing...</span>
-												</div>
-											) : (
-												<div className="flex items-center gap-3">
-													<Shield size={24} />
-													<span className="uppercase tracking-widest">{selectedPaymentMethod ? `PAY VIA ${selectedPaymentMethod.toUpperCase()}` : "CONFIRM METHOD"}</span>
-												</div>
-											)}
-										</Button>
+										{selectedPaymentMethod === "paypal" ? (
+											<div className="relative z-0">
+												<PayPalScriptProvider options={{ 
+													clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "",
+													currency: currency,
+													components: "buttons",
+													intent: "capture"
+												}}>
+													<PayPalButtons 
+														style={{ 
+															layout: "vertical",
+															shape: "pill",
+															label: "pay",
+															height: 54
+														}}
+														createOrder={handlePayPalCreateOrder}
+														onApprove={handlePayPalOnApprove}
+														onCancel={() => {
+															console.log("PayPal Payment Cancelled");
+															setIsProcessing(false);
+															toast.info("Payment cancelled");
+														}}
+														onError={(err) => {
+															console.error("PayPal Button Error:", err);
+															setIsProcessing(false);
+															toast.error("PayPal system error. Please try another method.");
+														}}
+														disabled={isProcessing}
+													/>
+												</PayPalScriptProvider>
+												{isProcessing && (
+													<div className="absolute inset-0 bg-white/50 backdrop-blur-[2px] flex items-center justify-center rounded-[2rem] z-10">
+														<Loader2 className="animate-spin text-slate-900" size={24} />
+													</div>
+												)}
+											</div>
+										) : (
+											<Button
+												onClick={handleBuy}
+												disabled={isProcessing || !selectedPaymentMethod}
+												className='w-full py-10 rounded-[2rem] text-xl font-black bg-white hover:bg-slate-100 text-slate-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/5'
+											>
+												{isProcessing ? (
+													<div className="flex items-center gap-3">
+														<Loader2 className='animate-spin' size={24} />
+														<span className="uppercase tracking-widest">Processing...</span>
+													</div>
+												) : (
+													<div className="flex items-center gap-3">
+														<Shield size={24} />
+														<span className="uppercase tracking-widest">{selectedPaymentMethod ? `PAY VIA ${selectedPaymentMethod.toUpperCase()}` : "CONFIRM METHOD"}</span>
+													</div>
+												)}
+											</Button>
+										)}
 									</div>
 								</div>
 
