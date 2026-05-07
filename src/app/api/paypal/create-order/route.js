@@ -41,9 +41,7 @@ export async function POST(request) {
             ]
         };
 
-        console.log("Initiating PayPal Order with data:", JSON.stringify(paypalCart, null, 2));
         const order = await createPayPalOrder(paypalCart);
-        console.log("PayPal Order Created Safely:", order.id);
 
         return NextResponse.json({
             success: true,

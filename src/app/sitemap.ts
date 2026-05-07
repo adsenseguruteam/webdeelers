@@ -126,30 +126,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			.lean();
 
 		productPages = products.map((product) => {
-			// Calculate priority based on product metrics
-			let priority = 0.7; // Base priority
-			
-			// Boost priority for featured products
-			if (product.isFeatured) priority = Math.min(priority + 0.2, 1.0);
-			
-			// Boost priority for bestsellers
-			if (product.isBestseller) priority = Math.min(priority + 0.1, 1.0);
-			
-			// Boost priority based on sales count
-			if (product.salesCount > 100) priority = Math.min(priority + 0.1, 1.0);
-			else if (product.salesCount > 50) priority = Math.min(priority + 0.05, 1.0);
-			
-			// Boost priority based on rating
-			if (product.rating?.average >= 4.5) priority = Math.min(priority + 0.1, 1.0);
-			else if (product.rating?.average >= 4.0) priority = Math.min(priority + 0.05, 1.0);
-
 			return {
 				url: `${baseUrl}/shop/${product.slug || product._id}`,
 				lastModified: product.updatedAt
 					? new Date(product.updatedAt)
 					: new Date(),
 				changeFrequency: "daily" as const,
-				priority: priority,
+				priority: 0.9,
 			};
 		});
 	} catch (error) {
