@@ -25,6 +25,7 @@ import {
 	ExternalLink,
 	Copy,
 	Wallet,
+	DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
@@ -32,6 +33,7 @@ import { userContext } from "@/context/userContext";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { PHONE } from "@/lib/constant";
 
 interface Product {
 	_id: string;
@@ -73,8 +75,9 @@ export default function CheckoutComponent() {
 	const [showTransactionDialog, setShowTransactionDialog] = useState(false);
 
 	const paymentDetails = {
-		binanceWallet: "TEiKjQHn5sRpW69prMSsV2s38PQtndofhb",
+		binanceWallet: "TD7dqFdghtBJfoqDxUN1KHF8bNKJzNnrLf",
 		binanceQrUrl: "/usdtscanner.jpeg",
+		binanceId: "529927770"
 	};
 
 	const singleProductId = searchParams.get("product");
@@ -365,7 +368,7 @@ export default function CheckoutComponent() {
 
 				<div className='flex flex-col lg:flex-row gap-8 lg:gap-16'>
 					{/* Left Column: Flow */}
-					<div className='flex-1 space-y-12 lg:space-y-20'>
+					<div className='flex-1 space-y-8 lg:space-y-20'>
 						{/* Steps: Mobile View */}
 						<div className="sm:hidden flex items-center justify-center gap-8 mb-4">
 							<div className="flex flex-col items-center gap-2">
@@ -389,7 +392,7 @@ export default function CheckoutComponent() {
 								</div>
 							</div>
 							
-							<div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+							<div className='grid grid-cols-2 sm:grid-cols-3 gap-4'>
 								<button
 									onClick={() => setSelectedPaymentMethod("payu")}
 									className={`group relative p-6 sm:p-8 rounded-[2rem] border-2 text-left transition-all duration-300 ${selectedPaymentMethod === "payu" ? "border-slate-900 bg-white ring-8 ring-slate-900/5 shadow-2xl" : "border-slate-100 bg-white hover:border-slate-200"}`}
@@ -419,7 +422,7 @@ export default function CheckoutComponent() {
 										</div>
 									</div>
 									<p className='font-black text-slate-900 text-xl leading-tight tracking-tight'>Binance Pay</p>
-									<p className='text-[10px] sm:text-xs text-slate-400 mt-2 font-bold uppercase tracking-widest'>USDT (BEP-20) Payment</p>
+									<p className='text-[10px] sm:text-xs text-slate-400 mt-2 font-bold uppercase tracking-widest'>USDT (TRX-20) Payment</p>
 								</button>
 
 								<button
@@ -476,20 +479,20 @@ export default function CheckoutComponent() {
 
 					{/* Right Column: Checkout Summary */}
 					<div className='lg:w-[450px]'>
-						<div className="sticky top-12 space-y-6">
-							<div className='relative bg-slate-900 rounded-[3rem] p-8 sm:p-12 text-white shadow-2xl shadow-slate-900/30 overflow-hidden'>
+						<div className="sticky top-10 space-y-4">
+							<div className='relative bg-slate-900 rounded-[3rem] p-8 text-white shadow-2xl shadow-slate-900/30 overflow-hidden'>
 								{/* Accent Background Decoration */}
 								<div className="absolute -top-24 -right-24 w-64 h-64 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
 								
-								<div className="flex items-center justify-between mb-12">
-									<h2 className='text-xl sm:text-2xl font-black tracking-tight'>Order Summary</h2>
+								<div className="flex items-center justify-between mb-8">
+									<h2 className='text-lg sm:text-xl font-black tracking-tight'>Order Summary</h2>
 									<div className="bg-white/10 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black tracking-widest text-white/60">
 										{products.length} ITEMS
 									</div>
 								</div>
 
 								{/* Coupon Input */}
-								<div className="mb-12">
+								<div className="mb-8">
 									{couponData ? (
 										<div className='bg-white/5 border border-white/10 rounded-3xl p-5 flex items-center justify-between group py-4'>
 											<div className='flex items-center gap-3'>
@@ -509,9 +512,9 @@ export default function CheckoutComponent() {
 												value={couponCode}
 												onChange={(e) => setCouponCode(e.target.value)}
 												placeholder='DISCOUNT CODE'
-												className='h-16 rounded-[1.25rem] bg-white/5 border-0 focus-visible:ring-1 focus-visible:ring-white/20 font-black text-xs tracking-[0.2em] placeholder:text-white/20 uppercase px-6'
+												className='h-12 rounded-[1.25rem] bg-white/5 border-0 focus-visible:ring-1 focus-visible:ring-white/20 font-bold text-xs tracking-[0.2em] placeholder:text-white/20 uppercase px-6'
 											/>
-											<Button onClick={verifyCoupon} disabled={isVerifyingCoupon || !couponCode.trim()} className='h-16 w-16 min-w-[4rem] rounded-[1.25rem] bg-white text-slate-900 hover:bg-slate-100 p-0 shadow-lg shadow-white/5'>
+											<Button onClick={verifyCoupon} disabled={isVerifyingCoupon || !couponCode.trim()} className='h-12 w-12 min-w-[3rem] rounded-[1.25rem] bg-white text-slate-900 hover:bg-slate-100 p-0 shadow-lg shadow-white/5'>
 												{isVerifyingCoupon ? <Loader2 className='animate-spin' size={18} /> : <ChevronRight size={28} />}
 											</Button>
 										</div>
@@ -519,7 +522,7 @@ export default function CheckoutComponent() {
 								</div>
 
 								{/* Pricing Details */}
-								<div className='space-y-5'>
+								<div className='space-y-4'>
 									<div className='flex justify-between items-center text-white/40 text-xs font-black uppercase tracking-[0.15em]'>
 										<span>Net Amount</span>
 										<span className="text-white font-bold">{currency} {cartTotal.toLocaleString()}</span>
@@ -541,12 +544,12 @@ export default function CheckoutComponent() {
 										<span className="text-emerald-400 font-black">WAIVED</span>
 									</div>
 
-									<div className='pt-10 mt-10 border-t border-white/5'>
+									<div className='pt-6 mt-4 border-t border-white/5'>
 										<div className="flex flex-col gap-6">
 											<div className="flex flex-col">
 												<p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-3">Total Payable Amount</p>
-												<p className="text-5xl sm:text-6xl font-black text-white leading-none tracking-tighter">
-													<span className="text-xl font-medium text-white/30 mr-2">{currency}</span>
+												<p className="text-4xl sm:text-5xl font-black text-white leading-none tracking-tighter">
+													<span className="text-lg font-medium text-white/30 mr-2">{currency}</span>
 													{totalWithFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 												</p>
 											</div>
@@ -568,7 +571,7 @@ export default function CheckoutComponent() {
 										</div>
 									</div>
 
-									<div className="pt-10">
+									<div className="pt-6">
 										{selectedPaymentMethod === "paypal" ? (
 											<div className="relative z-0">
 												<PayPalScriptProvider options={{ 
@@ -609,7 +612,7 @@ export default function CheckoutComponent() {
 											<Button
 												onClick={handleBuy}
 												disabled={isProcessing || !selectedPaymentMethod}
-												className='w-full py-10 rounded-[2rem] text-xl font-black bg-white hover:bg-slate-100 text-slate-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/5'
+												className='w-full py-6 rounded-[2rem] text-lg font-black bg-white hover:bg-slate-100 text-slate-900 transition-all hover:scale-[1.02] active:scale-95 shadow-2xl shadow-white/5'
 											>
 												{isProcessing ? (
 													<div className="flex items-center gap-3">
@@ -626,15 +629,23 @@ export default function CheckoutComponent() {
 										)}
 									</div>
 								</div>
-
-								<div className="flex items-center justify-center gap-6 mt-10 pt-10 border-t border-white/5">
-									<Image src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" width={44} height={12} className="opacity-20 grayscale brightness-200" />
-									<Image src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" width={44} height={12} className="opacity-20 grayscale brightness-200" />
-									<Image src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" width={32} height={12} className="opacity-20 grayscale brightness-200" />
-								</div>
 							</div>
 
 							{/* Help Section */}
+							<div className="bg-white rounded-[2rem] border border-slate-200/60 p-6 flex items-center justify-between shadow-sm">
+								<div className="flex items-center gap-4">
+									<div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
+										<DollarSign size={24} />
+									</div>
+									<div>
+										<h4 className="text-sm font-black text-slate-900 uppercase">No Refund Policy</h4>
+										<p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Read Refund Policy</p>
+									</div>
+								</div>
+								<Link href={`/refund-policy`} target="_blank" className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors">
+									<ExternalLink size={20} />
+								</Link>
+							</div>
 							<div className="bg-white rounded-[2rem] border border-slate-200/60 p-6 flex items-center justify-between shadow-sm">
 								<div className="flex items-center gap-4">
 									<div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400">
@@ -645,7 +656,7 @@ export default function CheckoutComponent() {
 										<p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">Contact 24/7 Desk</p>
 									</div>
 								</div>
-								<Link href="https://wa.me/919999999999" target="_blank" className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors">
+								<Link href={`https://wa.me/${PHONE}`} target="_blank" className="p-3 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors">
 									<ExternalLink size={20} />
 								</Link>
 							</div>
@@ -656,7 +667,7 @@ export default function CheckoutComponent() {
 
 			{/* Binance Transaction Dialog */}
 			<Dialog open={showTransactionDialog} onOpenChange={setShowTransactionDialog}>
-				<DialogContent className='max-w-md rounded-[3rem] p-0 border-0 shadow-2xl overflow-hidden bg-white'>
+				<DialogContent className='max-w-md rounded-[2rem] p-0 border-0 shadow-2xl overflow-hidden bg-white'>
 					<DialogHeader className="p-10 pb-0">
 						<div className="flex items-center gap-3 mb-2">
 							<div className="p-2 bg-amber-50 text-amber-500 rounded-xl">
@@ -668,21 +679,33 @@ export default function CheckoutComponent() {
 						<p className="text-slate-400 text-sm font-medium">Send <span className="text-slate-900 font-bold">{currency} {finalTotal}</span> (USDT BEP-20) to clear invoice.</p>
 					</DialogHeader>
 
-					<div className='p-10 space-y-10'>
-						<div className='bg-slate-50/50 rounded-[2.5rem] p-8 relative'>
+					<div className='p-4 space-y-4'>
+						<div className='bg-slate-50/50 rounded-2xl p-2 relative'>
 							<div className="flex flex-col items-center">
-								<div className='bg-white p-5 rounded-[2.5rem] shadow-xl shadow-slate-200/50 mb-8 border border-slate-100'>
+								<div className='bg-white p-2 rounded-[2.5rem] shadow-xl shadow-slate-200/50 mb-3 border border-slate-100'>
 									<Image src={paymentDetails.binanceQrUrl} alt='QR' width={180} height={180} className='rounded-2xl opacity-90' />
 								</div>
 								
-								<div className='w-full space-y-3'>
+								<div className='w-full space-y-2'>
 									<p className='text-[10px] font-black text-slate-400 uppercase tracking-widest text-center'>Recipient Wallet Address</p>
-									<div className="bg-white p-5 rounded-3xl border border-slate-200/60 shadow-sm flex items-center justify-between group transition-all hover:border-slate-300">
-										<p className='font-mono text-[11px] break-all text-slate-500 font-black tracking-tight flex-1'>{paymentDetails.binanceWallet}</p>
+									<div className="bg-white p-2 rounded-3xl border border-slate-200/60 shadow-sm flex items-center justify-between group transition-all hover:border-slate-300">
+										<p className='font-mono pl-2 text-[12px] break-all text-slate-500 font-black tracking-tight flex-1'>{paymentDetails.binanceWallet}</p>
 										<button onClick={() => {
 											navigator.clipboard.writeText(paymentDetails.binanceWallet);
 											toast.success("Wallet Address Copied!");
-										}} className="ml-4 p-3 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-90">
+										}} className="ml-4 p-2 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-90">
+											<Copy size={16} />
+										</button>
+									</div>
+								</div>
+								<div className='w-full pt-2 space-y-2'>
+									<p className='text-[10px] font-black text-slate-400 uppercase tracking-widest text-center'>Recipient Binance ID</p>
+									<div className="bg-white p-2 rounded-3xl border border-slate-200/60 shadow-sm flex items-center justify-between group transition-all hover:border-slate-300">
+										<p className='font-mono pl-2 text-[12px] break-all text-slate-500 font-black tracking-tight flex-1'>{paymentDetails.binanceId}</p>
+										<button onClick={() => {
+											navigator.clipboard.writeText(paymentDetails.binanceId);
+											toast.success("Binance ID Copied!");
+										}} className="ml-4 p-2 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10 active:scale-90">
 											<Copy size={16} />
 										</button>
 									</div>
@@ -690,7 +713,7 @@ export default function CheckoutComponent() {
 							</div>
 						</div>
 
-						<div className='space-y-4'>
+						<div className='space-y-2'>
 							<div className="flex items-center justify-between px-2">
 								<label className='text-[10px] font-black text-slate-900 uppercase tracking-widest'>Transaction Hash (TxID)</label>
 								<span className="text-[9px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1 animate-pulse">
@@ -701,11 +724,11 @@ export default function CheckoutComponent() {
 								value={transactionId} 
 								onChange={(e) => setTransactionId(e.target.value)}
 								placeholder='0x7a...'
-								className='h-16 rounded-2xl bg-white border-2 border-slate-100 focus-visible:ring-1 focus-visible:ring-slate-200 font-black text-sm tracking-widest placeholder:text-slate-300 uppercase px-6 text-slate-700'
+								className='h-10 md:h-12 rounded-2xl bg-white border-2 border-slate-100 focus-visible:ring-1 focus-visible:ring-slate-200 font-bold text-sm tracking-widest placeholder:text-slate-300 uppercase px-6 text-slate-700'
 							/>
 						</div>
 
-						<Button onClick={submitTransactionId} disabled={isVerifying || !transactionId.trim()} className='w-full py-10 rounded-[2rem] bg-slate-900 hover:bg-slate-800 text-white font-black text-xl transition-all shadow-2xl shadow-slate-900/20'>
+						<Button onClick={submitTransactionId} disabled={isVerifying || !transactionId.trim()} className='w-full py-7 rounded-[2rem] bg-slate-900 hover:bg-slate-800 text-white font-black text-lg md:text-xl transition-all shadow-2xl shadow-slate-900/20'>
 							{isVerifying ? (
 								<div className="flex items-center gap-3">
 									<Loader2 className='animate-spin' />
